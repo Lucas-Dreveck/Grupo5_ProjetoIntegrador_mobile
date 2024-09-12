@@ -21,6 +21,7 @@ class LabelTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TextLabel(text: text,),
         CustomTextField(hintText: hintText, controller: controller),
