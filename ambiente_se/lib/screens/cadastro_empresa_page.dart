@@ -1,5 +1,5 @@
-import 'package:ambiente_se/widgets/custom_button.dart';
-import 'package:ambiente_se/widgets/label_text_field.dart';
+import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_button.dart';
+import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_text_field.dart';
 import 'package:flutter/material.dart';
 
 class CadastroEmpresaPage extends StatefulWidget {
@@ -71,40 +71,47 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Nome fantasia",
+                CadastroTextField(
+                  label: "Nome fantasia",
                   hintText: "",
                   controller: _nomeFantasiaController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "CNPJ",
+                CadastroTextField(
+                  label: "CNPJ",
                   hintText: "",
                   controller: _cnpjController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Razão social",
+                CadastroTextField(
+                  label: "Razão social",
                   hintText: "",
                   controller: _razaoSocialController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Ramo",
+                CadastroTextField(
+                  label: "Ramo",
                   hintText: "",
                   controller: _ramoController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Porte",
+                CadastroTextField(
+                  label: "Porte",
                   hintText: "",
                   controller: _porteController,
                 ),
                 const Spacer(),
-                CustomButton(
-                  label: "Próxima",
-                  onPressed: _nextPage,
-                ),
+                Row(
+                  children: [
+                    Expanded(child: CadastroButton(
+                        label: "Próxima",
+                        onPressed: _nextPage,
+                      ),
+                    )
+                  ],
+                )
+
+
               ],
             ),
           ), 
@@ -119,40 +126,47 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Nome do solicitante",
+                CadastroTextField(
+                  label: "Nome do solicitante",
                   hintText: "",
                   controller: _nomeSolicitanteController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Telefone do solicitante",
+                CadastroTextField(
+                  label: "Telefone do solicitante",
                   hintText: "",
                   controller: _telefoneSolicitanteController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Email da empresa",
+                CadastroTextField(
+                  label: "Email da empresa",
                   hintText: "",
                   controller: _emailEmpresaController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Telefone da empresa",
+                CadastroTextField(
+                  label: "Telefone da empresa",
                   hintText: "",
                   controller: _telefoneEmpresaController,
                 ),
                 const Spacer(),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomButton(
-                      label: "Anterior",
-                      onPressed: _prevPage,
+                    Expanded(
+                      child: CadastroButton(
+                        label: "Anterior",
+                        onPressed: _prevPage,
+                      ),
                     ),
-                    CustomButton(
-                      label: "Próxima",
-                      onPressed: _nextPage,
+                    SizedBox(width: 10,),
+                    Expanded(
+                      child: CadastroButton(
+                        label: "Próxima",
+                        onPressed: _nextPage,
+                      ),
                     ),
+
                   ],
                 )
               ],
@@ -169,53 +183,60 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "CEP",
+                CadastroTextField(
+                  label: "CEP",
                   hintText: "",
                   controller: _cepController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "UF",
+                CadastroTextField(
+                  label: "UF",
                   hintText: "",
                   controller: _ufController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Cidade",
+                CadastroTextField(
+                  label: "Cidade",
                   hintText: "",
                   controller: _cidadeController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Logradouro",
+                CadastroTextField(
+                  label: "Logradouro",
                   hintText: "",
                   controller: _logradouroController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Bairro",
+                CadastroTextField(
+                  label: "Bairro",
                   hintText: "",
                   controller: _bairroController,
                 ),
                 const SizedBox(height: 15),
-                LabelTextField(
-                  text: "Complemento",
+                CadastroTextField(
+                  label: "Complemento",
                   hintText: "",
                   controller: _complementoController,
                 ),
                 const Spacer(),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CustomButton(
-                      label: "Anterior",
-                      onPressed: _prevPage,
+                    Expanded(
+                      child: CadastroButton(
+                        label: "Anterior",
+                        onPressed: _prevPage,
+                      ),
                     ),
-                    CustomButton(
+                    SizedBox(width: 10,),
+                    Expanded(
+                    child: CadastroButton(
                       label: "Finalizar",
                       onPressed: _nextPage,
-                      color: Colors.green,
+                      color: Color(0xFF0C9C6F),
                     ),
+                    )
+
                   ],
                 )
               ],
