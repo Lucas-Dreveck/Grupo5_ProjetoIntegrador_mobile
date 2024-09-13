@@ -1,4 +1,5 @@
 import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_button.dart';
+import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_dropdown.dart';
 import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_text_field.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,7 @@ class CadastroEmpresaPage extends StatefulWidget {
   State<CadastroEmpresaPage> createState() => _CadastroEmpresaPageState();
 }
 
-class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
-
+class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
   final TextEditingController _nomeFantasiaController = TextEditingController();
   final TextEditingController _cnpjController = TextEditingController();
   final TextEditingController _razaoSocialController = TextEditingController();
@@ -25,13 +25,68 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
   final TextEditingController _telefoneEmpresaController = TextEditingController();
 
   final TextEditingController _cepController = TextEditingController();
-  final TextEditingController _ufController = TextEditingController();
   final TextEditingController _cidadeController = TextEditingController();
   final TextEditingController _logradouroController = TextEditingController();
   final TextEditingController _bairroController = TextEditingController();
   final TextEditingController _complementoController = TextEditingController();
 
+  var _selectedValue;
 
+  bool verifarPaginaUm() {
+    if (_nomeFantasiaController.text.isEmpty) {
+      return false;
+    }
+    if (_cnpjController.text.isEmpty) {
+      return false;
+    }
+    if (_razaoSocialController.text.isEmpty) {
+      return false;
+    }
+    if (_ramoController.text.isEmpty) {
+      return false;
+    }
+    if (_porteController.text.isEmpty) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool verifarPaginaDois() {
+    if (_nomeSolicitanteController.text.isEmpty) {
+      return false;
+    }
+    if (_telefoneSolicitanteController.text.isEmpty) {
+      return false;
+    }
+    if (_emailEmpresaController.text.isEmpty) {
+      return false;
+    }
+    if (_telefoneEmpresaController.text.isEmpty) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool verifarPaginaTres() {
+    if (_cepController.text.isEmpty) {
+      return false;
+    }
+    if (_cidadeController.text.isEmpty) {
+      return false;
+    }
+    if (_logradouroController.text.isEmpty) {
+      return false;
+    }
+    if (_bairroController.text.isEmpty) {
+      return false;
+    }
+    if (_selectedValue == null) {
+      return false;
+    }
+    return true;
+  }
 
   final PageController _pageController = PageController();
 
@@ -49,7 +104,6 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
       curve: Curves.easeInOut,
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -103,18 +157,21 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
                 const Spacer(),
                 Row(
                   children: [
-                    Expanded(child: CadastroButton(
+                    Expanded(
+                      child: CadastroButton(
                         label: "Próxima",
-                        onPressed: _nextPage,
+                        onPressed: () {
+                          if (verifarPaginaUm()) {
+                            _nextPage();
+                          }
+                        },
                       ),
                     )
                   ],
                 )
-
-
               ],
             ),
-          ), 
+          ),
 
           // Pagina 2
           Padding(
@@ -159,19 +216,24 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
                         onPressed: _prevPage,
                       ),
                     ),
-                    SizedBox(width: 10,),
+                    const SizedBox(
+                      width: 10,
+                    ),
                     Expanded(
                       child: CadastroButton(
                         label: "Próxima",
-                        onPressed: _nextPage,
+                        onPressed: () {
+                          if(verifarPaginaDois()){
+                            _nextPage();
+                          }
+                        },
                       ),
                     ),
-
                   ],
                 )
               ],
             ),
-          ), 
+          ),
 
           // Pagina 3
           Padding(
@@ -189,10 +251,14 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
                   controller: _cepController,
                 ),
                 const SizedBox(height: 15),
-                CadastroTextField(
+                CadastroDropdown(
+                  items: ["banana", "maça"],
                   label: "UF",
-                  hintText: "",
-                  controller: _ufController,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedValue = newValue;
+                    });
+                  },
                 ),
                 const SizedBox(height: 15),
                 CadastroTextField(
@@ -228,20 +294,25 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage>{
                         onPressed: _prevPage,
                       ),
                     ),
-                    SizedBox(width: 10,),
-                    Expanded(
-                    child: CadastroButton(
-                      label: "Finalizar",
-                      onPressed: _nextPage,
-                      color: Color(0xFF0C9C6F),
+                    const SizedBox(
+                      width: 10,
                     ),
+                    Expanded(
+                      child: CadastroButton(
+                        label: "Finalizar",
+                        onPressed: () {
+                          if(verifarPaginaTres()){
+                            print("Deu certo!");
+                          }
+                        },
+                        color: const Color(0xFF0C9C6F),
+                      ),
                     )
-
                   ],
                 )
               ],
             ),
-          ), 
+          ),
         ],
       ),
     );

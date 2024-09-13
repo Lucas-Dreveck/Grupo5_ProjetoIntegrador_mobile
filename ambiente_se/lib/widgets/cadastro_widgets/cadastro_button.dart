@@ -7,12 +7,12 @@ class CadastroButton extends StatelessWidget {
   final double height;
 
   const CadastroButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.color = const Color(0xFF0077C8),
     this.height = 55,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

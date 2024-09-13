@@ -24,8 +24,8 @@ class CadastroTextField extends StatelessWidget {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.w800),),
-        SizedBox(height: 8,),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.w800),),
+        const SizedBox(height: 8,),
         SizedBox(
           height: height,
           child: 
