@@ -26,11 +26,15 @@ class CadastroButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(10), // Controla o borderRadius
           ),
         ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
+        child: FittedBox(
+          fit: BoxFit.scaleDown, // Reduz o texto para caber no botão
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+            overflow: TextOverflow.ellipsis, // Adiciona "..." caso o texto seja muito longo
           ),
         ),
       ),

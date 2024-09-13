@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class CadastroTextField extends StatelessWidget {
   final String hintText;
@@ -7,17 +9,20 @@ class CadastroTextField extends StatelessWidget {
   final Color fillColor;
   final String label;
   final double height;
-
+  final TextInputType type; 
+  final MaskTextInputFormatter? mask;
 
   const CadastroTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.hintText,
     required this.controller,
+    this.mask,
+    this.type = TextInputType.text,
     this.height = 40,
     this.fillColor = const Color(0xFFD5E2E7),
     this.obscureText = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +35,8 @@ class CadastroTextField extends StatelessWidget {
           height: height,
           child: 
             TextField(
+              inputFormatters: mask != null ? [mask!] : [],
+              keyboardType: type,
               controller: controller,
               obscureText: obscureText,
               decoration: InputDecoration(
@@ -37,6 +44,7 @@ class CadastroTextField extends StatelessWidget {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 fillColor: fillColor,
                 filled: true,
               ),
