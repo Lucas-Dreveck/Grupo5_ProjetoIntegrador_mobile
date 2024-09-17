@@ -11,6 +11,8 @@ class CadastroTextField extends StatelessWidget {
   final double height;
   final TextInputType type; 
   final MaskTextInputFormatter? mask;
+  final String initialValue;
+  final bool enabled;
 
   const CadastroTextField({
     super.key,
@@ -18,6 +20,8 @@ class CadastroTextField extends StatelessWidget {
     required this.hintText,
     required this.controller,
     this.mask,
+    this.initialValue = "",
+    this.enabled = true,
     this.type = TextInputType.text,
     this.height = 40,
     this.fillColor = const Color(0xFFD5E2E7),
@@ -35,10 +39,12 @@ class CadastroTextField extends StatelessWidget {
           height: height,
           child: 
             TextField(
+              enabled: enabled,
               inputFormatters: mask != null ? [mask!] : [],
               keyboardType: type,
               controller: controller,
               obscureText: obscureText,
+              style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 hintText: hintText,
                 border: OutlineInputBorder(
