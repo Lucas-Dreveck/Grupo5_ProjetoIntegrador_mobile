@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+class RankingEmpresaPage extends StatefulWidget {
+  const RankingEmpresaPage({Key? key}) : super(key: key);
 
-class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: RankingEmpresaPage(),
-    );
-  }
+  State<RankingEmpresaPage> createState() => _RankingEmpresaPageState();
 }
 
-class RankingEmpresaPage extends StatelessWidget {
+class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,77 +42,76 @@ class RankingEmpresaPage extends StatelessWidget {
 
                 // Ranking General Section
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: constraints.maxWidth * 0.04),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
                   child: Center(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Container(
-                        constraints: BoxConstraints(maxWidth: 600),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircleAvatar(
-                              radius: 50,
-                              backgroundImage: NetworkImage('https://via.placeholder.com/150'),
-                            ),
-                            SizedBox(width: 20),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Ranking Geral', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                                SizedBox(height: 4),
-                                Text('1ª Posição', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                                SizedBox(height: 4),
-                                Text('Biopark', style: TextStyle(fontSize: 18)),
-                                Text('Ramo: Educacional', style: TextStyle(fontSize: 16, color: Colors.grey)),
-                              ],
-                            ),
-                          ],
-                        ),
+                    child: Container(
+                      width: 400,
+                      height: 200,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            radius: 70,
+                            backgroundImage: NetworkImage('https://via.placeholder.com/150'),
+                          ),
+                          SizedBox(width: 20),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Ranking Geral', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              Text('1ª Posição', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 8),
+                              Text('Biopark', style: TextStyle(fontSize: 22)),
+                              Text('Ramo: Educacional', style: TextStyle(fontSize: 18, color: Colors.grey)),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 30),
 
                 // Filters
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center, // Center the row contents
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: 150, // Fixed width for the dropdown
+                        width: 150,
                         child: DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0), // Reduzido para ajustar o padding interno
+                            contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
                           ),
-                          hint: Text("Filtrar por ramo", style: TextStyle(fontSize: 12)), // Reduzido o tamanho do texto
+                          hint: Text("Filtrar por ramo", style: TextStyle(fontSize: 12)),
                           items: ['Ramo 1', 'Ramo 2']
                               .map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value, style: TextStyle(fontSize: 12)), // Reduzido o tamanho do texto
+                              child: Text(value, style: TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (newValue) {},
                         ),
                       ),
-                      SizedBox(width: 10), // Increased space between dropdowns
+                      SizedBox(width: 10),
                       SizedBox(
-                        width: 150, // Fixed width for the dropdown
+                        width: 150,
                         child: DropdownButtonFormField<String>(
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0), // Reduzido para ajustar o padding interno
+                            contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
                           ),
-                          hint: Text("Filtrar por porte", style: TextStyle(fontSize: 12)), // Reduzido o tamanho do texto
+                          hint: Text("Filtrar por porte", style: TextStyle(fontSize: 12)),
                           items: ['Porte 1', 'Porte 2']
                               .map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value, style: TextStyle(fontSize: 12)), // Reduzido o tamanho do texto
+                              child: Text(value, style: TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (newValue) {},
