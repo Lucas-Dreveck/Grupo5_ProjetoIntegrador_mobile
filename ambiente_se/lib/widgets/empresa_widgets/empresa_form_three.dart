@@ -8,7 +8,7 @@ class EmpresaFormThree extends StatefulWidget {
   final TextEditingController cidadeController;
   final TextEditingController logradouroController;
   final TextEditingController bairroController;
-  final TextEditingController complementoController;
+  final TextEditingController numeroController;
   final ValueChanged<String> onUfChanged;
   final String uf;
   final bool isEditing;
@@ -18,7 +18,7 @@ class EmpresaFormThree extends StatefulWidget {
     required this.cidadeController,
     required this.logradouroController,
     required this.bairroController,
-    required this.complementoController,
+    required this.numeroController,
     required this.uf,
     required this.onUfChanged,
     this.isEditing = false,
@@ -124,9 +124,10 @@ class _EmpresaFormThreeState extends State<EmpresaFormThree> {
           ),
           const SizedBox(height: 15),
           CadastroTextField(
-            label: "Complemento",
+            label: "Numero",
+            type: TextInputType.number,
             hintText: "",
-            controller: widget.complementoController,
+            controller: widget.numeroController,
           ),
         ]
       )

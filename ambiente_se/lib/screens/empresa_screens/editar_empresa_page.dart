@@ -21,6 +21,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
   final TextEditingController _cnpjController = TextEditingController();
   final TextEditingController _razaoSocialController = TextEditingController();
   final TextEditingController _ramoController = TextEditingController();
+  final TextEditingController _inscricaoSocialController = TextEditingController();
   var _porte = "";
   void _updatePorte(String novoPorte) {
     setState(() {
@@ -35,7 +36,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
   final TextEditingController _cidadeController = TextEditingController();
   final TextEditingController _logradouroController = TextEditingController();
   final TextEditingController _bairroController = TextEditingController();
-  final TextEditingController _complementoController = TextEditingController();
+  final TextEditingController _numeroController = TextEditingController();
   var _uf = "";
   void _updateUF(String novoUF) {
     setState(() {
@@ -52,6 +53,9 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
       return false;
     }
     if (_razaoSocialController.text.isEmpty) {
+      return false;
+    }
+    if (_inscricaoSocialController.text.isEmpty) {
       return false;
     }
     if (_ramoController.text.isEmpty) {
@@ -145,7 +149,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
     _cidadeController.dispose();
     _logradouroController.dispose();
     _bairroController.dispose();
-    _complementoController.dispose();
+    _numeroController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -187,7 +191,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
         _cidadeController.text = data['cidade'].toString();
         _logradouroController.text = data['logradouro'].toString();
         _bairroController.text = data['bairro'].toString();
-        _complementoController.text = data['complemento'].toString();
+        _numeroController.text = data['complemento'].toString();
         _uf = data['uf'].toString();
       });
     } else {
@@ -217,7 +221,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
         children: [
           Column(
             children: [ 
-              EmpresaFormOne(nomeFantasiaController: _nomeFantasiaController, cnpjController: _cnpjController, razaoSocialController: _razaoSocialController, ramoController: _ramoController, porte: _porte, onPorteChanged: _updatePorte, isEditing: true,),
+              EmpresaFormOne(nomeFantasiaController: _nomeFantasiaController, cnpjController: _cnpjController, razaoSocialController: _razaoSocialController, ramoController: _ramoController, porte: _porte, onPorteChanged: _updatePorte, isEditing: true,inscricaoSocialController: _inscricaoSocialController,),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -312,7 +316,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
           // Pagina 3
           Column(
             children: [
-              EmpresaFormThree(cepController: _cepController, cidadeController: _cidadeController, logradouroController: _logradouroController, bairroController: _bairroController, complementoController: _complementoController, uf: _uf, onUfChanged: _updateUF, isEditing: true),
+              EmpresaFormThree(cepController: _cepController, cidadeController: _cidadeController, logradouroController: _logradouroController, bairroController: _bairroController, numeroController: _numeroController, uf: _uf, onUfChanged: _updateUF, isEditing: true),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

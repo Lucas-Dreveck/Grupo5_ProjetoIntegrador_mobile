@@ -11,6 +11,8 @@ class EmpresaFormOne extends StatefulWidget {
   final String porte;
   final ValueChanged<String> onPorteChanged;
   final bool isEditing;
+  final TextEditingController inscricaoSocialController;
+
 
   EmpresaFormOne({
     required this.nomeFantasiaController,
@@ -18,6 +20,7 @@ class EmpresaFormOne extends StatefulWidget {
     required this.razaoSocialController,
     required this.ramoController,
     required this.onPorteChanged,
+    required this.inscricaoSocialController,
     this.porte = "",
     this.isEditing = false,
   });
@@ -34,7 +37,11 @@ class _EmpresaFormOneState extends State<EmpresaFormOne> {
     filter: { "#": RegExp(r'[0-9]') },
     type: MaskAutoCompletionType.lazy
   );
-
+  var mascaraInscricaoSocial = MaskTextInputFormatter(
+    mask: '###.###.###.###',
+    filter: { "#": RegExp(r'[0-9]') },
+    type: MaskAutoCompletionType.lazy
+  );
   @override
   void initState() {
     super.initState();
@@ -43,6 +50,7 @@ class _EmpresaFormOneState extends State<EmpresaFormOne> {
 
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -70,6 +78,14 @@ class _EmpresaFormOneState extends State<EmpresaFormOne> {
             label: "Razão Social",
             hintText: "",
             controller: widget.razaoSocialController,
+          ),
+          const SizedBox(height: 15),
+          CadastroTextField(
+            label: "Inscrição Social",
+            hintText: "",
+            type: TextInputType.number,
+            mask: mascaraInscricaoSocial,
+            controller: widget.inscricaoSocialController,
           ),
           const SizedBox(height: 15),
           CadastroTextField(
