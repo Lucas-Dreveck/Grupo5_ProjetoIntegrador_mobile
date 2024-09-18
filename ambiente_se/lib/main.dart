@@ -1,3 +1,4 @@
+import 'package:ambiente_se/screens/cadastro_empresa_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const CadastroEmpresaPage(title: 'Flutter Demo Home Page'),
     );
   }
 }
