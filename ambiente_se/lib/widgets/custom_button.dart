@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // Criação de um componente botão reutilizável
 class CustomButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color color;
   final double width;
   final double height;
