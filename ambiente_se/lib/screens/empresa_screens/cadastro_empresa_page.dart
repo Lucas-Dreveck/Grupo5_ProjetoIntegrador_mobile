@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/alert_snack_bar.dart';
 import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_button.dart';
 import 'package:ambiente_se/widgets/empresa_widgets/empresa_form_one.dart';
 import 'package:ambiente_se/widgets/empresa_widgets/empresa_form_three.dart';
@@ -43,71 +45,115 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
     });
   }
 
-
-  bool verifarPaginaUm() {
+  bool verificarPaginaUm() {
     if (_nomeFantasiaController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de nome fantasia não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
-    if (_cnpjController.text.isEmpty || _cnpjController.text.length < 18) {
+    if (_cnpjController.text.isEmpty ) {
+      AlertSnackBar.show(context: context, text: "O campo de CNPJ não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if(_cnpjController.text.length < 18){
+      AlertSnackBar.show(context: context, text: "O campo de CNPJ não está completo.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if(!isValidCNPJ(_cnpjController.text)){
+      AlertSnackBar.show(context: context, text: "O CNPJ informado é inválido.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_razaoSocialController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de razão social não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if (_inscricaoSocialController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de inscrição social não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if (_inscricaoSocialController.text.length < 15) {
+      AlertSnackBar.show(context: context, text: "O campo de inscrição social não está completo", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_ramoController.text.isEmpty) {
-      return false;
-    }
-    if (_inscricaoSocialController.text.isEmpty || _inscricaoSocialController.text.length < 15) {
+      AlertSnackBar.show(context: context, text: "O campo de ramo não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_porte == "") {
+      AlertSnackBar.show(context: context, text: "O campo de porte não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
 
     return true;
   }
 
-  bool verifarPaginaDois() {
+  bool verificarPaginaDois() {
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
     if (_nomeSolicitanteController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de nome do solicitante não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
-    if (_telefoneSolicitanteController.text.isEmpty || _telefoneSolicitanteController.text.length < 18) {
+    if (_telefoneSolicitanteController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de telefone do solicitante não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if(_telefoneSolicitanteController.text.length < 18)
+    {
+      AlertSnackBar.show(context: context, text: "O campo de telefone do solicitante não está completo.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_emailEmpresaController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de email da empresa não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (!emailRegex.hasMatch(_emailEmpresaController.text)) {
+      AlertSnackBar.show(context: context, text: "O email informado é inválido.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
-    if (_telefoneEmpresaController.text.isEmpty || _telefoneEmpresaController.text.length < 18) {
-
+    if (_telefoneEmpresaController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de telefone da empresa não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if( _telefoneEmpresaController.text.length < 18){
+      AlertSnackBar.show(context: context, text: "O campo de telefone da empresa não está completo.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
 
     return true;
   }
 
-  bool verifarPaginaTres() {
-    if (_cepController.text.isEmpty || _cepController.text.length < 9) {
+  bool verificarPaginaTres() {
+    if (_cepController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de CEP não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
+    if (_cepController.text.length < 9){
+      AlertSnackBar.show(context: context, text: "O campo de CEP não está completo.", backgroundColor: Color(0xFFDF2935));
+      return false; 
+    }
     if (_cidadeController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de cidade não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_logradouroController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de logradouro não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_bairroController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de bairro não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_uf == "") {
+      AlertSnackBar.show(context: context, text: "O campo de UF não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if (_numeroController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de número não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     return true;
   }
+
 
   final PageController _pageController = PageController();
 
@@ -202,6 +248,8 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -241,7 +289,7 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
                             child: CadastroButton(
                               label: "Próxima",
                               onPressed: () {
-                                if (verifarPaginaUm()) {
+                                if (verificarPaginaUm()) {
                                   _nextPage();
                                 }
                               },
@@ -295,7 +343,7 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
                             child: CadastroButton(
                               label: "Próxima",
                               onPressed: () {
-                                if(verifarPaginaDois()){
+                                if(verificarPaginaDois()){
                                   _nextPage();
                                 }
                               },
@@ -347,7 +395,7 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
                             child: CadastroButton(
                               label: "Finalizar",
                               onPressed: () {
-                                if(verifarPaginaTres()){
+                                if(verificarPaginaTres()){
                                   _finalizar();
                                 }
                               },
@@ -366,4 +414,7 @@ class _CadastroEmpresaPageState extends State<CadastroEmpresaPage> {
       ),
     );
   }
+  
 }
+
+

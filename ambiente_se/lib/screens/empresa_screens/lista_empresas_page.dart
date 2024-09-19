@@ -56,7 +56,7 @@ class _ListaEmpresasPageState extends State<ListaEmpresasPage>{
     return List.generate(limit, (index) {
       return {
         'id': (page - 1) * limit + index + 1,
-        'razaoSocial': 'Burguer King',
+        'nomeFantasia': 'Burguer King',
         'ramo': 'Alimentício',
       };
     });
@@ -65,13 +65,12 @@ class _ListaEmpresasPageState extends State<ListaEmpresasPage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0XffFCFCFC),
       appBar: AppBar(
-        title: Text("Aoba"),
+        title: Text('Lista de Empresas'),
         backgroundColor: Colors.blue,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Row(
@@ -89,12 +88,20 @@ class _ListaEmpresasPageState extends State<ListaEmpresasPage>{
             const SizedBox(height: 15,),
             Row(
               children: [
-                Expanded(child: CadastroSearchBar(controller: _searchBarController, onSearch: (){}),),
-                const SizedBox(width: 16,),
-                CadastroBuscarButton(label: "Buscar", onPressed: (){})
+                Expanded(
+                  child: CadastroSearchBar(
+                    controller: _searchBarController,
+                    onSearch: () {},
+                  ),
+                ),
+                const SizedBox(width: 16),
+                CadastroBuscarButton(
+                  label: "Buscar",
+                  onPressed: () {},
+                ),
               ],
             ),
-            const SizedBox(height: 8,),
+            const SizedBox(height: 8),
             const Divider(
               height: 15,
               thickness: 1,
@@ -102,69 +109,99 @@ class _ListaEmpresasPageState extends State<ListaEmpresasPage>{
               endIndent: 20,
               color: Colors.black,
             ),
-            const SizedBox(height: 5,),
+            const SizedBox(height: 5),
             Expanded(
               child: SingleChildScrollView(
                 controller: _scrollController,
                 child: Column(
                   children: [
-                    DataTable(
-                      columns: const [
-                        DataColumn(label: Expanded(child: Text('ID', textAlign: TextAlign.center))),
-                        DataColumn(label: Expanded(child: Text('Razão Social', textAlign: TextAlign.center),)),
-                        DataColumn(label: Expanded(child: Text('Ramo', textAlign: TextAlign.center),)),
-                      ],
-                        rows: _empresas
-                          .map(
-                          (item) => DataRow(
-                            cells: [
-                            DataCell(
-                              Text(item['id'].toString(), textAlign: TextAlign.center),
-                              onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                builder: (context) => EmpresaPage(id: item['id']),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        return Container(
+                          width: constraints.maxWidth,
+                          child: DataTable(
+                            columns: const [
+                              DataColumn(
+                                label: Expanded(
+                                  child: Center(
+                                    child: Text('ID', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
-                              );
-                              },
-                            ),
-                            DataCell(
-                              Text(item['razaoSocial'], textAlign: TextAlign.center),
-                              onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                builder: (context) => EmpresaPage(id: item['id']),
+                              ),
+                              DataColumn(
+                                label: Expanded(
+                                  child: Center(
+                                    child: Text('Nome Fantasia', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
+                                  ),
                                 ),
-                              );
-                              },
-                            ),
-                            DataCell(
-                              Text(item['ramo'], textAlign: TextAlign.center),
-                              onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                builder: (context) => EmpresaPage(id: item['id']),
+                              ),
+                              DataColumn(
+                                label: Expanded(
+                                  child: Center(
+                                    child: Text('Ramo', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
-                              );
-                              },
-                            ),
+                              ),
                             ],
+                            rows: _empresas.map(
+                              (item) => DataRow(
+                                cells: [
+                                  DataCell(
+                                    Center(
+                                      child: Text(item['id'].toString(), textAlign: TextAlign.center),
+                                    ),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EmpresaPage(id: item['id']),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(item['nomeFantasia'], textAlign: TextAlign.center),
+                                    ),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EmpresaPage(id: item['id']),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  DataCell(
+                                    Center(
+                                      child: Text(item['ramo'], textAlign: TextAlign.center),
+                                    ),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EmpresaPage(id: item['id']),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ).toList(),
                           ),
-                          )
-                          .toList(),
+                        );
+                      },
                     ),
-                    if (_isLoading) Center(child: CircularProgressIndicator()),
                   ],
                 ),
               ),
             ),
           ],
-        ),)
+        ),
+      ),
     );
   }
+
   @override
   void dispose() {
     _scrollController.dispose();

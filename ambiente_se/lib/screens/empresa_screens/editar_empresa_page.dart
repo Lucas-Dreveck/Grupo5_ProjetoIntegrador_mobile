@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ambiente_se/widgets/alert_snack_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_button.dart';
@@ -45,66 +46,110 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
   }
 
 
-  bool verifarPaginaUm() {
+  bool verificarPaginaUm() {
     if (_nomeFantasiaController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de nome fantasia não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
-    if (_cnpjController.text.isEmpty || _cnpjController.text.length < 18) {
+    if (_cnpjController.text.isEmpty ) {
+      AlertSnackBar.show(context: context, text: "O campo de CNPJ não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if(_cnpjController.text.length < 18){
+      AlertSnackBar.show(context: context, text: "O campo de CNPJ não está completo.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if(!isValidCNPJ(_cnpjController.text)){
+      AlertSnackBar.show(context: context, text: "O CNPJ informado é inválido.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_razaoSocialController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de razão social não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_inscricaoSocialController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de inscrição social não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if (_inscricaoSocialController.text.length < 15) {
+      AlertSnackBar.show(context: context, text: "O campo de inscrição social não está completo", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_ramoController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de ramo não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_porte == "") {
+      AlertSnackBar.show(context: context, text: "O campo de porte não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
 
     return true;
   }
 
-  bool verifarPaginaDois() {
+  bool verificarPaginaDois() {
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
     if (_nomeSolicitanteController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de nome do solicitante não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
-    if (_telefoneSolicitanteController.text.isEmpty || _telefoneSolicitanteController.text.length < 18) {
+    if (_telefoneSolicitanteController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de telefone do solicitante não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if(_telefoneSolicitanteController.text.length < 18)
+    {
+      AlertSnackBar.show(context: context, text: "O campo de telefone do solicitante não está completo.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_emailEmpresaController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de email da empresa não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (!emailRegex.hasMatch(_emailEmpresaController.text)) {
+      AlertSnackBar.show(context: context, text: "O email informado é inválido.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
-    if (_telefoneEmpresaController.text.isEmpty || _telefoneEmpresaController.text.length < 18) {
-
+    if (_telefoneEmpresaController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de telefone da empresa não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if( _telefoneEmpresaController.text.length < 18){
+      AlertSnackBar.show(context: context, text: "O campo de telefone da empresa não está completo.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
 
     return true;
   }
 
-  bool verifarPaginaTres() {
-    if (_cepController.text.isEmpty || _cepController.text.length < 9) {
+  bool verificarPaginaTres() {
+    if (_cepController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de CEP não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
+    if (_cepController.text.length < 9){
+      AlertSnackBar.show(context: context, text: "O campo de CEP não está completo.", backgroundColor: Color(0xFFDF2935));
+      return false; 
+    }
     if (_cidadeController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de cidade não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_logradouroController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de logradouro não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_bairroController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de bairro não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     if (_uf == "") {
+      AlertSnackBar.show(context: context, text: "O campo de UF não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
+      return false;
+    }
+    if (_numeroController.text.isEmpty) {
+      AlertSnackBar.show(context: context, text: "O campo de número não pode estar vazio.", backgroundColor: Color(0xFFDF2935));
       return false;
     }
     return true;
@@ -158,11 +203,11 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
     //final response = await http.get(Uri.parse('https://api.example.com/empresa/${widget.id}'));
 
     if (/*response.statusCode == 200 ||*/ true) {
-      print("aqui");
       final data = {
         'nomeFantasia': 'Empresa Teste',
         'cnpj': '12.345.678/0001-99',
         'razaoSocial': 'Empresa Teste Ltda',
+        'inscricaoSocial': '123456789',
         'ramo': 'Tecnologia',
         'porte': 'Pequeno',
         'nomeSolicitante': 'João Silva',
@@ -173,7 +218,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
         'cidade': 'São Paulo',
         'logradouro': 'Rua Exemplo',
         'bairro': 'Centro',
-        'complemento': 'Sala 101',
+        'numero': '01',
         'uf': 'SP',
       };
       
@@ -182,6 +227,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
         _cnpjController.text = data['cnpj'].toString();
         _razaoSocialController.text = data['razaoSocial'].toString();
         _ramoController.text = data['ramo'].toString();
+        _inscricaoSocialController.text = data['inscricaoSocial'].toString();
         _porte = data['porte'].toString();
         _nomeSolicitanteController.text = data['nomeSolicitante'].toString();
         _telefoneSolicitanteController.text = data['telefoneSolicitante'].toString();
@@ -245,7 +291,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
                             child: CadastroButton(
                               label: "Próxima",
                               onPressed: () {
-                                if (verifarPaginaUm()) {
+                                if (verificarPaginaUm()) {
                                   _nextPage();
                                 }
                               },
@@ -299,7 +345,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
                             child: CadastroButton(
                               label: "Próxima",
                               onPressed: () {
-                                if(verifarPaginaDois()){
+                                if(verificarPaginaDois()){
                                   _nextPage();
                                 }
                               },
@@ -351,7 +397,7 @@ class _EditarEmpresaPageState extends State<EditarEmpresaPage> {
                             child: CadastroButton(
                               label: "Salvar",
                               onPressed: () {
-                                if(verifarPaginaTres()){
+                                if(verificarPaginaTres()){
                                   _salvar();
                                 }
                               },
