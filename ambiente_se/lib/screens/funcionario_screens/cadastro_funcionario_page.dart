@@ -56,7 +56,7 @@ class _CadastroFuncionarioPageState extends State<CadastroFuncionarioPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text("Cadastro funcionário"),
         backgroundColor: Colors.blue,
