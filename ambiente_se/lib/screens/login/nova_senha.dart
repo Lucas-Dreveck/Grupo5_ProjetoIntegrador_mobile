@@ -1,20 +1,20 @@
-import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/forgot_password.dart';
-import 'package:ambiente_se/widgets/login_widgets/login_button.dart';
+import 'package:ambiente_se/screens/login/login.dart';
+import 'package:ambiente_se/widgets/login_widgets/confirm_password_field.dart';
+import 'package:ambiente_se/widgets/login_widgets/definir_senha_button.dart';
 import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/password_field.dart';
+import 'package:ambiente_se/widgets/login_widgets/new_password_field.dart';
+import 'package:ambiente_se/widgets/login_widgets/voltar_login.dart';
 import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/screens/login/login_recuperar_senha.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class NovaSenhaPage extends StatefulWidget {
+  const NovaSenhaPage({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _NovaSenhaPageState createState() => _NovaSenhaPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _NovaSenhaPageState extends State<NovaSenhaPage> {
   final TextEditingController _emailController = TextEditingController();
 
   @override
@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'ACESSE A SUA CONTA',
+                    'DEFINA SUA NOVA SENHA',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -75,25 +75,22 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 22),
-                  EmailField(
-                    controller: _emailController,
-                  ),
+                  const NewPasswordField(),
                   const SizedBox(height: 20),
-                  const PasswordField(),
+                  const ConfirmPasswordField(),
                   const SizedBox(height: 60),
-                  LoginButton(
-                    onPressed: () {
+                  DefinirSenhaButton(
+                    onPressed: () async {
                       // TODO: Implement login logic
                     },
                   ),
                   const SizedBox(height: 14),
-                  ForgotPassword(
+                  VoltarLogin(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginRecuperarSenha()),
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                       );
-                      // TODO: Implement forgot password logic
                     },
                   ),
                 ],
