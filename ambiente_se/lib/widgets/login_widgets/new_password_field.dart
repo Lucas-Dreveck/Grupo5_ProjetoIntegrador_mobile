@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class PasswordField extends StatefulWidget {
-  const PasswordField({Key? key}) : super(key: key);
+class NewPasswordField extends StatefulWidget {
+  const NewPasswordField({Key? key}) : super(key: key);
 
   @override
-  _PasswordFieldState createState() => _PasswordFieldState();
+  _NewPasswordFieldState createState() => _NewPasswordFieldState();
 }
 
-class _PasswordFieldState extends State<PasswordField> {
+class _NewPasswordFieldState extends State<NewPasswordField> {
   bool _isObscured = true;
 
   @override
@@ -16,7 +16,7 @@ class _PasswordFieldState extends State<PasswordField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Senha',
+          'Nova senha',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
