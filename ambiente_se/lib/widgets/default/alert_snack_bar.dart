@@ -1,10 +1,11 @@
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
 
 class AlertSnackBar {
   static OverlayEntry show({
     required BuildContext context,
     required String text,
-    required Color backgroundColor,
+    Color backgroundColor = AppColors.red,
   }) {
     OverlayEntry overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
@@ -14,14 +15,14 @@ class AlertSnackBar {
         child: Material(
           color: Colors.transparent,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
             decoration: BoxDecoration(
               color: backgroundColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Text(
               text,
-              style: TextStyle(color: Colors.white, 
+              style: const TextStyle(color: Colors.white, 
               fontSize: 18.0),
               textAlign: TextAlign.center,
             ),
@@ -30,9 +31,9 @@ class AlertSnackBar {
       ),
     );
 
-    Overlay.of(context)?.insert(overlayEntry);
+    Overlay.of(context).insert(overlayEntry);
 
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () {
       overlayEntry.remove();
     });
 

@@ -1,7 +1,19 @@
+import 'package:flutter/material.dart';
+
+class AppColors {
+  static const Color blue = Color(0xFF0077C8);
+  static const Color green = Color(0xFF0C9C6F);
+  static const Color red = Color(0xFFDF2935);
+  static const Color grey = Color(0xFF838B91);
+  static const Color offWhite = Color.fromRGBO(207, 207, 207, 1);
+  static const Color offBlack = Color(0xFF202020);
+  static const Color ice = Color(0xFFD5E2E7);
+}
+
+
 bool isValidCNPJ(String cnpj) {
   // Remove qualquer caractere que não seja dígito
   cnpj = cnpj.replaceAll(RegExp(r'[^0-9]'), '');
-  print(cnpj);
   // Verifica se o CNPJ tem 14 dígitos
   if (cnpj.length != 14) {
     return false;
