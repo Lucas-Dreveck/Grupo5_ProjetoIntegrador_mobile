@@ -1,17 +1,24 @@
-import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_button.dart';
+import 'dart:convert';
 import 'package:ambiente_se/widgets/funcionario_widgets/funcionario_form.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_button.dart';
+import 'package:ambiente_se/widgets/empresa_widgets/empresa_form_one.dart';
+import 'package:ambiente_se/widgets/empresa_widgets/empresa_form_three.dart';
+import 'package:ambiente_se/widgets/empresa_widgets/empresa_form_two.dart';
 import 'package:flutter/material.dart';
 
-class CadastroFuncionarioPage extends StatefulWidget {
-  const CadastroFuncionarioPage({super.key});
+class EditarFuncionarioPage extends StatefulWidget {
+  const EditarFuncionarioPage({super.key, required this.id});
+
+  final int id;
 
   @override
-  State<CadastroFuncionarioPage> createState() =>
-      _CadastroFuncionarioPageState();
+  State<EditarFuncionarioPage> createState() => _EditarFuncionarioPageState();
 }
 
-class _CadastroFuncionarioPageState extends State<CadastroFuncionarioPage> {
-  final TextEditingController _nomeController = TextEditingController();
+class _EditarFuncionarioPageState extends State<EditarFuncionarioPage> {
+ final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _dataNascimentoController = TextEditingController();
   var _cargo = "";
@@ -25,13 +32,6 @@ class _CadastroFuncionarioPageState extends State<CadastroFuncionarioPage> {
     });
   }
 
-  void _cancelar() {
-    Navigator.of(context).pop();
-  }
-
-  void _finalizar() {
-    Navigator.of(context).pop();
-  }
 
   bool verificarPagina(){
     if(_nomeController.text.isNotEmpty && _cpfController.text.isNotEmpty && _dataNascimentoController.text.isNotEmpty && _emailController.text.isNotEmpty && _loginController.text.isNotEmpty && _senhaController.text.isNotEmpty){
@@ -39,10 +39,17 @@ class _CadastroFuncionarioPageState extends State<CadastroFuncionarioPage> {
     }
     return false;
   }
-
+  
+  void _cancelar() {
+    Navigator.of(context).pop();
+  }
+ 
+ void _finalizar() {
+    Navigator.of(context).pop();
+  }
 
   @override
-  void dispose() {
+ void dispose() {
     _nomeController.dispose();
     _cpfController.dispose();
     _dataNascimentoController.dispose();
@@ -51,6 +58,7 @@ class _CadastroFuncionarioPageState extends State<CadastroFuncionarioPage> {
     _senhaController.dispose();
     super.dispose();
   }
+  
 
   @override
   Widget build(BuildContext context) {
