@@ -53,19 +53,24 @@ class DefaultDropdownState<T> extends State<DefaultDropdown<T>> {
             },
             decoration: InputDecoration(
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius:
+                    BorderRadius.circular(8), // Manter bordas arredondadas
+                borderSide: BorderSide.none, // Remover a borda preta
               ),
               fillColor: widget.fillColor,
               filled: true,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12.0), // Ajuste o preenchimento
+              contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12.0), // Ajuste o preenchimento
             ),
-            isExpanded: true, // Expande o dropdown para preencher o espaço disponível
+            isExpanded:
+                true, // Expande o dropdown para preencher o espaço disponível
             items: widget.items.map((T item) {
               return DropdownMenuItem<T>(
                 value: item,
                 child: Text(
                   item.toString(),
-                  overflow: TextOverflow.ellipsis, // Adiciona reticências se o texto for muito longo
+                  overflow: TextOverflow
+                      .ellipsis, // Adiciona reticências se o texto for muito longo
                 ),
               );
             }).toList(),
