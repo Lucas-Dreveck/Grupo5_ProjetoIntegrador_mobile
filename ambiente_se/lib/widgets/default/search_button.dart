@@ -1,17 +1,19 @@
+
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
 
-class CadastroButton extends StatelessWidget {
+class SearchButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final Color color;
   final double height;
 
-  const CadastroButton({
+  const SearchButton({
     super.key,
     required this.label,
     required this.onPressed,
-    this.color = const Color(0xFF0077C8),
-    this.height = 55,
+    this.color = AppColors.ice,
+    this.height = 35,
   });
 
   @override
@@ -31,7 +33,7 @@ class CadastroButton extends StatelessWidget {
           child: Text(
             label,
             style: const TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontSize: 16,
             ),
             overflow: TextOverflow.ellipsis, // Adiciona "..." caso o texto seja muito longo

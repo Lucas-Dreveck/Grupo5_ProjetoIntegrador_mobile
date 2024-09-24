@@ -1,16 +1,17 @@
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
 
-class CadastrarButton extends StatelessWidget {
+class NewRegisterButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
   final Color color;
   final double height;
 
-  const CadastrarButton({
+  const NewRegisterButton({
     super.key,
     required this.label,
     required this.onPressed,
-    this.color = const Color(0xFFD5E2E7),
+    this.color = AppColors.ice,
     this.height = 35,
   });
 
@@ -25,25 +26,25 @@ class CadastrarButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(13), 
           ),
-          padding: EdgeInsets.all(8.0),// Controla o borderRadius
+          padding: const EdgeInsets.all(8.0),// Controla o borderRadius
 
         ),
         child:
         Row(
           children: [
              Container(
-              padding: EdgeInsets.all(4), // Espaçamento dentro do círculo
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(4), // Espaçamento dentro do círculo
+              decoration: const BoxDecoration(
                 color: Colors.white, // Cor de fundo do círculo
                 shape: BoxShape.circle, // Forma de círculo
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.add,
                 color: Colors.black, // Cor do ícone
                 size: 12, // Tamanho do ícone
               ),
             ),
-            SizedBox(width: 8), // Espaçamento entre o ícone e o texto
+            const SizedBox(width: 8), // Espaçamento entre o ícone e o texto
             FittedBox(
               fit: BoxFit.scaleDown, // Reduz o texto para caber no botão
               child: Text(

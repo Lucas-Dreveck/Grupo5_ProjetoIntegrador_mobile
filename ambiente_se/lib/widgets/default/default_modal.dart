@@ -1,7 +1,8 @@
-import 'package:ambiente_se/widgets/cadastro_widgets/cadastro_button.dart';
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:flutter/material.dart';
 
-class CadastroModal extends StatelessWidget {
+class DefaultModal extends StatelessWidget {
   final String text;
   final VoidCallback function;
   final String labelButtonOne;
@@ -9,23 +10,24 @@ class CadastroModal extends StatelessWidget {
   final String labelButtonTwo;
   final Color colorButtonTwo;
 
-  const CadastroModal({
+  const DefaultModal({
+    super.key, 
     required this.text,
     required this.function,
     this.labelButtonOne = "Cancelar",
-    this.colorButtonOne = const Color(0xff838B91),
+    this.colorButtonOne = AppColors.grey,
     this.labelButtonTwo = "Aceitar",
-    this.colorButtonTwo = const Color(0xFF0077C8),
+    this.colorButtonTwo = AppColors.blue,
   });
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Color(0xffFCFCFC),
+      backgroundColor: AppColors.offWhite,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15), // Bordas arredondadas
       ),
-      contentPadding: EdgeInsets.all(40), // Padding ao redor do conteúdo
+      contentPadding: const EdgeInsets.all(40), // Padding ao redor do conteúdo
       contentTextStyle: const TextStyle(
         color: Colors.black, // Cor do texto do conteúdo
         fontSize: 18, 
@@ -36,7 +38,7 @@ class CadastroModal extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: CadastroButton(
+              child: DefaultButton(
                 label: labelButtonOne,
                 color: colorButtonOne,
                 onPressed: () {
@@ -44,9 +46,9 @@ class CadastroModal extends StatelessWidget {
                 },
               ),
             ),
-            SizedBox(width: 16), // Espaçamento entre os botões
+            const SizedBox(width: 16), // Espaçamento entre os botões
             Expanded(
-              child: CadastroButton(
+              child: DefaultButton(
                 label: labelButtonTwo,
                 color: colorButtonTwo,
                 onPressed: () {
