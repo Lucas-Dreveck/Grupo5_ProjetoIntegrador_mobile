@@ -360,7 +360,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
           // Pagina 3
           Column(
             children: [
-              CompanyFormThree(postalCodeController: _postalCodeController, cityController: _cityController, publicSpaceController: _publicSpaceController, neighborhoodController: _neighborhoodController, uf: _state, onUfChanged: _updateState, numberController: _numberController,),
+              CompanyFormThree(postalCodeController: _postalCodeController, cityController: _cityController, publicSpaceController: _publicSpaceController, neighborhoodController: _neighborhoodController, uf: _state, onUfChanged: _updateState, numberController: _numberController, key: UniqueKey(),),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

@@ -16,7 +16,8 @@ class CompanyFormThree extends StatefulWidget {
   final String uf;
   final bool isEditing;
 
-  const CompanyFormThree({super.key, 
+  const CompanyFormThree({
+    required Key key,
     required this.postalCodeController,
     required this.cityController,
     required this.publicSpaceController,
@@ -25,7 +26,7 @@ class CompanyFormThree extends StatefulWidget {
     required this.uf,
     required this.onUfChanged,
     this.isEditing = false,
-  });
+  }) : super(key: key);
 
   @override
   CompanyFormThreeState createState() => CompanyFormThreeState();
@@ -75,32 +76,32 @@ class CompanyFormThreeState extends State<CompanyFormThree> {
     'TO', // 
   ];
   
-  // void _fetchAddressFromCEP(String cep) async {
-  //   final response = await http.get(Uri.parse('https://viacep.com.br/ws/$cep/json/'));
+  void _fetchAddressFromCEP(String cep) async {
+    final response = await http.get(Uri.parse('https://viacep.com.br/ws/$cep/json/'));
 
-  //   if (response.statusCode == 200) {
-  //     final data = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
 
-  //     if (data['erro'] == null) {
-  //       if(mounted){
-  //         setState(() {
-  //           publicSpaceController.text = data['logradouro'] ?? '';
-  //           neighborhoodController.text = data['bairro'] ?? '';
-  //           cityController.text = data['localidade'] ?? '';
-  //           numberController.text = ''; 
-  //           uf = data['uf'] ?? ''; 
-  //           widget.onUfChanged(uf);
+      if (data['erro'] == null) {
+        if(mounted){
+          setState(() {
+            publicSpaceController.text = data['logradouro'] ?? '';
+            neighborhoodController.text = data['bairro'] ?? '';
+            cityController.text = data['localidade'] ?? '';
+            numberController.text = ''; 
+            uf = data['uf'] ?? ''; 
+            widget.onUfChanged(uf);
 
 
-  //         });
-  //       }
-  //     } else {
-  //       AlertSnackBar.show(context: context, text: "CEP não encontrado.");
-  //     }
-  //   } else {
-  //     AlertSnackBar.show(context: context, text: "Erro ao buscar CEP.");
-  //   }
-  // }
+          });
+        }
+      } else {
+        AlertSnackBar.show(context: context, text: "CEP não encontrado.");
+      }
+    } else {
+      AlertSnackBar.show(context: context, text: "Erro ao buscar CEP.");
+    }
+  }
 
   @override
   void initState() {
@@ -111,11 +112,11 @@ class CompanyFormThreeState extends State<CompanyFormThree> {
     cityController = widget.cityController;
     numberController = widget.numberController;
 
-    // postalCodeController.addListener(() {
-    //   if (postalCodeController.text.length == 9) {
-    //     _fetchAddressFromCEP(postalCodeController.text);
-    //   }
-    // });
+    postalCodeController.addListener(() {
+      if (postalCodeController.text.length == 9) {
+        _fetchAddressFromCEP(postalCodeController.text);
+      }
+    });
     uf = widget.uf;
   }
 

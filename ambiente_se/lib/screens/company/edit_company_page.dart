@@ -365,7 +365,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
           // Pagina 3
           Column(
             children: [
-              CompanyFormThree(postalCodeController: _postalCodeController, cityController: _cityController, publicSpaceController: _publicSpaceController, neighborhoodController: _neighborhoodController, numberController: _numberController, uf: _state, onUfChanged: _updateState, isEditing: true),
+              CompanyFormThree(postalCodeController: _postalCodeController, cityController: _cityController, publicSpaceController: _publicSpaceController, neighborhoodController: _neighborhoodController, numberController: _numberController, uf: _state, onUfChanged: _updateState, isEditing: true, key: UniqueKey(),),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
