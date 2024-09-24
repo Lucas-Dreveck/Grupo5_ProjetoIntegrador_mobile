@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ambiente_se/widgets/Menu/menu.dart';
 
 class RankingEmpresaPage extends StatefulWidget {
   const RankingEmpresaPage({Key? key}) : super(key: key);
@@ -8,12 +9,20 @@ class RankingEmpresaPage extends StatefulWidget {
 }
 
 class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
-        leading: Icon(Icons.menu),
+        backgroundColor: Color(0xFF0077C8),
+        leading: IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -21,6 +30,7 @@ class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
           ],
         ),
       ),
+      drawer: MenuLateral(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
