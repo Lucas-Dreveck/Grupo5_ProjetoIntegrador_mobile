@@ -1,11 +1,12 @@
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
 
-class CadastroSearchBar extends StatelessWidget {
+class DefaultSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onSearch;
   final String hintText;
 
-  const CadastroSearchBar({
+  const DefaultSearchBar({
     super.key,
     required this.controller,
     required this.onSearch,
@@ -17,9 +18,9 @@ class CadastroSearchBar extends StatelessWidget {
     return Container(
       height: 35,
        // Margens externas
-      padding: EdgeInsets.symmetric(horizontal: 8), // Padding interno
+      padding: const EdgeInsets.symmetric(horizontal: 8), // Padding interno
       decoration: BoxDecoration(
-        color: Color(0xFFD5E2E7),
+        color: AppColors.ice,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -37,7 +38,7 @@ class CadastroSearchBar extends StatelessWidget {
                   hintText: hintText,
                   border: InputBorder.none,
                   isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 0), // Ajuste do padding vertical
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0), // Ajuste do padding vertical
                 ),
                 onSubmitted: (_) => onSearch(), // Executa a busca ao submeter
               ),

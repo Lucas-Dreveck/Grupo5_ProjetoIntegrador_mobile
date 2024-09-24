@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CadastroDropdown<T> extends StatefulWidget {
+class DefaultDropdown<T> extends StatefulWidget {
   final String label;
   final List<T> items;
   final T? initialValue;
@@ -8,21 +8,21 @@ class CadastroDropdown<T> extends StatefulWidget {
   final Color fillColor;
   final double height;
 
-  const CadastroDropdown({
-    Key? key,
+  const DefaultDropdown({
+    super.key,
     required this.label,
     required this.items,
     required this.onChanged,
     this.initialValue,
     this.height = 40,
     this.fillColor = const Color(0xFFD5E2E7),
-  }) : super(key: key);
+  });
 
   @override
-  _CadastroDropdownState<T> createState() => _CadastroDropdownState<T>();
+  DefaultDropdownState<T> createState() => DefaultDropdownState<T>();
 }
 
-class _CadastroDropdownState<T> extends State<CadastroDropdown<T>> {
+class DefaultDropdownState<T> extends State<DefaultDropdown<T>> {
   T? _currentValue;
 
   @override
@@ -38,9 +38,9 @@ class _CadastroDropdownState<T> extends State<CadastroDropdown<T>> {
       children: [
         Text(
           widget.label,
-          style: TextStyle(fontWeight: FontWeight.w800),
+          style: const TextStyle(fontWeight: FontWeight.w800),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         SizedBox(
           height: widget.height,
           child: DropdownButtonFormField<T>(
@@ -48,8 +48,8 @@ class _CadastroDropdownState<T> extends State<CadastroDropdown<T>> {
             onChanged: (newValue) {
               setState(() {
                 _currentValue = newValue;
+                widget.onChanged(newValue);
               });
-              widget.onChanged(newValue);
             },
             decoration: InputDecoration(
               border: OutlineInputBorder(
@@ -57,7 +57,7 @@ class _CadastroDropdownState<T> extends State<CadastroDropdown<T>> {
               ),
               fillColor: widget.fillColor,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(horizontal: 12.0), // Ajuste o preenchimento
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12.0), // Ajuste o preenchimento
             ),
             isExpanded: true, // Expande o dropdown para preencher o espaço disponível
             items: widget.items.map((T item) {
