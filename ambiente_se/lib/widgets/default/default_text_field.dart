@@ -1,8 +1,9 @@
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-class CadastroTextField extends StatelessWidget {
+class DefaultTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final bool obscureText;
@@ -14,7 +15,7 @@ class CadastroTextField extends StatelessWidget {
   final String initialValue;
   final bool enabled;
 
-  const CadastroTextField({
+  const DefaultTextField({
     super.key,
     required this.label,
     required this.hintText,
@@ -24,7 +25,7 @@ class CadastroTextField extends StatelessWidget {
     this.enabled = true,
     this.type = TextInputType.text,
     this.height = 40,
-    this.fillColor = const Color(0xFFD5E2E7),
+    this.fillColor = AppColors.ice,
     this.obscureText = false,
   });
 
@@ -40,11 +41,13 @@ class CadastroTextField extends StatelessWidget {
           child: 
             TextField(
               enabled: enabled,
-              inputFormatters: mask != null ? [mask!] : [],
+              inputFormatters: mask != null ? [mask!] : [LengthLimitingTextInputFormatter(255)], 
               keyboardType: type,
               controller: controller,
               obscureText: obscureText,
-              style: TextStyle(color: Colors.black),
+              maxLength: 255,
+              maxLengthEnforcement: MaxLengthEnforcement.none,
+              style: const TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 hintText: hintText,
                 border: OutlineInputBorder(
@@ -53,6 +56,7 @@ class CadastroTextField extends StatelessWidget {
                 contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 fillColor: fillColor,
                 filled: true,
+                counterText: '',
               ),
             ),
         ),
