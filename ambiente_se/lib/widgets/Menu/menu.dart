@@ -1,3 +1,4 @@
+import 'package:ambiente_se/screens/company/main_company_page.dart';
 import 'package:flutter/material.dart';
 import 'package:ambiente_se/screens/ranking_empresa_page.dart';
 
@@ -56,7 +57,8 @@ class MenuLateral extends StatelessWidget {
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => EmpresaPage()),
+                      MaterialPageRoute(builder: (context) => MainCompanyPage()),
+                      );
                     },
                   ),
                   ListTile(
@@ -64,7 +66,7 @@ class MenuLateral extends StatelessWidget {
                     title: Text('Funcionários', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.of(context).pop();
-                      // Adicione a navegação para a página de Funcionários aqui
+                      // Adicione a navegação para a páginam de Funcionários aqui
                     },
                   ),
                   ListTile(
