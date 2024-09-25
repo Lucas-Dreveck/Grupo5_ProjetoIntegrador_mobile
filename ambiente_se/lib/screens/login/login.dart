@@ -1,3 +1,4 @@
+import 'package:ambiente_se/screens/home/home.dart';
 import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
 import 'package:ambiente_se/widgets/login_widgets/forgot_password.dart';
 import 'package:ambiente_se/widgets/login_widgets/login_button.dart';
@@ -83,7 +84,10 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 60),
                   LoginButton(
                     onPressed: () {
-                      // TODO: Implement login logic
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const Home()),
+                      );
                     },
                   ),
                   const SizedBox(height: 14),
