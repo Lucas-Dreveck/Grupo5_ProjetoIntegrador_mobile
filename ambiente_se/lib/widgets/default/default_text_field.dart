@@ -51,8 +51,9 @@ class DefaultTextField extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: hintText,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 fillColor: fillColor,
                 filled: true,
