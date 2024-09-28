@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AppColors {
   static const Color blue = Color(0xFF0077C8);
@@ -61,4 +62,37 @@ bool isValidCNPJ(String cnpj) {
 
   // Compara os dígitos calculados com os dígitos fornecidos
   return cnpj.endsWith('$firstDigit$secondDigit');
+}    
+
+
+
+Future<http.Response> makeHttpRequest(String url, {String method = 'GET', dynamic body}) async {
+  const String token = "Bearer "+ "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwiY2FyZ28iOiJBZG1pbiIsImV4cCI6MTcyNzU0MzA4OX0.nCCb_4nI93gymSpt11JInW_7VZ1JlO_iSqUoYDxGUsM";
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+    'Authorization': token,
+  };
+  http.Response response;
+
+  switch (method.toUpperCase()) {
+    case 'POST':
+      response = await http.post(Uri.parse(url), headers: headers, body: body);
+      break;
+    case 'PUT':
+      response = await http.put(Uri.parse(url), headers: headers, body: body);
+      break;
+    case 'DELETE':
+      response = await http.delete(Uri.parse(url), headers: headers, body: body);
+      break;
+    case 'GET':
+    default:
+      response = await http.get(Uri.parse(url), headers: headers);
+      break;
+  }
+
+  if (response.statusCode >= 200 && response.statusCode < 300) {
+    return response;
+  } else {
+    throw Exception('Failed to load data: ${response.statusCode}');
+  }
 }

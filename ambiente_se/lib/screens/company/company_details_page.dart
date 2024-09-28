@@ -5,7 +5,7 @@ import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:ambiente_se/widgets/default/default_modal.dart';
 import 'package:ambiente_se/widgets/default/default_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CompanyDetailsPage extends StatefulWidget {
   const CompanyDetailsPage({super.key, required this.id});
@@ -18,7 +18,7 @@ class CompanyDetailsPage extends StatefulWidget {
 
 class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   late int id;
-
+  late String url = "http://localhost:8080/auth/Empresa/$id";
   late TextEditingController cnpjController;
   late TextEditingController corporateNameController;
   late TextEditingController industryController;
@@ -46,17 +46,10 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   }
 
   Future<void> fetchCompanyData() async {
-    const uri = "https://ca59c6680290df512b38.free.beeceptor.com";
-    //const uri1 = 'https://api.exemplo.com/empresa/${widget.id}';
-    final response = await http.get(Uri.parse(uri));
+    final response = await makeHttpRequest(url);
 
     if (response.statusCode == 200 || 1==1) {
-      //final data = json.decode(response.body);
-      final data = {};
-      data['cnpj'] = '12345678000195';
-      data['razaoSocial'] = 'Empresa Exemplo Ltda';
-      data['ramo'] = 'Tecnologia';
-      data['nomeFantasia'] = 'Empresa Exemplo';
+      final data = json.decode(utf8.decode(response.bodyBytes));
       setState(() {
         cnpjController.text = data['cnpj'];
         corporateNameController.text = data['razaoSocial'];

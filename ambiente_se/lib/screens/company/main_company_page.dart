@@ -1,9 +1,11 @@
 import 'package:ambiente_se/screens/company/company_registration_page.dart';
 import 'package:ambiente_se/screens/company/company_details_page.dart';
+import 'package:ambiente_se/utils.dart';
 import 'package:ambiente_se/widgets/default/new_register_button.dart';
 import 'package:ambiente_se/widgets/default/search_button.dart';
 import 'package:ambiente_se/widgets/default/default_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 class MainCompanyPage extends StatefulWidget {
   const MainCompanyPage({super.key});
@@ -18,7 +20,7 @@ class MainCompanyPageState extends State<MainCompanyPage>{
   final List<Map<String, dynamic>> _companies = [];
   bool _isLoading = false;
   bool _hasMoreData = true;
-  int _currentPage = 1;
+  int _currentPage = 0;
   final int _itemsPerPage = 20;
 
   @override
@@ -36,11 +38,21 @@ class MainCompanyPageState extends State<MainCompanyPage>{
 
 
   Future<void> _loadMoreCompanies() async {
+
     setState(() {
       _isLoading = true;
     });
 
-    List<Map<String, dynamic>> moreCompanies = await fetchCompanies(_currentPage, _itemsPerPage);
+    List<Map<String, dynamic>> moreCompanies;
+    final url = 'http://localhost:8080/auth/Empresa/search?page=$_currentPage&size=$_itemsPerPage';
+ 
+    final response = await makeHttpRequest(url);
+    
+    if (response.statusCode == 200) {
+      moreCompanies = List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
+    } else {
+      moreCompanies = [];
+    }
 
     if (moreCompanies.length < _itemsPerPage) {
       _hasMoreData = false;
@@ -53,22 +65,11 @@ class MainCompanyPageState extends State<MainCompanyPage>{
     });
   }
 
-  Future<List<Map<String, dynamic>>> fetchCompanies(int page, int limit) async {
-    await Future.delayed(const Duration(seconds: 2)); 
-    return List.generate(limit, (index) {
-      return {
-        'id': (page - 1) * limit + index + 1,
-        'nomeFantasia': 'Burguer King',
-        'ramo': 'Alimentício',
-      };
-    });
-    
-  }
 
   Future<void> _resetCompanies() async {
     setState(() {
       _companies.clear();
-      _currentPage = 1;
+      _currentPage = 0;
       _hasMoreData = true;
     });
     await _loadMoreCompanies();
