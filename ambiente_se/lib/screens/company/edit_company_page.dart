@@ -200,36 +200,33 @@ class EditCompanyPageState extends State<EditCompanyPage> {
     _pageController.dispose();
     super.dispose();
   }
-
+  formatCnpj(cnpj){
+    cnpj = cnpj.replaceAll(RegExp(r'[^0-9]'), '');
+    if(cnpj.length > 2){
+      cnpj = cnpj.substring(0, 2) + '.' + cnpj.substring(2);
+    }
+    if(cnpj.length > 6){
+      cnpj = cnpj.substring(0, 6) + '.' + cnpj.substring(6);
+    }
+    if(cnpj.length > 10){
+      cnpj = cnpj.substring(0, 10) + '/' + cnpj.substring(10);
+    }
+    if(cnpj.length > 15){
+      cnpj = cnpj.substring(0, 15) + '-' + cnpj.substring(15);
+    }
+    _cnpjController.text = cnpj;
+  }
   void _fetchCompanyData() async {
-    //final response = await http.get(Uri.parse('https://api.example.com/empresa/${widget.id}'));
-
-    if (/*response.statusCode == 200 ||*/ true) {
-      final data = {
-        'nomeFantasia': 'Empresa Teste',
-        'cnpj': '10.436.497/0001-49',
-        'razaoSocial': 'Empresa Teste Ltda',
-        'inscricaoSocial': '123456789',
-        'ramo': 'Tecnologia',
-        'companySize': 'Pequeno',
-        'nomeSolicitante': 'João Silva',
-        'telefoneSolicitante': '+55 (11)98765-4321',
-        'emailEmpresa': 'contato@empresateste.com',
-        'telefoneEmpresa': '+55 (11)12345-6789',
-        'cep': '12345-678',
-        'cidade': 'São Paulo',
-        'logradouro': 'Rua Exemplo',
-        'bairro': 'Centro',
-        'numero': '01',
-        'uf': 'SP',
-      };
-      
+    final response = await makeHttpRequest('http://localhost:8080/auth/Empresa/${widget.id}');
+    if (response.statusCode == 200 ) {
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      print(data);
       setState(() {
         _tradeNameController.text = data['nomeFantasia'].toString();
-        _cnpjController.text = data['cnpj'].toString();
+        _cnpjController.text = formatCnpj(data['cnpj'].toString());
         _corporateNameController.text = data['razaoSocial'].toString();
         _industryController.text = data['ramo'].toString();
-        _companySize = data['companySize'].toString();
+        _companySize = data['porteEmpresas'].toString();
         _requesterNameController.text = data['nomeSolicitante'].toString();
         _requesterPhoneController.text = data['telefoneSolicitante'].toString();
         _companyEmailController.text = data['emailEmpresa'].toString();
@@ -241,7 +238,6 @@ class EditCompanyPageState extends State<EditCompanyPage> {
         _numberController.text = data['numero'].toString();
         _state = data['uf'].toString();
       });
-    // ignore: dead_code
     } else {
       AlertSnackBar.show(context: context, text: "Ocorreu um erro ao buscar dados da empresa.",);
     }

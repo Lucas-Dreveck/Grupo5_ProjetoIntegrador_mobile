@@ -65,9 +65,10 @@ bool isValidCNPJ(String cnpj) {
 }    
 
 
+    
 
 Future<http.Response> makeHttpRequest(String url, {String method = 'GET', dynamic body}) async {
-  const String token = "Bearer "+ "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwiY2FyZ28iOiJBZG1pbiIsImV4cCI6MTcyNzU0MzA4OX0.nCCb_4nI93gymSpt11JInW_7VZ1JlO_iSqUoYDxGUsM";
+  const String token = "Bearer "+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwiY2FyZ28iOiJBZG1pbiIsImV4cCI6MTcyNzYxNDAwOH0.jJE5_3Kd39pWu3N7Jcb0RzrSDjpui5H2f_ZDe65ZxRI";
   Map<String, String> headers = {
     'Content-Type': 'application/json',
     'Authorization': token,

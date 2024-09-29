@@ -18,7 +18,6 @@ class CompanyDetailsPage extends StatefulWidget {
 
 class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   late int id;
-  late String url = "http://localhost:8080/auth/Empresa/$id";
   late TextEditingController cnpjController;
   late TextEditingController corporateNameController;
   late TextEditingController industryController;
@@ -46,7 +45,7 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   }
 
   Future<void> fetchCompanyData() async {
-    final response = await makeHttpRequest(url);
+    final response = await makeHttpRequest("http://localhost:8080/auth/Empresa/$id");
 
     if (response.statusCode == 200 || 1==1) {
       final data = json.decode(utf8.decode(response.bodyBytes));
@@ -64,21 +63,15 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   }
 
   Future<void> _delete() async {
-    //final response = await http.delete(Uri.parse('https://api.exemplo.com/empresa/${widget.id}'));
-    // final response = await http.delete(Uri.parse('https://ca59c6680290df512b38.free.beeceptor.com'));
+    final response = await makeHttpRequest("http://localhost:8080/auth/Empresa/Delete/$id", method: 'DELETE');
 
-    // if (response.statusCode == 200) {
-    //   Navigator.of(context).pop();
-    // } else {
-    //   throw Exception('Failed to delete empresa');
-    // } 
-
-
-    AlertSnackBar.show(context: context, text: "Empresa deletada com sucesso.", backgroundColor: AppColors.green);
-    Future.delayed(const Duration(seconds: 2), () {
+    if (response.statusCode == 200) {
+      AlertSnackBar.show(context: context, text: "Empresa deletada com sucesso.", backgroundColor: AppColors.green);
       Navigator.of(context).pop();
-    });
-    Navigator.of(context).pop();
+    } else {
+      AlertSnackBar.show(context: context, text: "Erro ao deletar empresa.", backgroundColor: AppColors.red);
+      throw Exception('Failed to delete empresa');
+    } 
   }
 
   @override

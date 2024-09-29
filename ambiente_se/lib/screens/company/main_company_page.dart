@@ -6,6 +6,7 @@ import 'package:ambiente_se/widgets/default/search_button.dart';
 import 'package:ambiente_se/widgets/default/default_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class MainCompanyPage extends StatefulWidget {
   const MainCompanyPage({super.key});
@@ -14,10 +15,11 @@ class MainCompanyPage extends StatefulWidget {
   State<MainCompanyPage> createState() => MainCompanyPageState();
 }
 
-class MainCompanyPageState extends State<MainCompanyPage>{
+class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchBarController = TextEditingController();
   final List<Map<String, dynamic>> _companies = [];
+  String? _searchText = '';
   bool _isLoading = false;
   bool _hasMoreData = true;
   int _currentPage = 0;
@@ -35,6 +37,23 @@ class MainCompanyPageState extends State<MainCompanyPage>{
       }
     });
   }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute<dynamic>);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _resetCompanies();
+  }
 
 
   Future<void> _loadMoreCompanies() async {
@@ -44,7 +63,7 @@ class MainCompanyPageState extends State<MainCompanyPage>{
     });
 
     List<Map<String, dynamic>> moreCompanies;
-    final url = 'http://localhost:8080/auth/Empresa/search?page=$_currentPage&size=$_itemsPerPage';
+    final url = 'http://localhost:8080/auth/Empresa/search?page=$_currentPage&size=$_itemsPerPage$_searchText';
  
     final response = await makeHttpRequest(url);
     
@@ -73,6 +92,16 @@ class MainCompanyPageState extends State<MainCompanyPage>{
       _hasMoreData = true;
     });
     await _loadMoreCompanies();
+  }
+
+  _search(){
+    if(_searchBarController.text.isEmpty){
+      _searchText = '';
+    }
+    else {
+      _searchText = "&nome=${_searchBarController.text}";
+    }
+    _resetCompanies();
   }
 
   @override
@@ -110,7 +139,7 @@ class MainCompanyPageState extends State<MainCompanyPage>{
                 const SizedBox(width: 16),
                 SearchButton(
                   label: "Buscar",
-                  onPressed: () {},
+                  onPressed: _search,
                 ),
               ],
             ),
@@ -167,39 +196,43 @@ class MainCompanyPageState extends State<MainCompanyPage>{
                                       Center(
                                         child: Text(item['id'].toString(), textAlign: TextAlign.center),
                                       ),
-                                      onTap: () {
-                                        Navigator.push(
+                                      onTap: () async {
+                                        await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => CompanyDetailsPage(id: item['id']),
+                                            
                                           ),
                                         );
+                                        _resetCompanies();
                                       },
                                     ),
                                     DataCell(
                                       Center(
                                         child: Text(item['nomeFantasia'], textAlign: TextAlign.center),
                                       ),
-                                      onTap: () {
-                                        Navigator.push(
+                                      onTap: () async {
+                                        await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => CompanyDetailsPage(id: item['id']),
                                           ),
                                         );
+                                        _resetCompanies();
                                       },
                                     ),
                                     DataCell(
                                       Center(
                                         child: Text(item['ramo'], textAlign: TextAlign.center),
                                       ),
-                                      onTap: () {
-                                        Navigator.push(
+                                      onTap: () async {
+                                        await Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) => CompanyDetailsPage(id: item['id']),
                                           ),
                                         );
+                                        _resetCompanies();
                                       },
                                     ),
                                   ],
@@ -230,9 +263,9 @@ class MainCompanyPageState extends State<MainCompanyPage>{
     );
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+
+
+
+
+
 }
