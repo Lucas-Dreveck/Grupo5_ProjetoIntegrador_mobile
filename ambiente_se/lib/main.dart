@@ -1,4 +1,4 @@
-import 'package:ambiente_se/screens/login/login.dart';
+import 'package:ambiente_se/screens/question/home_quest.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const LoginPage(),
+      home: const MainQuestionPage(),
       debugShowCheckedModeBanner: false,
     );
   }
