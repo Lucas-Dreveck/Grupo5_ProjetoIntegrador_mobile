@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 
 class ResultadosPage extends StatelessWidget {
   final String nomeEmpresa;
@@ -68,21 +69,23 @@ class ResultadosPage extends StatelessWidget {
   }
 
   // Função para mostrar a porcentagem de conformidade por categoria com cor específica
-  Widget _buildPorcentagemConformidade(
-      String categoria, double porcentagem, Color color) {
+  Widget _buildPorcentagemConformidade(String categoria, double porcentagem, Color color) {
     return Column(
       children: [
-        CircleAvatar(
-            radius: 50,
-            backgroundColor: color,
-            child: CircleAvatar(
-              radius: 40,
-              backgroundColor: Color.fromRGBO(254, 247, 255, 1.0),
-              child: Text(
-                '${porcentagem.toStringAsFixed(0)}%',
-                style: const TextStyle(fontSize: 21, color: Colors.black),
-              ),
-            )),
+        CircularPercentIndicator(
+          radius: 50,
+          backgroundColor: Color.fromRGBO(254, 247, 255, 1.0),
+          lineWidth: 10.0,
+          percent: porcentagem / 100,
+          progressColor: color,
+          animation: true,
+          animationDuration: 1200,
+          circularStrokeCap: CircularStrokeCap.round,
+          center: Text(
+            '${porcentagem.toStringAsFixed(0)}%',
+            style: const TextStyle(fontSize: 21, color: Colors.black),
+          ),
+        ),
         const SizedBox(height: 5),
         Text(
           categoria,
