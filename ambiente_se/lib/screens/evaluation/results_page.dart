@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
-class ResultadosPage extends StatelessWidget {
-  final String nomeEmpresa;
+class ResultsPage extends StatelessWidget {
+  final String companyName;
 
-  const ResultadosPage({Key? key, required this.nomeEmpresa}) : super(key: key);
+  const ResultsPage({Key? key, required this.companyName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,83 +12,96 @@ class ResultadosPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Resultados da Avaliação'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(25.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Column(
-                children: [
-                  CircleAvatar(
-                    radius: 80,
-                    backgroundColor: Colors.black,
-                    child: CircleAvatar(
-                      radius: 75,
-                      backgroundImage: AssetImage('images/logo.png'),
-                    ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Column(
+              children: [
+                CircleAvatar(
+                  radius: 80,
+                  backgroundColor: Colors.black,
+                  child: CircleAvatar(
+                    radius: 75,
+                    backgroundImage: AssetImage('images/logo.png'),
                   ),
-                  SizedBox(
-                    height: 10,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Resultados \n $companyName',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Text(
-                    'Resultados \n $nomeEmpresa',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Exibindo os círculos de porcentagem de conformidade por categoria
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildPorcentagemConformidade(
-                      'Social', 100, const Color.fromRGBO(240, 135, 11, 1.0)),
-                  _buildPorcentagemConformidade('Governamental', 100,
-                      const Color.fromRGBO(0, 119, 200, 1.0)),
-                  _buildPorcentagemConformidade(
-                      'Ambiental', 100, const Color.fromRGBO(106, 192, 74, 1.0)),
-                ],
-              ),
-              const SizedBox(height: 20),
-              _buildCategoriaResultados(_socialPerguntas(),
-                  const Color.fromRGBO(240, 135, 11, 1.0)),
-              _buildCategoriaResultados(_governamentalPerguntas(),
-                  const Color.fromRGBO(0, 113, 191, 1.0)),
-              _buildCategoriaResultados(_ambientalPerguntas(),
-                  const Color.fromRGBO(106, 192, 74, 1.0)),
-            ],
-          ),
+                )
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Exibindo os círculos de porcentagem de conformidade por categoria
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildPercentageAccordance(
+                  'Social', 
+                  100, 
+                  const Color.fromRGBO(240, 135, 11, 1.0)
+                ),
+                _buildPercentageAccordance(
+                  'Governamental', 
+                  100,
+                  const Color.fromRGBO(0, 119, 200, 1.0)
+                ),
+                _buildPercentageAccordance(
+                  'Ambiental', 
+                  100, 
+                  const Color.fromRGBO(106, 192, 74, 1.0)
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            _buildResultsCategory(
+              _socialQuestions(),
+              const Color.fromRGBO(240, 135, 11, 1.0)
+            ),
+            _buildResultsCategory(
+              _governmentQuestions(),
+              const Color.fromRGBO(0, 113, 191, 1.0)
+            ),
+            _buildResultsCategory(
+              _environmentalQuestions(),
+              const Color.fromRGBO(106, 192, 74, 1.0)
+            ),
+          ],
         ),
       ),
     );
   }
 
   // Função para mostrar a porcentagem de conformidade por categoria com cor específica
-  Widget _buildPorcentagemConformidade(String categoria, double porcentagem, Color color) {
+  Widget _buildPercentageAccordance(String category, double percentage, Color color) {
     return Column(
       children: [
         CircularPercentIndicator(
           radius: 50,
           backgroundColor: Color.fromRGBO(254, 247, 255, 1.0),
           lineWidth: 10.0,
-          percent: porcentagem / 100,
+          percent: percentage / 100,
           progressColor: color,
           animation: true,
           animationDuration: 1200,
           circularStrokeCap: CircularStrokeCap.round,
           center: Text(
-            '${porcentagem.toStringAsFixed(0)}%',
+            '${percentage.toStringAsFixed(0)}%',
             style: const TextStyle(fontSize: 21, color: Colors.black),
           ),
         ),
         const SizedBox(height: 5),
         Text(
-          categoria,
+          category,
           style: TextStyle(fontSize: 21, color: Colors.black),
         ),
       ],
@@ -96,7 +109,7 @@ class ResultadosPage extends StatelessWidget {
   }
 
   // Função para construir as seções de cada categoria com cor específica
-  Widget _buildCategoriaResultados(List<String> perguntas, Color color) {
+  Widget _buildResultsCategory(List<String> questions, Color color) {
     List<TableRow> rows = [];
 
     // Cabeçalho "Perguntas" e "Respostas"
@@ -106,23 +119,27 @@ class ResultadosPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12.0),
             child: Center(
-              child: const Text('Perguntas',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center),
+              child: const Text(
+                'Perguntas',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center
+              ),
             ),
           ),
           Container(
             padding: const EdgeInsets.all(12.0),
             child: Center(
-              child: const Text('Respostas',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center),
+              child: const Text(
+                'Respostas',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center
+              ),
             ),
           ),
         ],
@@ -131,25 +148,29 @@ class ResultadosPage extends StatelessWidget {
 
     bool alternate = true; // Variável para alternar cores das linhas
 
-    for (String pergunta in perguntas) {
+    for (String question in questions) {
       rows.add(
         TableRow(
           children: [
             Container(
               color:
-                  alternate ? color.withOpacity(1.0) : color.withOpacity(0.5),
+                alternate ? color.withOpacity(1.0) : color.withOpacity(0.5),
               padding: const EdgeInsets.all(12.0),
               child: Center(
-                child: Text(pergunta,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center),
+                child: Text(
+                  question,
+                  style: const TextStyle(
+                    fontSize: 16, 
+                    fontWeight: FontWeight.bold
+                  ),
+                  textAlign: TextAlign.center
+                ),
               ),
               height: 90,
             ),
             Container(
               color:
-                  alternate ? color.withOpacity(1.0) : color.withOpacity(0.5),
+                alternate ? color.withOpacity(1.0) : color.withOpacity(0.5),
               padding: const EdgeInsets.all(12.0),
               child: Center(
                 child: Text(
@@ -199,7 +220,7 @@ class ResultadosPage extends StatelessWidget {
   }
 
   // Lista de perguntas da categoria Social
-  List<String> _socialPerguntas() {
+  List<String> _socialQuestions() {
     return [
       'A empresa possui políticas de diversidade e inclusão?',
       'A empresa compromete-se com a saúde e segurança dos funcionários?',
@@ -225,7 +246,7 @@ class ResultadosPage extends StatelessWidget {
   }
 
   // Lista de perguntas da categoria Governamental
-  List<String> _governamentalPerguntas() {
+  List<String> _governmentQuestions() {
     return [
       'A empresa possui uma política ambiental clara e documentada?',
       'A empresa possui metas de redução de emissões de carbono?',
@@ -251,7 +272,7 @@ class ResultadosPage extends StatelessWidget {
   }
 
   // Lista de perguntas da categoria Ambiental
-  List<String> _ambientalPerguntas() {
+  List<String> _environmentalQuestions() {
     return [
       'A empresa possui uma estratégia clara de sustentabilidade ambiental?',
       'A empresa integra considerações ambientais em seu planejamento estratégico?',

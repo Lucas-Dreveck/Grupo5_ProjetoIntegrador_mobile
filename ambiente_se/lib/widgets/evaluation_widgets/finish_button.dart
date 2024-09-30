@@ -1,11 +1,11 @@
-import 'package:ambiente_se/screens/resultados_page.dart';
+import 'package:ambiente_se/screens/evaluation/results_page.dart';
 import 'package:ambiente_se/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class FinishButton extends StatelessWidget {
-  final String nomeEmpresa; // Adiciona um parâmetro para o nome da empresa
+  final String companyName; // Adiciona um parâmetro para o nome da empresa
 
-  const FinishButton({Key? key, required this.nomeEmpresa}) : super(key: key);
+  const FinishButton({Key? key, required this.companyName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,8 +16,8 @@ class FinishButton extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ResultadosPage(
-              nomeEmpresa: nomeEmpresa, // Passa o nome da empresa aqui
+            builder: (context) => ResultsPage(
+              companyName: companyName, // Passa o nome da empresa aqui
             ),
           ),
         );

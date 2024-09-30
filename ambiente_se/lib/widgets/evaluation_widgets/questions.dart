@@ -1,10 +1,10 @@
-import 'package:ambiente_se/widgets/avaliacao_widgets/avaliation_options.dart';
+import 'package:ambiente_se/widgets/evaluation_widgets/evaluation_options.dart';
 import 'package:flutter/material.dart';
 
-class PerguntaComOpcoes extends StatelessWidget {
-  final String pergunta;
+class Questions extends StatelessWidget {
+  final String question;
 
-  const PerguntaComOpcoes({Key? key, required this.pergunta}) : super(key: key);
+  const Questions({Key? key, required this.question}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,14 +19,14 @@ class PerguntaComOpcoes extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            pergunta,
+            question,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           SizedBox(height: 10),
-          OpcoesRadio(), // Widget de opções de rádio para responder à pergunta
+          RadioOptions(), // Widget de opções de rádio para responder à question
         ],
       ),
     );

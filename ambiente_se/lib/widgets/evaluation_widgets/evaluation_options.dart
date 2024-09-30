@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-class OpcoesRadio extends StatefulWidget {
-  final List<String> opcoes;
+class RadioOptions extends StatefulWidget {
+  final List<String> options;
   final String selectedOption;
   
-  const OpcoesRadio({
+  const RadioOptions({
     Key? key,
-    this.opcoes = const ['Conforme', 'Não Conforme', 'Não Aplicável'],
+    this.options = const ['Conforme', 'Não Conforme', 'Não Aplicável'],
     this.selectedOption = '',
   }) : super(key: key);
 
   @override
-  _OpcoesRadioState createState() => _OpcoesRadioState();
+  _RadioOptionsState createState() => _RadioOptionsState();
 }
 
-class _OpcoesRadioState extends State<OpcoesRadio> {
+class _RadioOptionsState extends State<RadioOptions> {
   String? _selectedOption;
 
   @override
@@ -26,10 +26,10 @@ class _OpcoesRadioState extends State<OpcoesRadio> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: widget.opcoes.map((String opcao) {
+      children: widget.options.map((String option) {
         return RadioListTile<String>(
-          title: Text(opcao),
-          value: opcao,
+          title: Text(option),
+          value: option,
           groupValue: _selectedOption,
           onChanged: (String? value) {
             setState(() {
