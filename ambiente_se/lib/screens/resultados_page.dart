@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class ResultadosPage extends StatelessWidget {
-  const ResultadosPage({Key? key}) : super(key: key);
+  final String nomeEmpresa;
+
+  const ResultadosPage({Key? key, required this.nomeEmpresa}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,57 +13,76 @@ class ResultadosPage extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(25.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Exibindo os círculos de porcentagem de conformidade por categoria
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildPorcentagemConformidade(
-                    'Social', 100, const Color.fromRGBO(240, 135, 11, 1.0)),
-                _buildPorcentagemConformidade('Governamental', 100,
-                    const Color.fromRGBO(0, 119, 200, 1.0)),
-                _buildPorcentagemConformidade(
-                    'Ambiental', 100, const Color.fromRGBO(106, 192, 74, 1.0)),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Column(
                 children: [
-                  _buildCategoriaResultados(_socialPerguntas(),
-                      const Color.fromRGBO(240, 135, 11, 1.0)),
-                  _buildCategoriaResultados(_governamentalPerguntas(),
-                      const Color.fromRGBO(0, 113, 191, 1.0)),
-                  _buildCategoriaResultados(_ambientalPerguntas(),
-                      const Color.fromRGBO(106, 192, 74, 1.0)),
+                  CircleAvatar(
+                    radius: 80,
+                    backgroundColor: Colors.black,
+                    child: CircleAvatar(
+                      radius: 75,
+                      backgroundImage: AssetImage('images/logo.png'),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Resultados \n $nomeEmpresa',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              // Exibindo os círculos de porcentagem de conformidade por categoria
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildPorcentagemConformidade(
+                      'Social', 100, const Color.fromRGBO(240, 135, 11, 1.0)),
+                  _buildPorcentagemConformidade('Governamental', 100,
+                      const Color.fromRGBO(0, 119, 200, 1.0)),
+                  _buildPorcentagemConformidade(
+                      'Ambiental', 100, const Color.fromRGBO(106, 192, 74, 1.0)),
+                ],
+              ),
+              const SizedBox(height: 20),
+              _buildCategoriaResultados(_socialPerguntas(),
+                  const Color.fromRGBO(240, 135, 11, 1.0)),
+              _buildCategoriaResultados(_governamentalPerguntas(),
+                  const Color.fromRGBO(0, 113, 191, 1.0)),
+              _buildCategoriaResultados(_ambientalPerguntas(),
+                  const Color.fromRGBO(106, 192, 74, 1.0)),
+            ],
+          ),
         ),
       ),
     );
   }
 
   // Função para mostrar a porcentagem de conformidade por categoria com cor específica
-  Widget _buildPorcentagemConformidade(String categoria, double porcentagem, Color color) {
+  Widget _buildPorcentagemConformidade(
+      String categoria, double porcentagem, Color color) {
     return Column(
       children: [
         CircleAvatar(
-          radius: 50,
-          backgroundColor: color,
-          child: CircleAvatar(
-            radius: 40,
-            backgroundColor: Color.fromRGBO(254, 247, 255, 1.0),
-            child: Text(
-            '${porcentagem.toStringAsFixed(0)}%',
-            style: const TextStyle(fontSize: 21, color: Colors.black),
-          ),
-          )
-          
-        ),
+            radius: 50,
+            backgroundColor: color,
+            child: CircleAvatar(
+              radius: 40,
+              backgroundColor: Color.fromRGBO(254, 247, 255, 1.0),
+              child: Text(
+                '${porcentagem.toStringAsFixed(0)}%',
+                style: const TextStyle(fontSize: 21, color: Colors.black),
+              ),
+            )),
         const SizedBox(height: 5),
         Text(
           categoria,
