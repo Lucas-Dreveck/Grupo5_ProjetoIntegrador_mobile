@@ -63,9 +63,18 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
     });
 
     List<Map<String, dynamic>> moreCompanies;
-    final url = 'http://localhost:8080/auth/Empresa/search?page=$_currentPage&size=$_itemsPerPage$_searchText';
- 
-    final response = await makeHttpRequest(url);
+    final url = '/api/auth/Company/search';
+    final Map<String, dynamic> parameters = {
+      'page': _currentPage.toString(),
+      'size': _itemsPerPage.toString(),
+    };
+    if (_searchText != null && _searchText!.isNotEmpty) {
+      parameters['name'] = _searchText;
+    } else {
+      parameters.remove('name');
+    }
+
+    final response = await makeHttpRequest(url, parameters: parameters);
     
     if (response.statusCode == 200) {
       moreCompanies = List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
@@ -99,7 +108,7 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
       _searchText = '';
     }
     else {
-      _searchText = "&nome=${_searchBarController.text}";
+      _searchText = _searchBarController.text;
     }
     _resetCompanies();
   }
@@ -209,7 +218,7 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
                                     ),
                                     DataCell(
                                       Center(
-                                        child: Text(item['nomeFantasia'], textAlign: TextAlign.center),
+                                        child: Text(item['tradeName'], textAlign: TextAlign.center),
                                       ),
                                       onTap: () async {
                                         await Navigator.push(
@@ -223,7 +232,7 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
                                     ),
                                     DataCell(
                                       Center(
-                                        child: Text(item['ramo'], textAlign: TextAlign.center),
+                                        child: Text(item['segment'], textAlign: TextAlign.center),
                                       ),
                                       onTap: () async {
                                         await Navigator.push(

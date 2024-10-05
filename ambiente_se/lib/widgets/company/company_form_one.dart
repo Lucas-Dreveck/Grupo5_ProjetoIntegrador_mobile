@@ -13,7 +13,8 @@ class CompanyFormOne extends StatefulWidget {
   final bool isEditing;
 
 
-  const CompanyFormOne({super.key, 
+  const CompanyFormOne({
+    required Key key,
     required this.tradeNameController,
     required this.cnpjController,
     required this.corporateNameController,
@@ -21,8 +22,8 @@ class CompanyFormOne extends StatefulWidget {
     required this.oncompanySizeChanged,
     this.companySize = "",
     this.isEditing = false,
-  });
-
+  })  : super(key: key);
+ 
   @override
   CompanyFormOneState createState() => CompanyFormOneState();
 }

@@ -45,15 +45,17 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   }
 
   Future<void> fetchCompanyData() async {
-    final response = await makeHttpRequest("http://localhost:8080/auth/Empresa/$id");
+    final response = await makeHttpRequest("/api/auth/Company/$id");
 
     if (response.statusCode == 200 || 1==1) {
       final data = json.decode(utf8.decode(response.bodyBytes));
+      var cnpj = data['cnpj'];
       setState(() {
-        cnpjController.text = data['cnpj'];
-        corporateNameController.text = data['razaoSocial'];
-        industryController.text = data['ramo'];
-        tradeNameController.text = data['nomeFantasia'];
+
+        cnpjController.text = formatCnpj(cnpj);
+        tradeNameController.text = data['tradeName'] ?? '';
+        corporateNameController.text = data['socialInscription'] ?? '';
+        industryController.text = data['segment'] ?? '';
       });
 
 
@@ -63,7 +65,7 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   }
 
   Future<void> _delete() async {
-    final response = await makeHttpRequest("http://localhost:8080/auth/Empresa/Delete/$id", method: 'DELETE');
+    final response = await makeHttpRequest("/api/auth/Company/$id", method: 'DELETE');
 
     if (response.statusCode == 200) {
       AlertSnackBar.show(context: context, text: "Empresa deletada com sucesso.", backgroundColor: AppColors.green);

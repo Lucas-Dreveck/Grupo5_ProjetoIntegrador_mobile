@@ -200,43 +200,58 @@ class EditCompanyPageState extends State<EditCompanyPage> {
     _pageController.dispose();
     super.dispose();
   }
-  formatCnpj(cnpj){
-    cnpj = cnpj.replaceAll(RegExp(r'[^0-9]'), '');
-    if(cnpj.length > 2){
-      cnpj = cnpj.substring(0, 2) + '.' + cnpj.substring(2);
-    }
-    if(cnpj.length > 6){
-      cnpj = cnpj.substring(0, 6) + '.' + cnpj.substring(6);
-    }
-    if(cnpj.length > 10){
-      cnpj = cnpj.substring(0, 10) + '/' + cnpj.substring(10);
-    }
-    if(cnpj.length > 15){
-      cnpj = cnpj.substring(0, 15) + '-' + cnpj.substring(15);
-    }
-    _cnpjController.text = cnpj;
-  }
+
   void _fetchCompanyData() async {
-    final response = await makeHttpRequest('http://localhost:8080/auth/Empresa/${widget.id}');
+    final response = await makeHttpRequest('/api/auth/Company/${widget.id}');
     if (response.statusCode == 200 ) {
       final data = json.decode(utf8.decode(response.bodyBytes));
-      print(data);
       setState(() {
-        _tradeNameController.text = data['nomeFantasia'].toString();
-        _cnpjController.text = formatCnpj(data['cnpj'].toString());
-        _corporateNameController.text = data['razaoSocial'].toString();
-        _industryController.text = data['ramo'].toString();
-        _companySize = data['porteEmpresas'].toString();
-        _requesterNameController.text = data['nomeSolicitante'].toString();
-        _requesterPhoneController.text = data['telefoneSolicitante'].toString();
-        _companyEmailController.text = data['emailEmpresa'].toString();
-        _companyPhoneController.text = data['telefoneEmpresa'].toString();
-        _postalCodeController.text = data['cep'].toString();
-        _cityController.text = data['cidade'].toString();
-        _publicSpaceController.text = data['logradouro'].toString();
-        _neighborhoodController.text = data['bairro'].toString();
-        _numberController.text = data['numero'].toString();
-        _state = data['uf'].toString();
+        print('socialInscription: ${data['socialInscription']}');
+        _tradeNameController.text = data['tradeName']?.toString() ?? '';
+
+        print('cnpj: ${data['cnpj']}');
+
+        _cnpjController.text = formatCnpj(data['cnpj']?.toString() ?? '');
+
+        print('socialInscription: ${data['socialInscription']?.toString() ?? ''}');
+        _corporateNameController.text = data['socialInscription']?.toString() ?? '';
+
+        print('segment: ${data['segment']}');
+        _industryController.text = data['segment']?.toString() ?? '';
+
+        print('companySize: ${data['companySize']}');
+        _companySize = data['companySize']?.toString() ?? '';
+        print(_companySize);
+
+        print('applicantsName: ${data['applicantsName']}');
+        _requesterNameController.text = data['applicantsName']?.toString() ?? '';
+
+        print('applicantsPhone: ${data['applicantsPhone']}');
+        _requesterPhoneController.text = formatPhone(data['applicantsPhone']?.toString() ?? '');
+
+        print('email: ${data['email']}');
+        _companyEmailController.text = data['email']?.toString() ?? '';
+
+        print('companyPhone: ${data['companyPhone']}');
+        _companyPhoneController.text = formatPhone(data['companyPhone']?.toString() ?? '');
+
+        print('cep: ${data['addres']?['cep']}');
+        _postalCodeController.text = formatCep(data['addres']?['cep']?.toString() ?? '');
+
+        print('city: ${data['addres']?['city']}');
+        _cityController.text = data['addres']?['city']?.toString() ?? '';
+
+        print('patio: ${data['addres']?['patio']}');
+        _publicSpaceController.text = data['addres']?['patio']?.toString() ?? '';
+
+        print('neighborhood: ${data['addres']?['neighborhood']}');
+        _neighborhoodController.text = data['addres']?['neighborhood']?.toString() ?? '';
+
+        print('number: ${data['addres']?['number']}');
+        _numberController.text = data['addres']?['number']?.toString() ?? '';
+
+        print('uf: ${data['addres']?['uf']}');
+        _state = data['addres']?['uf']?.toString() ?? '';
       });
     } else {
       AlertSnackBar.show(context: context, text: "Ocorreu um erro ao buscar dados da empresa.",);
@@ -266,7 +281,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
         children: [
           Column(
             children: [ 
-              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updatecompanySize, isEditing: true,),
+              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updatecompanySize, isEditing: true, key: UniqueKey(),), 
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

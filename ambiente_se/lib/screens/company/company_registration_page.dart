@@ -169,34 +169,33 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
  
   void _save() {
     final empresaData = {
-      "nomeFantasia": _tradeNameController.text,
-      "nomeSolicitante": _requesterNameController.text,
-      "telefoneSolicitante": _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
-      "razaoSocial": _corporateNameController.text,
+      "tradeName": _tradeNameController.text,
+      "applicantsName": _requesterNameController.text,
+      "applicantsPhone": _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      "companyName": _corporateNameController.text,
       "cnpj": _cnpjController.text.replaceAll(RegExp(r'\D'), ''),
-      "inscricaoSocial": 1,
-      "endereco": {
+      "socialInscription": "1",
+      "address": {
+        "id": 0,
         "cep": _postalCodeController.text.replaceAll(RegExp(r'\D'), ''),
-        "numero": _numberController.text.replaceAll(RegExp(r'\D'), ''), // Assuming you have a field for the number, replace 1 with the actual value
-        "logradouro": _publicSpaceController.text,
-        "complemento": null,
-        "cidade": _cityController.text,
-        "bairro": _neighborhoodController.text,
+        "number": int.tryParse(_numberController.text.replaceAll(RegExp(r'\D'), '')) ?? 0,
+        "patio": _publicSpaceController.text,
+        "complement": "",
+        "city": _cityController.text,
+        "neighborhood": _neighborhoodController.text,
         "uf": _state,
       },
       "email": _companyEmailController.text,
-      "telefoneEmpresas": _companyPhoneController.text.replaceAll(RegExp(r'\D'), ''),
-      "ramo": _industryController.text,
-      "porteEmpresas": _companySize,
-      "ranking": null // Assuming ranking is not provided
-      };
+      "companyPhone": _companyPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      "segment": _industryController.text,
+      "companySize": _companySize,
+    };
 
     _registerCompany(empresaData);
-  
   }
 
   void _registerCompany(Map<String, dynamic> empresaData) async {
-    const url = 'http://localhost:8080/auth/Empresa/Add';
+    const url = '/api/auth/Company';
     try {
       final response = await makeHttpRequest(url, method: 'POST', body: jsonEncode(empresaData));
       if (response.statusCode == 200) {
@@ -246,7 +245,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
         children: [
           Column(
             children: [ 
-              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updateCompanySize,),
+              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updateCompanySize, key: UniqueKey(),),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -289,7 +288,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
           // Pagina 2
           Column(
             children: [
-              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController),
+              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController, key: UniqueKey(),),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
