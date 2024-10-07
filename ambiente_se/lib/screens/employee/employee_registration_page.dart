@@ -58,7 +58,7 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
       "user": {
         "login": _loginController.text,
         "password": _passwordController.text,
-        "isAdmin": _role == "gestor" ? true : false
+        "isAdmin": false
       },
       "role": _role,
     };
