@@ -202,7 +202,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
         AlertSnackBar.show(context: context, text: "Empresa cadastrada com sucesso.", backgroundColor: AppColors.green);
         Navigator.of(context).pop();
       } else {
-        AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa: ${response.statusCode}", backgroundColor: AppColors.red);
+        AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa.", backgroundColor: AppColors.red);
       }
     } catch (e) {
       AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa: cnpj já cadastrado", backgroundColor: AppColors.red);
