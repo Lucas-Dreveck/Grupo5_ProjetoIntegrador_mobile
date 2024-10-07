@@ -1,4 +1,6 @@
 import 'package:ambiente_se/screens/evaluation/results_page.dart';
+import 'package:ambiente_se/widgets/evaluation_widgets/evaluation_answer.dart';
+import 'package:ambiente_se/widgets/evaluation_widgets/evaluations_questions_list.dart';
 import 'package:ambiente_se/widgets/evaluation_widgets/finish_button.dart';
 import 'package:ambiente_se/widgets/evaluation_widgets/questions.dart';
 import 'package:ambiente_se/widgets/custom_button.dart';
@@ -30,10 +32,29 @@ class _EvaluationPageState extends State<EvaluationPage> {
   // PageController _pageController = PageController(initialPage: 4, keepPage: false);
   int currentPage = 0;
 
+  // Armazenar as respostas
+  List<EvaluationAnswer> _answers = [];
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  // Função para salvar uma resposta
+  void _saveAnswer(String question, String answer) {
+    final existingAnswer = _answers.firstWhere(
+      (ans) => ans.question_registered == question,
+      orElse: () => EvaluationAnswer(question_registered: question, answer_registered: answer),
+    );
+
+    setState(() {
+      if (_answers.contains(existingAnswer)) {
+        existingAnswer.answer_registered = answer; // Atualiza a resposta
+      } else {
+        _answers.add(EvaluationAnswer(question_registered: question, answer_registered: answer)); // Adiciona nova resposta
+      }
+    });
   }
 
   @override
@@ -48,7 +69,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
             controller: _pageController,
             physics: NeverScrollableScrollPhysics(), // Desativa o deslizar manual
             children: [
-// Primeira página
+// Primeira página: Escolha da empresa
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
@@ -110,8 +131,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ResultsPage(
-                                  companyName: selectedCompany?.label ??
-                                      'Nenhuma empresa selecionada',
+                                  companyName: selectedCompany?.label ?? 'Nenhuma empresa selecionada',
+                                  answers: _answers,
                                 ),
                               ),
                             );
@@ -123,7 +144,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   )
                 ],
               ),
-// Segunda página
+// Segunda página: Perguntas sociais
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
@@ -141,87 +162,39 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     ),
                   ),
                   Expanded(
-                    child: ListView(
-                      children: [
-                        const Questions(
-                            question:
-                                'A empresa possui políticas de diversidade e inclusão?'),
-                        const Questions(
-                            question:
-                                'A empresa compromete-se com a saúde e segurança dos funcionários?'),
-                        const Questions(
-                            question:
-                                'A empresa oferece oportunidades de desenvolvimento e capacitação para os empregados?'),
-                        const Questions(
-                            question:
-                                'A empresa engaja-se com as comunidades locais onde opera?'),
-                        const Questions(
-                            question:
-                                'A empresa promove igualdade de gênero no local de trabalho?'),
-                        const Questions(
-                            question:
-                                'A empresa possui práticas de remuneração e benefícios justas?'),
-                        const Questions(
-                            question:
-                                'A empresa possui políticas contra assédio e discriminação?'),
-                        const Questions(
-                            question:
-                                'A empresa contribui para a educação e formação profissional na comunidade?'),
-                        const Questions(
-                            question:
-                                'A empresa realiza auditorias sociais em sua cadeia de suprimentos?'),
-                        const Questions(
-                            question:
-                                'A empresa incentiva programas de voluntariado corporativo?'),
-                        const Questions(
-                            question:
-                                'A empresa apoia a saúde e o bem-estar dos funcionários além do local de trabalho?'),
-                        const Questions(
-                            question:
-                                'A empresa possui políticas contra trabalho infantil e trabalho forçado em sua cadeia de suprimentos?'),
-                        const Questions(
-                            question:
-                                'A empresa lida com questões de direitos humanos em suas operações globais?'),
-                        const Questions(
-                            question:
-                                'A empresa envolve os funcionários em decisões importantes que os afetam?'),
-                        const Questions(
-                            question:
-                                'A empresa possui uma alta taxa de retenção de funcionários?'),
-                        const Questions(
-                            question:
-                                'A empresa promove a participação dos funcionários em iniciativas de responsabilidade social?'),
-                        const Questions(
-                            question:
-                                'A empresa possui práticas transparentes de comunicação com as partes interessadas?'),
-                        const Questions(
-                            question:
-                                'A empresa mede e relata seu impacto social?'),
-                        const Questions(
-                            question:
-                                'A empresa apoia iniciativas culturais e esportivas nas comunidades onde atua?'),
-                        const Questions(
-                            question:
-                                'A empresa possui políticas de equilíbrio entre vida pessoal e profissional para os funcionários?'),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              NextPageButton(
-                                pageController: _pageController,
-                                label: 'Próxima página',
-                                width: 255,
-                              )
-                            ],
-                          ),
-                        ),
+                    child: ListView.builder(
+                      itemCount: EvaluationsQuestionsList.socialQuestions.length,
+                      itemBuilder: (context, index) {
+                        // Aqui você deve pegar a resposta armazenada
+                        String savedAnswer = _answers.firstWhere(
+                          (ans) => ans.question_registered == EvaluationsQuestionsList.socialQuestions[index],
+                          orElse: () => EvaluationAnswer(question_registered: EvaluationsQuestionsList.socialQuestions[index], answer_registered: ''),
+                        ).answer_registered;
+
+                        return Questions(
+                          question: EvaluationsQuestionsList.socialQuestions[index],
+                          onSelected: (answer) => _saveAnswer(EvaluationsQuestionsList.socialQuestions[index], answer),
+                          selectedOption: savedAnswer, // Passa a resposta armazenada
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        NextPageButton(
+                          pageController: _pageController,
+                          label: 'Próxima página',
+                          width: 255,
+                        )
                       ],
                     ),
                   ),
                 ],
               ),
-// Terceira página
+// Terceira página: Perguntas governamentais
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
@@ -239,79 +212,31 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     ),
                   ),
                   Expanded(
-                    child: ListView(
-                      children: [
-                        const Questions(
-                            question:
-                                'A empresa possui uma estratégia clara de sustentabilidade ambiental?'),
-                        const Questions(
-                            question:
-                                'A empresa integra considerações ambientais em seu planejamento estratégico?'),
-                        const Questions(
-                            question:
-                                'A empresa realiza auditorias ambientais regulares?'),
-                        const Questions(
-                            question:
-                                'A empresa possui práticas de gestão de risco ambiental?'),
-                        const Questions(
-                            question:
-                                'A empresa possui uma política de governança ambiental documentada?'),
-                        const Questions(
-                            question:
-                                'A empresa gerencia a conformidade com as leis e regulamentos ambientais?'),
-                        const Questions(
-                            question:
-                                'A empresa divulga relatórios de sustentabilidade ambiental?'),
-                        const Questions(
-                            question:
-                                'A empresa possui práticas de transparência em relação ao seu impacto ambiental?'),
-                        const Questions(
-                            question:
-                                'A empresa possui um comitê de sustentabilidade ou um departamento dedicado ao meio ambiente?'),
-                        const Questions(
-                            question:
-                                'A empresa lida com a responsabilidade ambiental na cadeia de suprimentos?'),
-                        const Questions(
-                            question:
-                                'A empresa promove a participação dos stakeholders nas decisões ambientais?'),
-                        const Questions(
-                            question:
-                                'A empresa tem políticas para prevenir e mitigar a poluição ambiental?'),
-                        const Questions(
-                            question:
-                                'A empresa gerencia e minimiza seu impacto ambiental ao longo do ciclo de vida dos produtos?'),
-                        const Questions(
-                            question:
-                                'A empresa possui programas de treinamento ambiental para os funcionários?'),
-                        const Questions(
-                            question:
-                                'A empresa possui estratégias para reduzir suas emissões de carbono?'),
-                        const Questions(
-                            question:
-                                'A empresa investe em tecnologias limpas e sustentáveis?'),
-                        const Questions(
-                            question:
-                                'A empresa mede e gerencia seu consumo de recursos naturais?'),
-                        const Questions(
-                            question:
-                                'A empresa divulga seu desempenho ambiental em relatórios públicos?'),
-                        const Questions(
-                            question:
-                                'A empresa possui práticas de responsabilidade ambiental em relação às comunidades locais?'),
-                        const Questions(
-                            question:
-                                'A empresa tem um histórico de iniciativas e projetos de conservação ambiental?'),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              PreviousPageButton(pageController: _pageController), // Botão de anterior
-                              SizedBox(width: 50),
-                              NextPageButton(pageController: _pageController), // Botão de próxima página
-                            ],
-                          ),
-                        ),
+                    child: ListView.builder(
+                      itemCount: EvaluationsQuestionsList.governmentQuestions.length,
+                      itemBuilder: (context, index) {
+                        // Aqui você deve pegar a resposta armazenada
+                        String savedAnswer = _answers.firstWhere(
+                          (ans) => ans.question_registered == EvaluationsQuestionsList.governmentQuestions[index],
+                          orElse: () => EvaluationAnswer(question_registered: EvaluationsQuestionsList.governmentQuestions[index], answer_registered: ''),
+                        ).answer_registered;
+
+                        return Questions(
+                          question: EvaluationsQuestionsList.governmentQuestions[index],
+                          onSelected: (answer) => _saveAnswer(EvaluationsQuestionsList.governmentQuestions[index], answer),
+                          selectedOption: savedAnswer, // Passa a resposta armazenada
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        PreviousPageButton(pageController: _pageController), // Botão de anterior
+                        SizedBox(width: 50),
+                        NextPageButton(pageController: _pageController), // Botão de próxima página
                       ],
                     ),
                   ),
@@ -335,81 +260,34 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     ),
                   ),
                   Expanded(
-                    child: ListView(
-                      children: [
-                        const Questions(
-                            question:
-                                'A empresa possui uma política ambiental clara e documentada?'),
-                        const Questions(
-                            question:
-                                'A empresa possui metas de redução de emissões de carbono?'),
-                        const Questions(
-                            question:
-                                'A empresa gerencia adequadamente seus resíduos sólidos?'),
-                        const Questions(
-                            question:
-                                'A empresa utiliza fontes de energia renovável?'),
-                        const Questions(
-                            question:
-                                'Existem programas de eficiência energética implementados na empresa?'),
-                        const Questions(
-                            question:
-                                'A empresa realiza auditorias ambientais regulares?'),
-                        const Questions(
-                            question:
-                                'A empresa gerencia seu consumo de água de forma sustentável?'),
-                        const Questions(
-                            question:
-                                'A empresa possui políticas de reciclagem em vigor?'),
-                        const Questions(
-                            question:
-                                'A empresa lida adequadamente com a poluição do ar e da água gerada por suas operações?'),
-                        const Questions(
-                            question:
-                                'A empresa tem iniciativas para conservar a biodiversidade?'),
-                        const Questions(
-                            question:
-                                'A empresa oferece programas de educação ambiental para os funcionários?'),
-                        const Questions(
-                            question:
-                                'A empresa divulga seu desempenho ambiental em relatórios de sustentabilidade?'),
-                        const Questions(
-                            question:
-                                'A empresa investe em tecnologias limpas e sustentáveis?'),
-                        const Questions(
-                            question:
-                                'A empresa possui certificações ambientais, como ISO 14001?'),
-                        const Questions(
-                            question:
-                                'A empresa trabalha para minimizar o impacto ambiental ao longo de sua cadeia de suprimentos?'),
-                        const Questions(
-                            question:
-                                'A empresa avalia e mitiga o impacto ambiental de novos projetos?'),
-                        const Questions(
-                            question:
-                                'A empresa participa de iniciativas ou colaborações globais para a sustentabilidade ambiental?'),
-                        const Questions(
-                            question:
-                                'A empresa possui estratégias para lidar com as mudanças climáticas?'),
-                        const Questions(
-                            question:
-                                'A empresa incentiva práticas sustentáveis entre seus clientes e fornecedores?'),
-                        const Questions(
-                            question:
-                                'A empresa possui um compromisso com a restauração de ecossistemas afetados por suas operações?'),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              PreviousPageButton(pageController: _pageController), // Botão de anterior
-                              SizedBox(width: 50),
-                              FinishButton(
-                                companyName: selectedCompany?.label ??
-                                'Nenhuma empresa selecionada',
-                              ),
-                            ],
-                          ),
+                    child: ListView.builder(
+                      itemCount: EvaluationsQuestionsList.environmentalQuestions.length,
+                      itemBuilder: (context, index) {
+                        // Aqui você deve pegar a resposta armazenada
+                        String savedAnswer = _answers.firstWhere(
+                          (ans) => ans.question_registered == EvaluationsQuestionsList.environmentalQuestions[index],
+                          orElse: () => EvaluationAnswer(question_registered: EvaluationsQuestionsList.environmentalQuestions[index], answer_registered: ''),
+                        ).answer_registered;
+
+                        return Questions(
+                          question: EvaluationsQuestionsList.environmentalQuestions[index],
+                          onSelected: (answer) => _saveAnswer(EvaluationsQuestionsList.environmentalQuestions[index], answer),
+                          selectedOption: savedAnswer, // Passa a resposta armazenada
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        PreviousPageButton(pageController: _pageController), // Botão de anterior
+                        SizedBox(width: 50),
+                        FinishButton(
+                          companyName: selectedCompany?.label ??
+                          'Nenhuma empresa selecionada',
+                          answers: _answers,
                         ),
                       ],
                     ),

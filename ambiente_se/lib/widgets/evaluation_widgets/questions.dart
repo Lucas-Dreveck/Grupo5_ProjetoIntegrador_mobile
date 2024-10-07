@@ -3,8 +3,15 @@ import 'package:flutter/material.dart';
 
 class Questions extends StatelessWidget {
   final String question;
+  final String selectedOption;
+  final ValueChanged<String> onSelected; // Callback para enviar a resposta selecionada
 
-  const Questions({Key? key, required this.question}) : super(key: key);
+  const Questions({
+    Key? key,
+    required this.question,
+    required this.onSelected,
+    this.selectedOption = '',
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +33,10 @@ class Questions extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          RadioOptions(), // Widget de opções de rádio para responder à question
+          EvaluationOptions(
+            onSelected: onSelected, // Passa o callback para o EvaluationOptions
+            selectedOption: selectedOption, // Passa a opção selecionada
+          ),
         ],
       ),
     );
