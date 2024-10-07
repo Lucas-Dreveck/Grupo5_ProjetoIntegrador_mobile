@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String backendUrl = '192.168.1.19:8080'; // Substitua pelo endereço IP do seu servidor
+const String backendUrl = '192.168.0.102:8080'; // Substitua pelo endereço IP do seu servidor
 
 
 class AppColors {
@@ -118,7 +118,22 @@ bool isValidCNPJ(String cnpj) {
     }
     return cep;
   }
-Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
+
+  String formatDate(String date) {
+    if (date == null || date.isEmpty) {
+      return '';
+    }
+    List<String> parts = date.split('/');
+    if (parts.length != 3) {
+      return '';
+    }
+    String day = parts[0].padLeft(2, '0');
+    String month = parts[1].padLeft(2, '0');
+    String year = parts[2];
+    return '$year-$month-$day';
+  }
+
+  Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
   Uri url;
   if (parameters != null) {
     url = Uri.http(backendUrl, endpoint, parameters);

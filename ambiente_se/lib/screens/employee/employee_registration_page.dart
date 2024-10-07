@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:ambiente_se/widgets/employee/employee_form.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +47,48 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
       return true;
     }
     return false;
+  }
+
+  void _save() {
+    final employeeData = {
+      "name": _nameController.text,
+      "cpf": _cpfController.text.replaceAll(RegExp(r'\D'), ''),
+      "email": _emailController.text,
+      "birthDate": formatDate(_birthDateController.text),
+      "user": {
+        "login": _loginController.text,
+        "password": _passwordController.text,
+        "isAdmin": _role == "gestor" ? true : false
+      },
+      "role": _role,
+    };
+
+    _registerEmployee(employeeData);
+  }
+
+  void _registerEmployee(Map<String, dynamic> employeeData) async {
+    const url = '/api/auth/Employee';
+    try {
+      final response = await makeHttpRequest(url,
+          method: 'POST', body: jsonEncode(employeeData));
+      if (response.statusCode == 200) {
+        AlertSnackBar.show(
+            context: context,
+            text: "Funcionário cadastrado com sucesso.",
+            backgroundColor: AppColors.green);
+        Navigator.of(context).pop();
+      } else {
+        AlertSnackBar.show(
+            context: context,
+            text: "Erro ao cadastrar funcionário.",
+            backgroundColor: AppColors.red);
+      }
+    } catch (e) {
+      AlertSnackBar.show(
+          context: context,
+          text: "Erro ao cadastrar funcionário",
+          backgroundColor: AppColors.red);
+    }
   }
 
   @override
@@ -98,7 +144,7 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
                         label: "Salvar",
                         onPressed: () {
                           if (verifyPage()) {
-                            _finish();
+                            _save();
                           }
                         },
                         color: const Color(0xFF0C9C6F),
