@@ -202,46 +202,57 @@ class EditCompanyPageState extends State<EditCompanyPage> {
   }
 
   void _fetchCompanyData() async {
-    //final response = await http.get(Uri.parse('https://api.example.com/empresa/${widget.id}'));
-
-    if (/*response.statusCode == 200 ||*/ true) {
-      final data = {
-        'nomeFantasia': 'Empresa Teste',
-        'cnpj': '10.436.497/0001-49',
-        'razaoSocial': 'Empresa Teste Ltda',
-        'inscricaoSocial': '123456789',
-        'ramo': 'Tecnologia',
-        'companySize': 'Pequeno',
-        'nomeSolicitante': 'João Silva',
-        'telefoneSolicitante': '+55 (11)98765-4321',
-        'emailEmpresa': 'contato@empresateste.com',
-        'telefoneEmpresa': '+55 (11)12345-6789',
-        'cep': '12345-678',
-        'cidade': 'São Paulo',
-        'logradouro': 'Rua Exemplo',
-        'bairro': 'Centro',
-        'numero': '01',
-        'uf': 'SP',
-      };
-      
+    final response = await makeHttpRequest('/api/auth/Company/${widget.id}');
+    if (response.statusCode == 200 ) {
+      final data = json.decode(utf8.decode(response.bodyBytes));
       setState(() {
-        _tradeNameController.text = data['nomeFantasia'].toString();
-        _cnpjController.text = data['cnpj'].toString();
-        _corporateNameController.text = data['razaoSocial'].toString();
-        _industryController.text = data['ramo'].toString();
-        _companySize = data['companySize'].toString();
-        _requesterNameController.text = data['nomeSolicitante'].toString();
-        _requesterPhoneController.text = data['telefoneSolicitante'].toString();
-        _companyEmailController.text = data['emailEmpresa'].toString();
-        _companyPhoneController.text = data['telefoneEmpresa'].toString();
-        _postalCodeController.text = data['cep'].toString();
-        _cityController.text = data['cidade'].toString();
-        _publicSpaceController.text = data['logradouro'].toString();
-        _neighborhoodController.text = data['bairro'].toString();
-        _numberController.text = data['numero'].toString();
-        _state = data['uf'].toString();
+        print('socialInscription: ${data['socialInscription']}');
+        _tradeNameController.text = data['tradeName']?.toString() ?? '';
+
+        print('cnpj: ${data['cnpj']}');
+
+        _cnpjController.text = formatCnpj(data['cnpj']?.toString() ?? '');
+
+        print('socialInscription: ${data['socialInscription']?.toString() ?? ''}');
+        _corporateNameController.text = data['socialInscription']?.toString() ?? '';
+
+        print('segment: ${data['segment']}');
+        _industryController.text = data['segment']?.toString() ?? '';
+
+        print('companySize: ${data['companySize']}');
+        _companySize = data['companySize']?.toString() ?? '';
+        print(_companySize);
+
+        print('applicantsName: ${data['applicantsName']}');
+        _requesterNameController.text = data['applicantsName']?.toString() ?? '';
+
+        print('applicantsPhone: ${data['applicantsPhone']}');
+        _requesterPhoneController.text = formatPhone(data['applicantsPhone']?.toString() ?? '');
+
+        print('email: ${data['email']}');
+        _companyEmailController.text = data['email']?.toString() ?? '';
+
+        print('companyPhone: ${data['companyPhone']}');
+        _companyPhoneController.text = formatPhone(data['companyPhone']?.toString() ?? '');
+
+        print('cep: ${data['addres']?['cep']}');
+        _postalCodeController.text = formatCep(data['addres']?['cep']?.toString() ?? '');
+
+        print('city: ${data['addres']?['city']}');
+        _cityController.text = data['addres']?['city']?.toString() ?? '';
+
+        print('patio: ${data['addres']?['patio']}');
+        _publicSpaceController.text = data['addres']?['patio']?.toString() ?? '';
+
+        print('neighborhood: ${data['addres']?['neighborhood']}');
+        _neighborhoodController.text = data['addres']?['neighborhood']?.toString() ?? '';
+
+        print('number: ${data['addres']?['number']}');
+        _numberController.text = data['addres']?['number']?.toString() ?? '';
+
+        print('uf: ${data['addres']?['uf']}');
+        _state = data['addres']?['uf']?.toString() ?? '';
       });
-    // ignore: dead_code
     } else {
       AlertSnackBar.show(context: context, text: "Ocorreu um erro ao buscar dados da empresa.",);
     }
@@ -270,7 +281,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
         children: [
           Column(
             children: [ 
-              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updatecompanySize, isEditing: true,),
+              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updatecompanySize, isEditing: true, key: UniqueKey(),), 
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

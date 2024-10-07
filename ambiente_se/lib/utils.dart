@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+const String backendUrl = '192.168.1.19:8080'; // Substitua pelo endereço IP do seu servidor
+
 
 class AppColors {
   static const Color blue = Color(0xFF0077C8);
@@ -61,4 +67,118 @@ bool isValidCNPJ(String cnpj) {
 
   // Compara os dígitos calculados com os dígitos fornecidos
   return cnpj.endsWith('$firstDigit$secondDigit');
+}    
+
+
+  formatCnpj(cnpj){
+    if (cnpj == null) {
+      return '';
+    }
+    print(cnpj);
+    cnpj = cnpj.replaceAll(RegExp(r'[^0-9]'), '');
+    if(cnpj.length > 2){
+      cnpj = cnpj.substring(0, 2) + '.' + cnpj.substring(2);
+    }
+    if(cnpj.length > 6){
+      cnpj = cnpj.substring(0, 6) + '.' + cnpj.substring(6);
+    }
+    if(cnpj.length > 10){
+      cnpj = cnpj.substring(0, 10) + '/' + cnpj.substring(10);
+    }
+    if(cnpj.length > 15){
+      cnpj = cnpj.substring(0, 15) + '-' + cnpj.substring(15);
+    }
+    return cnpj;
+  }
+
+  String formatPhone(String phone) {
+    if (phone == null) {
+      return '';
+    }
+    phone = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    if (phone.length > 0) {
+      phone = '+' + phone.substring(0, 2) + ' (' + phone.substring(2);
+    }
+    if (phone.length > 6) {
+      phone = phone.substring(0, 6) + ') ' + phone.substring(6);
+    }
+    if (phone.length > 12) {
+      phone = phone.substring(0, 11) + '-' + phone.substring(11);
+    }
+    return phone;
+  }
+
+  String formatCep(String cep) {
+    if (cep == null) {
+      return '';
+    }
+    cep = cep.replaceAll(RegExp(r'[^0-9]'), '');
+    if (cep.length > 5) {
+      cep = cep.substring(0, 5) + '-' + cep.substring(5);
+    }
+    return cep;
+  }
+Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
+  Uri url;
+  if (parameters != null) {
+    url = Uri.http(backendUrl, endpoint, parameters);
+  } else {
+    url = Uri.http(backendUrl, endpoint);
+  }
+
+  String token;
+  print(url);
+  http.Response response;
+
+
+  Map<String, String> authBody = {
+    "login": "root",
+    "password": "root"
+  };
+  Map<String, String> headers = {
+    'Content-Type': 'application/json'
+  };
+
+  try{
+    response = await http.post(Uri.parse("http://$backendUrl/api/login"), body: jsonEncode(authBody), headers: headers);
+  } catch (e) {
+    print('Error making HTTP auth request: $e');
+    rethrow;
+  }
+
+  final Map<String, dynamic> responseBody = jsonDecode(response.body);
+  token = "Bearer ${responseBody['token']}";
+  headers = {
+    'Content-Type': 'application/json',
+    'Authorization': token,
+  };
+
+  try{
+    switch (method.toUpperCase()) {
+      case 'POST':
+        
+        response = await http.post(url, headers: headers, body: body);
+        break;
+      case 'PUT':
+        response = await http.put(url, headers: headers, body: body);
+        break;
+      case 'DELETE':
+        response = await http.delete(url, headers: headers, body: body);
+        break;
+      case 'GET':
+      default:
+        response = await http.get(url, headers: headers);
+        break;
+    }
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response;
+    } else {
+      throw Exception('Failed to load data: ${response.statusCode}');
+    } 
+  } catch (e) {
+    print('Error making HTTP request: $e');
+    rethrow;
+  };
 }
+
