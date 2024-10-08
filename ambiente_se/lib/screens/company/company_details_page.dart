@@ -5,7 +5,7 @@ import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:ambiente_se/widgets/default/default_modal.dart';
 import 'package:ambiente_se/widgets/default/default_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CompanyDetailsPage extends StatefulWidget {
   const CompanyDetailsPage({super.key, required this.id});
@@ -18,7 +18,6 @@ class CompanyDetailsPage extends StatefulWidget {
 
 class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   late int id;
-
   late TextEditingController cnpjController;
   late TextEditingController corporateNameController;
   late TextEditingController industryController;
@@ -46,22 +45,17 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   }
 
   Future<void> fetchCompanyData() async {
-    const uri = "https://ca59c6680290df512b38.free.beeceptor.com";
-    //const uri1 = 'https://api.exemplo.com/empresa/${widget.id}';
-    final response = await http.get(Uri.parse(uri));
+    final response = await makeHttpRequest("/api/auth/Company/$id");
 
     if (response.statusCode == 200 || 1==1) {
-      //final data = json.decode(response.body);
-      final data = {};
-      data['cnpj'] = '12345678000195';
-      data['razaoSocial'] = 'Empresa Exemplo Ltda';
-      data['ramo'] = 'Tecnologia';
-      data['nomeFantasia'] = 'Empresa Exemplo';
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      var cnpj = data['cnpj'];
       setState(() {
-        cnpjController.text = data['cnpj'];
-        corporateNameController.text = data['razaoSocial'];
-        industryController.text = data['ramo'];
-        tradeNameController.text = data['nomeFantasia'];
+
+        cnpjController.text = formatCnpj(cnpj);
+        tradeNameController.text = data['tradeName'] ?? '';
+        corporateNameController.text = data['socialInscription'] ?? '';
+        industryController.text = data['segment'] ?? '';
       });
 
 
@@ -71,21 +65,15 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage> {
   }
 
   Future<void> _delete() async {
-    //final response = await http.delete(Uri.parse('https://api.exemplo.com/empresa/${widget.id}'));
-    // final response = await http.delete(Uri.parse('https://ca59c6680290df512b38.free.beeceptor.com'));
+    final response = await makeHttpRequest("/api/auth/Company/$id", method: 'DELETE');
 
-    // if (response.statusCode == 200) {
-    //   Navigator.of(context).pop();
-    // } else {
-    //   throw Exception('Failed to delete empresa');
-    // } 
-
-
-    AlertSnackBar.show(context: context, text: "Empresa deletada com sucesso.", backgroundColor: AppColors.green);
-    Future.delayed(const Duration(seconds: 2), () {
+    if (response.statusCode == 200) {
+      AlertSnackBar.show(context: context, text: "Empresa deletada com sucesso.", backgroundColor: AppColors.green);
       Navigator.of(context).pop();
-    });
-    Navigator.of(context).pop();
+    } else {
+      AlertSnackBar.show(context: context, text: "Erro ao deletar empresa.", backgroundColor: AppColors.red);
+      throw Exception('Failed to delete empresa');
+    } 
   }
 
   @override

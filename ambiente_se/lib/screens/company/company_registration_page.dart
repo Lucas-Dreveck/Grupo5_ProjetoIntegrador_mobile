@@ -6,6 +6,7 @@ import 'package:ambiente_se/widgets/company/company_form_two.dart';
 import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 
 
@@ -168,65 +169,44 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
  
   void _save() {
     final empresaData = {
-      "nomeFantasia": _tradeNameController.text,
-      "nomeSolicitante": _requesterNameController.text,
-      "telefoneSolicitante": _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
-      "razaoSocial": _corporateNameController.text,
+      "tradeName": _tradeNameController.text,
+      "applicantsName": _requesterNameController.text,
+      "applicantsPhone": _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      "companyName": _corporateNameController.text,
       "cnpj": _cnpjController.text.replaceAll(RegExp(r'\D'), ''),
-      "inscricaoSocial": null,
-      "endereco": {
-      "cep": _postalCodeController.text.replaceAll(RegExp(r'\D'), ''),
-      "numero": _numberController.text.replaceAll(RegExp(r'\D'), ''), // Assuming you have a field for the number, replace 1 with the actual value
-      "logradouro": _publicSpaceController.text,
-      "complemento": null,
-      "cidade": _cityController.text,
-      "bairro": _neighborhoodController.text,
-      "uf": _state,
+      "socialInscription": "1",
+      "address": {
+        "id": 0,
+        "cep": _postalCodeController.text.replaceAll(RegExp(r'\D'), ''),
+        "number": int.tryParse(_numberController.text.replaceAll(RegExp(r'\D'), '')) ?? 0,
+        "patio": _publicSpaceController.text,
+        "complement": "",
+        "city": _cityController.text,
+        "neighborhood": _neighborhoodController.text,
+        "uf": _state,
       },
       "email": _companyEmailController.text,
-      "telefoneEmpresas": _companyPhoneController.text.replaceAll(RegExp(r'\D'), ''),
-      "ramo": _industryController.text,
-      "companySizeEmpresas": _companySize,
-      "ranking": null // Assuming ranking is not provided
-        };
+      "companyPhone": _companyPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      "segment": _industryController.text,
+      "companySize": _companySize,
+    };
 
     _registerCompany(empresaData);
-  
   }
 
   void _registerCompany(Map<String, dynamic> empresaData) async {
-    // final url = Uri.parse('http://localhost:8080/auth/Empresa/Add');
-    // var globalToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyb290IiwiY2FyZ28iOiJBZG1pbiIsImV4cCI6MTcyNjYyNDM3OH0.AXlyzVu09SvQGhhCNkhGNGD_QiY7UXa3FynlkK2ZplM";
-    // try {
-    //   final response = await http.post(
-    //     url,
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       "Authorization": globalToken,
-    //     },
-    //     body: json.encode(empresaData),
-    //   );
-
-    //   if (response.statusCode == 200) {
-    //     if(context.mounted){
-    //       AlertSnackBar.show(context: context, text: "Empresa cadastrada com sucesso.", backgroundColor: AppColors.green);
-    //       Navigator.of(context).pop();
-    //     }
-    //   } else {
-    //     if(context.mounted){
-    //       AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa: ${response.statusCode}", backgroundColor: AppColors.red);
-    //     }
-    //   }
-    // } catch (e) {
-    //   if(context.mounted){
-    //     AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa: $e", backgroundColor: AppColors.red);
-    //   }
-    // }
-    AlertSnackBar.show(context: context, text: "Empresa cadastrada com sucesso.", backgroundColor: AppColors.green);
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop();
-    });
-    Navigator.of(context).pop();
+    const url = '/api/auth/Company';
+    try {
+      final response = await makeHttpRequest(url, method: 'POST', body: jsonEncode(empresaData));
+      if (response.statusCode == 200) {
+        AlertSnackBar.show(context: context, text: "Empresa cadastrada com sucesso.", backgroundColor: AppColors.green);
+        Navigator.of(context).pop();
+      } else {
+        AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa.", backgroundColor: AppColors.red);
+      }
+    } catch (e) {
+      AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa: cnpj já cadastrado", backgroundColor: AppColors.red);
+    }
   }
 
   @override
@@ -265,7 +245,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
         children: [
           Column(
             children: [ 
-              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updateCompanySize,),
+              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updateCompanySize, key: UniqueKey(),),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -308,7 +288,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
           // Pagina 2
           Column(
             children: [
-              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController),
+              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController, key: UniqueKey(),),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
