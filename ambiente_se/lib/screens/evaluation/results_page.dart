@@ -27,6 +27,40 @@ class ResultsPage extends StatelessWidget {
             _buildResultsCategory('Social', EvaluationsQuestionsList.socialQuestions, const Color.fromRGBO(240, 135, 11, 1.0)),
             _buildResultsCategory('Governamental', EvaluationsQuestionsList.governmentQuestions, const Color.fromRGBO(0, 113, 191, 1.0)),
             _buildResultsCategory('Ambiental', EvaluationsQuestionsList.environmentalQuestions, const Color.fromRGBO(106, 192, 74, 1.0)),
+            const SizedBox(height: 5),
+            ElevatedButton(
+              onPressed: () {
+                // Ação simples: exibir um SnackBar
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Download iniciado!'), // Mensagem a ser exibida
+                    duration: Duration(seconds: 2), // Duração do SnackBar
+                  ),
+                );
+              },
+              child: Text(
+                'Baixar',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent, // Cor de fundo igual ao fundo
+                foregroundColor: Colors.black, // Cor do texto
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0), // Bordas arredondadas
+                  side: BorderSide(
+                    color: Color.fromRGBO(192, 188, 188, 1), // Cor da borda
+                    width: 1.0, // Largura da borda
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0), // Ajusta o padding para formar quase um quadrado
+              ).copyWith(
+                elevation: MaterialStateProperty.all(0), // Remove a sombra
+              ),
+            ),
+            const SizedBox(height: 5),
           ],
         ),
       ),
