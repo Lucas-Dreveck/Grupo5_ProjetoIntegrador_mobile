@@ -1,22 +1,21 @@
-import 'package:ambiente_se/screens/home/home.dart';
+import 'package:ambiente_se/screens/login/login.dart';
 import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/forgot_password.dart';
-import 'package:ambiente_se/widgets/login_widgets/login_button.dart';
 import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/password_field.dart';
+import 'package:ambiente_se/widgets/login_widgets/recuperar_senha_button.dart';
+import 'package:ambiente_se/widgets/login_widgets/voltar_login.dart';
 import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/screens/login/login_recuperar_senha.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class LoginRecuperarSenha extends StatefulWidget {
+  const LoginRecuperarSenha({Key? key}) : super(key: key);
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginRecuperarSenhaState createState() => _LoginRecuperarSenhaState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginRecuperarSenhaState extends State<LoginRecuperarSenha> {
   final TextEditingController _emailController = TextEditingController();
+  String? _errorText;
 
   @override
   void dispose() {
@@ -24,12 +23,28 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  Future<void> _recuperarSenha() async {
+    setState(() {
+      if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
+        _errorText = 'Please enter a valid email';
+      } else {
+        _errorText = null;
+      }
+    });
+
+    if (_errorText == null) {
+      // Simulate async operation
+      await Future.delayed(const Duration(seconds: 2));
+      // TODO: Implement recuperar senha logic
+      print('Email: ${_emailController.text}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -38,7 +53,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          // White overlay with wave
           Positioned(
             bottom: 0,
             left: 0,
@@ -50,7 +64,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          // Content
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -68,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'ACESSE A SUA CONTA',
+                    'RECUPERE A SUA SENHA',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -76,28 +89,18 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 22),
-                  EmailField(
-                    controller: _emailController,
-                  ),
-                  const SizedBox(height: 20),
-                  const PasswordField(),
+                  EmailField(controller: _emailController, errorText: _errorText),
                   const SizedBox(height: 60),
-                  LoginButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Home()),
-                      );
-                    },
+                  RecuperarSenhaButton(
+                    onPressed: _recuperarSenha,
                   ),
                   const SizedBox(height: 14),
-                  ForgotPassword(
+                  VoltarLogin(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginRecuperarSenha()),
+                        MaterialPageRoute(builder: (context) => LoginPage()),
                       );
-                      // TODO: Implement forgot password logic
                     },
                   ),
                 ],
