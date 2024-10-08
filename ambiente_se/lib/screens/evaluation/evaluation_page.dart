@@ -26,14 +26,17 @@ enum SelectCompany {
 }
 
 class _EvaluationPageState extends State<EvaluationPage> {
-  final TextEditingController SelectCompanyController = TextEditingController();
+  final TextEditingController selectCompanyController = TextEditingController();
   SelectCompany? selectedCompany;
   PageController _pageController = PageController();
-  // PageController _pageController = PageController(initialPage: 4, keepPage: false);
   int currentPage = 0;
 
-  // Armazenar as respostas
-  List<EvaluationAnswer> _answers = [];
+  // Map para armazenar respostas por categoria
+  Map<String, List<EvaluationAnswer>> _categoryAnswers = {
+    'Social': [],
+    'Governamental': [],
+    'Ambiental': [],
+  };
 
   @override
   void dispose() {
@@ -41,20 +44,32 @@ class _EvaluationPageState extends State<EvaluationPage> {
     super.dispose();
   }
 
-  // Função para salvar uma resposta
-  void _saveAnswer(String question, String answer) {
-    final existingAnswer = _answers.firstWhere(
+  // Função para salvar respostas categorizadas
+  void _saveAnswer(String category, String question, String answer) {
+    final List<EvaluationAnswer> categoryAnswerList = _categoryAnswers[category]!;
+
+    final existingAnswer = categoryAnswerList.firstWhere(
       (ans) => ans.question_registered == question,
       orElse: () => EvaluationAnswer(question_registered: question, answer_registered: answer),
     );
 
     setState(() {
-      if (_answers.contains(existingAnswer)) {
-        existingAnswer.answer_registered = answer; // Atualiza a resposta
+      if (categoryAnswerList.contains(existingAnswer)) {
+        existingAnswer.answer_registered = answer;
       } else {
-        _answers.add(EvaluationAnswer(question_registered: question, answer_registered: answer)); // Adiciona nova resposta
+        categoryAnswerList.add(EvaluationAnswer(question_registered: question, answer_registered: answer));
       }
     });
+  }
+
+  // Função para calcular a porcentagem de respostas "Conforme" por categoria
+  double _calculatePercentageForCategory(String category, List<String> questions) {
+    List<EvaluationAnswer> answers = _categoryAnswers[category]!;
+    int totalQuestions = questions.length;
+    int correctAnswers = answers.where((answer) => answer.answer_registered == 'Conforme').length;
+
+    if (totalQuestions == 0) return 0;
+    return (correctAnswers / totalQuestions) * 100;
   }
 
   @override
@@ -87,7 +102,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       children: <Widget>[
                         DropdownMenu<SelectCompany>(
                           initialSelection: SelectCompany.selecionar,
-                          controller: SelectCompanyController,
+                          controller: selectCompanyController,
                           requestFocusOnTap: true,
                           onSelected: (SelectCompany? company) {
                             setState(() {
@@ -117,7 +132,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
                           selectedCompany != SelectCompany.selecionar
                         ) ? () {
                           if (currentPage < 3) {
-                            // Verifica se não está na última página
                             _pageController.nextPage(
                               duration: Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
@@ -126,13 +140,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
                               currentPage++;
                             });
                           } else {
-                            // Se estiver na última página, navega para a RestultsPage
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ResultsPage(
                                   companyName: selectedCompany?.label ?? 'Nenhuma empresa selecionada',
-                                  answers: _answers,
+                                  categoryAnswers: _categoryAnswers,
                                 ),
                               ),
                             );
@@ -165,16 +178,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     child: ListView.builder(
                       itemCount: EvaluationsQuestionsList.socialQuestions.length,
                       itemBuilder: (context, index) {
-                        // Aqui você deve pegar a resposta armazenada
-                        String savedAnswer = _answers.firstWhere(
+                        String savedAnswer = _categoryAnswers['Social']!.firstWhere(
                           (ans) => ans.question_registered == EvaluationsQuestionsList.socialQuestions[index],
                           orElse: () => EvaluationAnswer(question_registered: EvaluationsQuestionsList.socialQuestions[index], answer_registered: ''),
                         ).answer_registered;
 
                         return Questions(
                           question: EvaluationsQuestionsList.socialQuestions[index],
-                          onSelected: (answer) => _saveAnswer(EvaluationsQuestionsList.socialQuestions[index], answer),
-                          selectedOption: savedAnswer, // Passa a resposta armazenada
+                          onSelected: (answer) => _saveAnswer('Social', EvaluationsQuestionsList.socialQuestions[index], answer),
+                          selectedOption: savedAnswer,
                         );
                       },
                     ),
@@ -215,16 +227,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     child: ListView.builder(
                       itemCount: EvaluationsQuestionsList.governmentQuestions.length,
                       itemBuilder: (context, index) {
-                        // Aqui você deve pegar a resposta armazenada
-                        String savedAnswer = _answers.firstWhere(
+                        String savedAnswer = _categoryAnswers['Governamental']!.firstWhere(
                           (ans) => ans.question_registered == EvaluationsQuestionsList.governmentQuestions[index],
                           orElse: () => EvaluationAnswer(question_registered: EvaluationsQuestionsList.governmentQuestions[index], answer_registered: ''),
                         ).answer_registered;
 
                         return Questions(
                           question: EvaluationsQuestionsList.governmentQuestions[index],
-                          onSelected: (answer) => _saveAnswer(EvaluationsQuestionsList.governmentQuestions[index], answer),
-                          selectedOption: savedAnswer, // Passa a resposta armazenada
+                          onSelected: (answer) => _saveAnswer('Governamental', EvaluationsQuestionsList.governmentQuestions[index], answer),
+                          selectedOption: savedAnswer,
                         );
                       },
                     ),
@@ -234,15 +245,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        PreviousPageButton(pageController: _pageController), // Botão de anterior
+                        PreviousPageButton(pageController: _pageController),
                         SizedBox(width: 50),
-                        NextPageButton(pageController: _pageController), // Botão de próxima página
+                        NextPageButton(pageController: _pageController),
                       ],
                     ),
                   ),
                 ],
               ),
-// Quarta página
+// Quarta página: Perguntas ambientais
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
@@ -263,16 +274,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     child: ListView.builder(
                       itemCount: EvaluationsQuestionsList.environmentalQuestions.length,
                       itemBuilder: (context, index) {
-                        // Aqui você deve pegar a resposta armazenada
-                        String savedAnswer = _answers.firstWhere(
+                        String savedAnswer = _categoryAnswers['Ambiental']!.firstWhere(
                           (ans) => ans.question_registered == EvaluationsQuestionsList.environmentalQuestions[index],
                           orElse: () => EvaluationAnswer(question_registered: EvaluationsQuestionsList.environmentalQuestions[index], answer_registered: ''),
                         ).answer_registered;
 
                         return Questions(
                           question: EvaluationsQuestionsList.environmentalQuestions[index],
-                          onSelected: (answer) => _saveAnswer(EvaluationsQuestionsList.environmentalQuestions[index], answer),
-                          selectedOption: savedAnswer, // Passa a resposta armazenada
+                          onSelected: (answer) => _saveAnswer('Ambiental', EvaluationsQuestionsList.environmentalQuestions[index], answer),
+                          selectedOption: savedAnswer,
                         );
                       },
                     ),
@@ -282,13 +292,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        PreviousPageButton(pageController: _pageController), // Botão de anterior
+                        PreviousPageButton(pageController: _pageController),
                         SizedBox(width: 50),
                         FinishButton(
-                          companyName: selectedCompany?.label ??
-                          'Nenhuma empresa selecionada',
-                          answers: _answers,
-                        ),
+                          pageController: _pageController,
+                          label: 'Finalizar',
+                          companyName: selectedCompany?.label ?? 'Nenhuma empresa selecionada',
+                          answers: _categoryAnswers,
+                        )
                       ],
                     ),
                   ),

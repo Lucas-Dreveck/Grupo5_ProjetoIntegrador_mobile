@@ -5,9 +5,9 @@ import 'package:percent_indicator/percent_indicator.dart';
 
 class ResultsPage extends StatelessWidget {
   final String companyName;
-  final List<EvaluationAnswer> answers;
+  final Map<String, List<EvaluationAnswer>> categoryAnswers; // Agora usa um Map de respostas categorizadas
 
-  const ResultsPage({Key? key, required this.companyName, required this.answers}) : super(key: key);
+  const ResultsPage({Key? key, required this.companyName, required this.categoryAnswers}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +24,9 @@ class ResultsPage extends StatelessWidget {
             const SizedBox(height: 20),
             _buildPercentageRow(),
             const SizedBox(height: 20),
-            _buildResultsCategory(EvaluationsQuestionsList.socialQuestions, const Color.fromRGBO(240, 135, 11, 1.0)),
-            _buildResultsCategory(EvaluationsQuestionsList.governmentQuestions, const Color.fromRGBO(0, 113, 191, 1.0)),
-            _buildResultsCategory(EvaluationsQuestionsList.environmentalQuestions, const Color.fromRGBO(106, 192, 74, 1.0)),
+            _buildResultsCategory('Social', EvaluationsQuestionsList.socialQuestions, const Color.fromRGBO(240, 135, 11, 1.0)),
+            _buildResultsCategory('Governamental', EvaluationsQuestionsList.governmentQuestions, const Color.fromRGBO(0, 113, 191, 1.0)),
+            _buildResultsCategory('Ambiental', EvaluationsQuestionsList.environmentalQuestions, const Color.fromRGBO(106, 192, 74, 1.0)),
           ],
         ),
       ),
@@ -55,14 +55,26 @@ class ResultsPage extends StatelessWidget {
   }
 
   Widget _buildPercentageRow() {
+    // Calcula a porcentagem de cada categoria com base nas respostas
+    double socialPercentage = _calculatePercentage(EvaluationsQuestionsList.socialQuestions, categoryAnswers['Social']!);
+    double governmentalPercentage = _calculatePercentage(EvaluationsQuestionsList.governmentQuestions, categoryAnswers['Governamental']!);
+    double environmentalPercentage = _calculatePercentage(EvaluationsQuestionsList.environmentalQuestions, categoryAnswers['Ambiental']!);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildPercentageAccordance('Social', 100, const Color.fromRGBO(240, 135, 11, 1.0)),
-        _buildPercentageAccordance('Governamental', 100, const Color.fromRGBO(0, 119, 200, 1.0)),
-        _buildPercentageAccordance('Ambiental', 100, const Color.fromRGBO(106, 192, 74, 1.0)),
+        _buildPercentageAccordance('Social', socialPercentage, const Color.fromRGBO(240, 135, 11, 1.0)),
+        _buildPercentageAccordance('Governamental', governmentalPercentage, const Color.fromRGBO(0, 119, 200, 1.0)),
+        _buildPercentageAccordance('Ambiental', environmentalPercentage, const Color.fromRGBO(106, 192, 74, 1.0)),
       ],
     );
+  }
+
+  // Função para calcular a porcentagem de conformidade com base nas respostas "Conforme"
+  double _calculatePercentage(List<String> questions, List<EvaluationAnswer> answers) {
+    if (questions.isEmpty) return 0;
+    int conformeCount = answers.where((answer) => answer.answer_registered == 'Conforme').length;
+    return (conformeCount / questions.length) * 100;
   }
 
   // Função para mostrar a porcentagem de conformidade por categoria com cor específica
@@ -93,7 +105,7 @@ class ResultsPage extends StatelessWidget {
   }
 
   // Função para construir as seções de cada categoria com cor específica
-  Widget _buildResultsCategory(List<String> questions, Color color) {
+  Widget _buildResultsCategory(String category, List<String> questions, Color color) {
     List<TableRow> rows = [
       _buildHeaderRow(),
     ];
@@ -101,7 +113,11 @@ class ResultsPage extends StatelessWidget {
     bool alternate = true; // Variável para alternar cores das linhas
 
     for (String question in questions) {
-      final answer = answers.firstWhere((a) => a.question_registered == question, orElse: () => EvaluationAnswer(question_registered: question, answer_registered: 'N/A')); // Substitua 'N/A' por um valor padrão, se necessário
+      final answer = categoryAnswers[category]?.firstWhere(
+        (a) => a.question_registered == question,
+        orElse: () => EvaluationAnswer(question_registered: question, answer_registered: 'N/A'),
+      ) ?? EvaluationAnswer(question_registered: question, answer_registered: 'N/A'); // Substitua 'N/A' por um valor padrão, se necessário
+
       rows.add(
         TableRow(
           children: [
