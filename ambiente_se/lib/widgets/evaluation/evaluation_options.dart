@@ -5,11 +5,11 @@ class EvaluationOptions extends StatefulWidget {
   final ValueChanged<String>? onSelected; // Adiciona um callback
 
   const EvaluationOptions({
-    Key? key,
+    super.key,
     this.options = const ['Conforme', 'Não Conforme', 'Não Aplicável'],
     this.selectedOption = '',
     this.onSelected, // Inicializa o callback
-  }) : super(key: key);
+  });
 
   @override
   _EvaluationOptionsState createState() => _EvaluationOptionsState();

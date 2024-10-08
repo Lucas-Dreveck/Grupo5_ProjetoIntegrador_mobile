@@ -1,6 +1,6 @@
 import 'package:ambiente_se/screens/evaluation/results_page.dart';
 import 'package:ambiente_se/widgets/custom_button.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/evaluation_answer.dart';
+import 'package:ambiente_se/widgets/evaluation/evaluation_answer.dart';
 import 'package:flutter/material.dart';
 
 class FinishButton extends StatelessWidget {
@@ -10,12 +10,12 @@ class FinishButton extends StatelessWidget {
   final String label;
 
   const FinishButton({
-    Key? key,
+    super.key,
     required this.companyName,
     required this.answers,
     required this.pageController,
     required this.label,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

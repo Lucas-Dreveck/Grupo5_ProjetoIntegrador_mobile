@@ -9,13 +9,13 @@ class NextPageButton extends StatelessWidget {
   final double height;
 
   const NextPageButton({
-    Key? key,
+    super.key,
     required this.pageController,
     this.label = 'Próxima',
     this.color = Colors.blue,
     this.width = 200,
     this.height = 50,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,7 @@
-import 'package:ambiente_se/widgets/evaluation_widgets/evaluation_answer.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/evaluations_questions_list.dart';
+// ignore_for_file: unnecessary_const
+
+import 'package:ambiente_se/widgets/evaluation/evaluation_answer.dart';
+import 'package:ambiente_se/widgets/evaluation/evaluations_questions_list.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
@@ -7,7 +9,7 @@ class ResultsPage extends StatelessWidget {
   final String companyName;
   final Map<String, List<EvaluationAnswer>> categoryAnswers; // Agora usa um Map de respostas categorizadas
 
-  const ResultsPage({Key? key, required this.companyName, required this.categoryAnswers}) : super(key: key);
+  const ResultsPage({super.key, required this.companyName, required this.categoryAnswers});
 
   @override
   Widget build(BuildContext context) {
@@ -32,32 +34,32 @@ class ResultsPage extends StatelessWidget {
               onPressed: () {
                 // Ação simples: exibir um SnackBar
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Download iniciado!'), // Mensagem a ser exibida
+                  const SnackBar(
+                    content: const Text('Download iniciado!'), // Mensagem a ser exibida
                     duration: Duration(seconds: 2), // Duração do SnackBar
                   ),
                 );
               },
-              child: Text(
-                'Baixar',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 24,
-                ),
-              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent, // Cor de fundo igual ao fundo
                 foregroundColor: Colors.black, // Cor do texto
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0), // Bordas arredondadas
-                  side: BorderSide(
+                  side: const BorderSide(
                     color: Color.fromRGBO(192, 188, 188, 1), // Cor da borda
                     width: 1.0, // Largura da borda
                   ),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0), // Ajusta o padding para formar quase um quadrado
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0), // Ajusta o padding para formar quase um quadrado
               ).copyWith(
-                elevation: MaterialStateProperty.all(0), // Remove a sombra
+                elevation: WidgetStateProperty.all(0), // Remove a sombra
+              ),
+              child: const Text(
+                'Baixar',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                ),
               ),
             ),
             const SizedBox(height: 5),
@@ -70,7 +72,7 @@ class ResultsPage extends StatelessWidget {
   Widget _buildHeader() {
     return Column(
       children: [
-        CircleAvatar(
+        const CircleAvatar(
           radius: 80,
           backgroundColor: Colors.black,
           child: CircleAvatar(
@@ -178,7 +180,7 @@ class ResultsPage extends StatelessWidget {
                 0: FlexColumnWidth(2),
                 1: FlexColumnWidth(1),
               },
-              border: TableBorder(
+              border: const TableBorder(
                 verticalInside: BorderSide(color: Colors.black, width: 0.5),
               ),
               children: rows,
@@ -215,6 +217,7 @@ class ResultsPage extends StatelessWidget {
     return Container(
       color: alternate ? color.withOpacity(1.0) : color.withOpacity(0.5),
       padding: const EdgeInsets.all(12.0),
+      height: 90,
       child: Center(
         child: Text(
           content,
@@ -222,7 +225,6 @@ class ResultsPage extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ),
-      height: 90,
     );
   }
 }

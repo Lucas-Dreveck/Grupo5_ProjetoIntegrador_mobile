@@ -1,11 +1,11 @@
 import 'package:ambiente_se/screens/evaluation/results_page.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/evaluation_answer.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/evaluations_questions_list.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/finish_button.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/questions.dart';
+import 'package:ambiente_se/widgets/evaluation/evaluation_answer.dart';
+import 'package:ambiente_se/widgets/evaluation/evaluations_questions_list.dart';
+import 'package:ambiente_se/widgets/evaluation/finish_button.dart';
+import 'package:ambiente_se/widgets/evaluation/questions.dart';
 import 'package:ambiente_se/widgets/custom_button.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/next_page_button.dart';
-import 'package:ambiente_se/widgets/evaluation_widgets/previous_page_button.dart';
+import 'package:ambiente_se/widgets/evaluation/next_page_button.dart';
+import 'package:ambiente_se/widgets/evaluation/previous_page_button.dart';
 import 'package:flutter/material.dart';
 
 class EvaluationPage extends StatefulWidget {
@@ -28,11 +28,11 @@ enum SelectCompany {
 class _EvaluationPageState extends State<EvaluationPage> {
   final TextEditingController selectCompanyController = TextEditingController();
   SelectCompany? selectedCompany;
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
   int currentPage = 0;
 
   // Map para armazenar respostas por categoria
-  Map<String, List<EvaluationAnswer>> _categoryAnswers = {
+  final Map<String, List<EvaluationAnswer>> _categoryAnswers = {
     'Social': [],
     'Governamental': [],
     'Ambiental': [],
@@ -62,16 +62,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
     });
   }
 
-  // Função para calcular a porcentagem de respostas "Conforme" por categoria
-  double _calculatePercentageForCategory(String category, List<String> questions) {
-    List<EvaluationAnswer> answers = _categoryAnswers[category]!;
-    int totalQuestions = questions.length;
-    int correctAnswers = answers.where((answer) => answer.answer_registered == 'Conforme').length;
-
-    if (totalQuestions == 0) return 0;
-    return (correctAnswers / totalQuestions) * 100;
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -82,13 +72,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
         body: SafeArea(
           child: PageView(
             controller: _pageController,
-            physics: NeverScrollableScrollPhysics(), // Desativa o deslizar manual
+            physics: const NeverScrollableScrollPhysics(), // Desativa o deslizar manual
             children: [
 // Primeira página: Escolha da empresa
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     'Escolha a empresa para a avaliação',
                     style: TextStyle(
                       fontSize: 24, 
@@ -133,7 +123,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                         ) ? () {
                           if (currentPage < 3) {
                             _pageController.nextPage(
-                              duration: Duration(milliseconds: 500),
+                              duration: const Duration(milliseconds: 500),
                               curve: Curves.easeInOut,
                             );
                             setState(() {
@@ -161,10 +151,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
                   ),
-                  Align(
+                  const Align(
                     alignment: Alignment.topCenter,
                     child: Text(
                       'Social',
@@ -210,10 +200,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
                   ),
-                  Align(
+                  const Align(
                     alignment: Alignment.topCenter,
                     child: Text(
                       'Governamental',
@@ -246,7 +236,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         PreviousPageButton(pageController: _pageController),
-                        SizedBox(width: 50),
+                        const SizedBox(width: 50),
                         NextPageButton(pageController: _pageController),
                       ],
                     ),
@@ -257,10 +247,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
                   ),
-                  Align(
+                  const Align(
                     alignment: Alignment.topCenter,
                     child: Text(
                       'Ambiental',
@@ -293,7 +283,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         PreviousPageButton(pageController: _pageController),
-                        SizedBox(width: 50),
+                        const SizedBox(width: 50),
                         FinishButton(
                           pageController: _pageController,
                           label: 'Finalizar',

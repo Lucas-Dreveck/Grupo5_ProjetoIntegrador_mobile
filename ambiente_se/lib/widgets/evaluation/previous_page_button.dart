@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class PreviousPageButton extends StatelessWidget {
   final PageController pageController;
 
-  const PreviousPageButton({Key? key, required this.pageController}) : super(key: key);
+  const PreviousPageButton({super.key, required this.pageController});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class PreviousPageButton extends StatelessWidget {
       label: 'Anterior',
       onPressed: () {
         pageController.previousPage(
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
       },
