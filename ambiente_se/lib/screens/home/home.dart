@@ -1,4 +1,8 @@
 import 'package:ambiente_se/screens/company/main_company_page.dart';
+import 'package:ambiente_se/screens/employee/main_employee_page.dart';
+import 'package:ambiente_se/screens/question/home_quest.dart';
+import 'package:ambiente_se/screens/ranking/ranking_empresa_page.dart';
+import 'package:ambiente_se/screens/evaluation/evaluation_page.dart';
 import 'package:ambiente_se/widgets/home/build_menu_button.dart';
 import 'package:flutter/material.dart';
 
@@ -57,7 +61,7 @@ class Home extends StatelessWidget {
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   const Text(
-                    'Bem Vinde, Lucas Dreveck',
+                    'Bem Vindo, Lucas Dreveck',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -65,36 +69,56 @@ class Home extends StatelessWidget {
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
-                    title: 'Cadastrar empresa',
+                    title: 'Empresas',
                     onPressed: () {
                       // Navigate to company registration screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainCompanyPage()),
+                      );
                     },
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
-                    title: 'Cadastrar funcionário',
+                    title: 'Funcionários',
                     onPressed: () {
                       // Navigate to employee registration screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainEmployeePage()),
+                      );
                     },
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
-                    title: 'Visualizar ranking',
+                    title: 'Ranking',
                     onPressed: () {
                       // Navigate to ranking screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const RankingEmpresaPage()),
+                      );
                     },
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
-                    title: 'Visualizar perguntas',
+                    title: 'Perguntas',
                     onPressed: () {
                       // Navigate to questions screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainQuestionPage()),
+                      );
                     },
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
                     title: 'Avaliação',
                     onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const MainEvaluationPage()),
+                      );
                       // Navigate to evaluation screen
                     },
                   ),

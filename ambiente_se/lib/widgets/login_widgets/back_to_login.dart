@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class VoltarLogin extends StatelessWidget {
+class BackToLogin extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const VoltarLogin({Key? key, required this.onPressed}) : super(key: key);
+  const BackToLogin({Key? key, required this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

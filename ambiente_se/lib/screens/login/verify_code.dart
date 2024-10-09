@@ -2,18 +2,18 @@ import 'package:ambiente_se/screens/login/login.dart';
 import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
 import 'package:ambiente_se/widgets/login_widgets/verificar_codigo_button.dart';
 import 'package:ambiente_se/widgets/login_widgets/verification_code.dart';
-import 'package:ambiente_se/widgets/login_widgets/voltar_login.dart';
+import 'package:ambiente_se/widgets/login_widgets/back_to_login.dart';
 import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
 import 'package:flutter/material.dart';
 
-class VerificarCodigo extends StatefulWidget {
-  const VerificarCodigo({Key? key}) : super(key: key);
+class VerifyCode extends StatefulWidget {
+  const VerifyCode({Key? key}) : super(key: key);
 
   @override
-  _VerificarCodigoState createState() => _VerificarCodigoState();
+  _VerifyCodeState createState() => _VerifyCodeState();
 }
 
-class _VerificarCodigoState extends State<VerificarCodigo> {
+class _VerifyCodeState extends State<VerifyCode> {
   final TextEditingController _emailController = TextEditingController();
   String? _errorText;
 
@@ -23,10 +23,10 @@ class _VerificarCodigoState extends State<VerificarCodigo> {
     super.dispose();
   }
 
-  Future<void> _verificarCodigo() async {
+  Future<void> _VerifyCode() async {
     setState(() {
       if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
-        _errorText = 'Please enter a valid email';
+        _errorText = 'Por favor, insira um email válido.';
       } else {
         _errorText = null;
       }
@@ -34,7 +34,6 @@ class _VerificarCodigoState extends State<VerificarCodigo> {
 
     if (_errorText == null) {
       await Future.delayed(const Duration(seconds: 2));
-      // TODO: Implement verificar codigo logic
       print('Email: ${_emailController.text}');
     }
   }
@@ -90,11 +89,11 @@ class _VerificarCodigoState extends State<VerificarCodigo> {
                   const SizedBox(height: 22),
                   const VerificationCodeField(),
                   const SizedBox(height: 60),
-                  VerificarCodigoButton(
-                    onPressed: _verificarCodigo,
+                  VerifyCodeButton(
+                    onPressed: _VerifyCode,
                   ),
                   const SizedBox(height: 14),
-                  VoltarLogin(
+                  BackToLogin(
                     onPressed: () {
                       Navigator.push(
                         context,

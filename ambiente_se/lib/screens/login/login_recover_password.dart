@@ -1,21 +1,21 @@
 import 'package:ambiente_se/screens/login/login.dart';
-import 'package:ambiente_se/widgets/login_widgets/confirm_password_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/definir_senha_button.dart';
+import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
 import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/new_password_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/voltar_login.dart';
+import 'package:ambiente_se/widgets/login_widgets/recover_password_button.dart';
+import 'package:ambiente_se/widgets/login_widgets/back_to_login.dart';
 import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
 import 'package:flutter/material.dart';
 
-class NovaSenhaPage extends StatefulWidget {
-  const NovaSenhaPage({Key? key}) : super(key: key);
+class LoginRecoverPassword extends StatefulWidget {
+  const LoginRecoverPassword({Key? key}) : super(key: key);
 
   @override
-  _NovaSenhaPageState createState() => _NovaSenhaPageState();
+  _LoginRecoverPasswordState createState() => _LoginRecoverPasswordState();
 }
 
-class _NovaSenhaPageState extends State<NovaSenhaPage> {
+class _LoginRecoverPasswordState extends State<LoginRecoverPassword> {
   final TextEditingController _emailController = TextEditingController();
+  String? _errorText;
 
   @override
   void dispose() {
@@ -23,12 +23,27 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
     super.dispose();
   }
 
+  Future<void> _RecoverPassword() async {
+    setState(() {
+      if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
+        _errorText = 'Please enter a valid email';
+      } else {
+        _errorText = null;
+      }
+    });
+
+    if (_errorText == null) {
+      // Simulate async operation
+      await Future.delayed(const Duration(seconds: 2));
+      print('Email: ${_emailController.text}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -37,7 +52,6 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
               ),
             ),
           ),
-          // White overlay with wave
           Positioned(
             bottom: 0,
             left: 0,
@@ -49,7 +63,6 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
               ),
             ),
           ),
-          // Content
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -67,7 +80,7 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'DEFINA SUA NOVA SENHA',
+                    'RECUPERE A SUA SENHA',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -75,17 +88,13 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
                     ),
                   ),
                   const SizedBox(height: 22),
-                  const NewPasswordField(),
-                  const SizedBox(height: 20),
-                  const ConfirmPasswordField(),
+                  EmailField(controller: _emailController, errorText: _errorText),
                   const SizedBox(height: 60),
-                  DefinirSenhaButton(
-                    onPressed: () async {
-                      // TODO: Implement login logic
-                    },
+                  RecoverPasswordButton(
+                    onPressed: _RecoverPassword,
                   ),
                   const SizedBox(height: 14),
-                  VoltarLogin(
+                  BackToLogin(
                     onPressed: () {
                       Navigator.push(
                         context,
