@@ -1,16 +1,16 @@
+import 'package:ambiente_se/screens/login/login.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/screens/login/verificar_codigo.dart'; // Ensure this path is correct
 
-class RecuperarSenhaButton extends StatefulWidget {
+class SetPasswordButton extends StatefulWidget {
   final Future<void> Function() onPressed;
 
-  const RecuperarSenhaButton({Key? key, required this.onPressed}) : super(key: key);
+  const SetPasswordButton({Key? key, required this.onPressed}) : super(key: key);
 
   @override
-  _RecuperarSenhaButtonState createState() => _RecuperarSenhaButtonState();
+  _SetPasswordButtonState createState() => _SetPasswordButtonState();
 }
 
-class _RecuperarSenhaButtonState extends State<RecuperarSenhaButton> {
+class _SetPasswordButtonState extends State<SetPasswordButton> {
   bool _isLoading = false;
 
   @override
@@ -29,7 +29,7 @@ class _RecuperarSenhaButtonState extends State<RecuperarSenhaButton> {
                   await widget.onPressed();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const VerificarCodigo()),
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
                   );
                 } finally {
                   setState(() {
@@ -42,7 +42,7 @@ class _RecuperarSenhaButtonState extends State<RecuperarSenhaButton> {
                 color: Colors.white,
               )
             : const Text(
-                'Recuperar senha',
+                'Definir senha',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

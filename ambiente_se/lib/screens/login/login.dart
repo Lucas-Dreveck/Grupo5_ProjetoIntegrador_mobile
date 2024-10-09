@@ -1,12 +1,16 @@
 import 'package:ambiente_se/screens/home/home.dart';
-import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
 import 'package:ambiente_se/widgets/login_widgets/forgot_password.dart';
 import 'package:ambiente_se/widgets/login_widgets/login_button.dart';
 import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
+import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
 import 'package:ambiente_se/widgets/login_widgets/password_field.dart';
 import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/screens/login/login_recuperar_senha.dart';
+import 'package:ambiente_se/screens/login/login_recover_password.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:ambiente_se/utils.dart'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -17,11 +21,105 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); 
 
   @override
   void dispose() {
     _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _login() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Por favor insira email e senha.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    // Create the body to send to the backend
+    Map<String, String> loginData = {
+      "login": email,
+      "password": password,
+    };
+
+    try {
+      // Send POST request to the backend to log in
+      final response = await makeHttpRequest('/api/login', method: 'POST', body: jsonEncode(loginData));
+
+      if (response.statusCode == 200) {
+        // Successfully logged in, extract the token
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        String token = responseBody['token'];
+
+        // Store the token securely
+        await _secureStorage.write(key: 'auth_token', value: token);
+
+        // Navigate to the Home screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Home()),
+        );
+      } else {
+        // Handle error, show message
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Erro ao realizar login.'),
+              content: const Text('Email ou senha invalidos.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (error) {
+      // Handle any errors during the request
+      print('Erro ao realizar login: $error');
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Erro ao realizar login.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -80,24 +178,20 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _emailController,
                   ),
                   const SizedBox(height: 20),
-                  const PasswordField(),
+                  PasswordField(
+                    controller: _passwordController,
+                  ),
                   const SizedBox(height: 60),
                   LoginButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Home()),
-                      );
-                    },
+                    onPressed: _login, // Call the _login method on button press
                   ),
                   const SizedBox(height: 14),
                   ForgotPassword(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const LoginRecuperarSenha()),
+                        MaterialPageRoute(builder: (context) => const LoginRecoverPassword()),
                       );
-                      // TODO: Implement forgot password logic
                     },
                   ),
                 ],

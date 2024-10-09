@@ -1,21 +1,21 @@
 import 'package:ambiente_se/screens/login/login.dart';
-import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
+import 'package:ambiente_se/widgets/login_widgets/confirm_password_field.dart';
+import 'package:ambiente_se/widgets/login_widgets/set_password_button.dart';
 import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/recuperar_senha_button.dart';
-import 'package:ambiente_se/widgets/login_widgets/voltar_login.dart';
+import 'package:ambiente_se/widgets/login_widgets/new_password_field.dart';
+import 'package:ambiente_se/widgets/login_widgets/back_to_login.dart';
 import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
 import 'package:flutter/material.dart';
 
-class LoginRecuperarSenha extends StatefulWidget {
-  const LoginRecuperarSenha({Key? key}) : super(key: key);
+class NewPasswordPage extends StatefulWidget {
+  const NewPasswordPage({Key? key}) : super(key: key);
 
   @override
-  _LoginRecuperarSenhaState createState() => _LoginRecuperarSenhaState();
+  _NewPasswordPageState createState() => _NewPasswordPageState();
 }
 
-class _LoginRecuperarSenhaState extends State<LoginRecuperarSenha> {
+class _NewPasswordPageState extends State<NewPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
-  String? _errorText;
 
   @override
   void dispose() {
@@ -23,28 +23,12 @@ class _LoginRecuperarSenhaState extends State<LoginRecuperarSenha> {
     super.dispose();
   }
 
-  Future<void> _recuperarSenha() async {
-    setState(() {
-      if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
-        _errorText = 'Please enter a valid email';
-      } else {
-        _errorText = null;
-      }
-    });
-
-    if (_errorText == null) {
-      // Simulate async operation
-      await Future.delayed(const Duration(seconds: 2));
-      // TODO: Implement recuperar senha logic
-      print('Email: ${_emailController.text}');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+          // Background
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -53,6 +37,7 @@ class _LoginRecuperarSenhaState extends State<LoginRecuperarSenha> {
               ),
             ),
           ),
+          // White overlay with wave
           Positioned(
             bottom: 0,
             left: 0,
@@ -64,6 +49,7 @@ class _LoginRecuperarSenhaState extends State<LoginRecuperarSenha> {
               ),
             ),
           ),
+          // Content
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -81,7 +67,7 @@ class _LoginRecuperarSenhaState extends State<LoginRecuperarSenha> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'RECUPERE A SUA SENHA',
+                    'DEFINA SUA NOVA SENHA',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -89,13 +75,16 @@ class _LoginRecuperarSenhaState extends State<LoginRecuperarSenha> {
                     ),
                   ),
                   const SizedBox(height: 22),
-                  EmailField(controller: _emailController, errorText: _errorText),
+                  const NewPasswordField(),
+                  const SizedBox(height: 20),
+                  const ConfirmPasswordField(),
                   const SizedBox(height: 60),
-                  RecuperarSenhaButton(
-                    onPressed: _recuperarSenha,
+                  SetPasswordButton(
+                    onPressed: () async {
+                    },
                   ),
                   const SizedBox(height: 14),
-                  VoltarLogin(
+                  BackToLogin(
                     onPressed: () {
                       Navigator.push(
                         context,
