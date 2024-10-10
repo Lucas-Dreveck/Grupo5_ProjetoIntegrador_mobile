@@ -16,7 +16,7 @@ class EmailField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Email',
+          'Password',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w400,
@@ -29,8 +29,9 @@ class EmailField extends StatelessWidget {
           width: 300,
           child: TextField(
             controller: controller,
+            obscureText: true, // Hides the password input
             decoration: InputDecoration(
-              hintText: 'eduardo@gmail.com',
+              hintText: 'Enter your password',
               hintStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,

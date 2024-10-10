@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String backendUrl = '192.168.1.19:8080'; // Substitua pelo endereço IP do seu servidor
+const String backendUrl = '10.200.75.29:8080'; // Substitua pelo endereço IP do seu servidor
 
 
 class AppColors {
@@ -120,6 +120,7 @@ bool isValidCNPJ(String cnpj) {
     }
     return cep;
   }
+
 Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
   Uri url;
   if (parameters != null) {
@@ -128,37 +129,15 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
     url = Uri.http(backendUrl, endpoint);
   }
 
-  String token;
-  print(url);
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
+
   http.Response response;
 
-
-  Map<String, String> authBody = {
-    "login": "root",
-    "password": "root"
-  };
-  Map<String, String> headers = {
-    'Content-Type': 'application/json'
-  };
-
-  try{
-    response = await http.post(Uri.parse("http://$backendUrl/api/login"), body: jsonEncode(authBody), headers: headers);
-  } catch (e) {
-    print('Error making HTTP auth request: $e');
-    rethrow;
-  }
-
-  final Map<String, dynamic> responseBody = jsonDecode(response.body);
-  token = "Bearer ${responseBody['token']}";
-  headers = {
-    'Content-Type': 'application/json',
-    'Authorization': token,
-  };
-
-  try{
+  try {
     switch (method.toUpperCase()) {
       case 'POST':
-        
         response = await http.post(url, headers: headers, body: body);
         break;
       case 'PUT':
@@ -177,10 +156,10 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
       return response;
     } else {
       throw Exception('Failed to load data: ${response.statusCode}');
-    } 
+    }
   } catch (e) {
     print('Error making HTTP request: $e');
     rethrow;
-  };
+  }
 }
 
