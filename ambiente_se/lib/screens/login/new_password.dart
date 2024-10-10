@@ -1,10 +1,10 @@
 import 'package:ambiente_se/screens/login/login.dart';
-import 'package:ambiente_se/widgets/login_widgets/confirm_password_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/set_password_button.dart';
-import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/new_password_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/back_to_login.dart';
-import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
+import 'package:ambiente_se/widgets/login/confirm_password_field.dart';
+import 'package:ambiente_se/widgets/login/set_password_button.dart';
+import 'package:ambiente_se/widgets/login/logo_widget.dart';
+import 'package:ambiente_se/widgets/login/new_password_field.dart';
+import 'package:ambiente_se/widgets/login/back_to_login.dart';
+import 'package:ambiente_se/widgets/login/wave_painter.dart';
 import 'package:flutter/material.dart';
 
 class NewPasswordPage extends StatefulWidget {

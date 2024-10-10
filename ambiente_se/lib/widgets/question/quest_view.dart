@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/widgets/question_widgets/quest_delete.dart'; 
-import 'package:ambiente_se/widgets/question_widgets/quest_edit.dart';
+import 'package:ambiente_se/widgets/question/quest_delete.dart'; 
+import 'package:ambiente_se/widgets/question/quest_edit.dart';
 
 class QuestionDetailDialog extends StatelessWidget {
   final String axis; // Eixo da pergunta
