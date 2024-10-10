@@ -65,10 +65,6 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: const Text("Editar funcionário"),
-        backgroundColor: Colors.blue,
-      ),
       body: Column(children: [
         EmployeeForm(
           nameController: _nameController,

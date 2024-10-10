@@ -25,10 +25,6 @@ class MainQuestionPageState extends State<MainQuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Banco de Perguntas'),
-        backgroundColor: Colors.blue,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

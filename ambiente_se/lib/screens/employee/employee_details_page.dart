@@ -52,9 +52,6 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Funcionário Page'),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

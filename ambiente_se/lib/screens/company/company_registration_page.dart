@@ -234,10 +234,6 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false, 
-      appBar: AppBar(
-        title: const Text("Aoba"),
-        backgroundColor: Colors.blue,
-      ),
       body: 
       PageView(
         physics: const NeverScrollableScrollPhysics(),

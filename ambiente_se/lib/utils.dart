@@ -8,7 +8,9 @@ const String backendUrl = '192.168.1.19:8080'; // Substitua pelo endereço IP do
 
 class AppColors {
   static const Color blue = Color(0xFF0077C8);
+  static const Color darkBlue = Color(0xFF005A9C);
   static const Color green = Color(0xFF0C9C6F);
+  static const Color logoGreen = Color.fromRGBO(118, 192, 77, 1);
   static const Color red = Color(0xFFDF2935);
   static const Color grey = Color(0xFF838B91);
   static const Color offWhite = Color.fromRGBO(207, 207, 207, 1);

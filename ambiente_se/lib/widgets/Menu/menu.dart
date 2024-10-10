@@ -1,123 +1,142 @@
-import 'package:ambiente_se/screens/company/main_company_page.dart';
+import 'package:ambiente_se/screens/login/login.dart';
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/screens/ranking_empresa_page.dart';
-
-class MyWidget extends StatefulWidget {
-  const MyWidget({super.key});
-
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 class MenuLateral extends StatelessWidget {
-  final Color customBlue = Color(0xFF0077C8);
+  final int selectedPageIndex;
+  final Function(int) onSelectPage;
+
+  const MenuLateral({
+    super.key,
+    required this.selectedPageIndex,
+    required this.onSelectPage,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: customBlue,
+        color: AppColors.blue,
         child: Column(
           children: <Widget>[
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: AppColors.blue,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset('assets/images/ambientese.png'),
+                ],
+              ),
+            ),
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: <Widget>[
-                  DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: customBlue,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                     Image.asset('assets/images/ambientese.png'),
-                      ],
-                    ),
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.star, color: Colors.white),
-                    title: Text('Ranking', style: TextStyle(color: Colors.white)),
+                  _createDrawerItem(
+                    icon: Icons.home,
+                    text: 'Home',
+                    selected: selectedPageIndex == 0,
                     onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => RankingEmpresaPage()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.business, color: Colors.white),
-                    title: Text('Empresas', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (context) => MainCompanyPage()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.people, color: Colors.white),
-                    title: Text('Funcionários', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      // Adicione a navegação para a páginam de Funcionários aqui
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.question_answer, color: Colors.white),
-                    title: Text('Perguntas', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      // Adicione a navegação para a página de Perguntas aqui
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.assessment, color: Colors.white),
-                    title: Text('Avaliação', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      // Adicione a navegação para a página de Avaliação aqui
-                    },
-                  ),
-                  Divider(color: Colors.white),
-                  ListTile(
-                    leading: Icon(Icons.arrow_back, color: Colors.white),
-                    title: Text('Voltar', style: TextStyle(color: Colors.white)),
-                    onTap: () {
+                      onSelectPage(0);
                       Navigator.of(context).pop();
                     },
                   ),
-                  Spacer(),
+                  _createDrawerItem(
+                    icon: Icons.star,
+                    text: 'Ranking',
+                    selected: selectedPageIndex == 1,
+                    onTap: () {
+                      onSelectPage(1);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.business,
+                    text: 'Empresas',
+                    selected: selectedPageIndex == 2,
+                    onTap: () {
+                      onSelectPage(2);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.people,
+                    text: 'Funcionários',
+                    selected: selectedPageIndex == 3,
+                    onTap: () {
+                      onSelectPage(3);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.question_answer,
+                    text: 'Perguntas',
+                    selected: selectedPageIndex == 4,
+                    onTap: () {
+                      onSelectPage(4);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  _createDrawerItem(
+                    icon: Icons.assessment,
+                    text: 'Avaliação',
+                    selected: selectedPageIndex == 5,
+                    onTap: () {
+                      onSelectPage(5);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  const Divider(color: Colors.white),
+                  ListTile(
+                    leading: const Icon(Icons.arrow_back, color: Colors.white),
+                    title: const Text('Voltar', style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(bottom: 20),
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.exit_to_app, color: customBlue),
-                label: Text('Sair', style: TextStyle(color: customBlue)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: customBlue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                ),
+              padding: const EdgeInsets.only(bottom: 40, top: 10),
+              child: TextButton.icon(
+                icon: const Icon(Icons.exit_to_app, color: Colors.white),
+                label: const Text('Sair', style: TextStyle(color: Colors.white)),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // Adicione a lógica para sair do aplicativo aqui
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
                 },
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _createDrawerItem({
+    required IconData icon,
+    required String text,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      color: selected ? AppColors.darkBlue : Colors.transparent,
+      child: ListTile(
+        leading: Icon(icon, color: selected ? const Color.fromARGB(255, 255, 255, 255) : Colors.white),
+        title: Text(
+          text,
+          style: TextStyle(
+            color: selected ? const Color.fromARGB(255, 255, 255, 255) : Colors.white,
+            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            
+          ),
+        ),
+        onTap: onTap,
       ),
     );
   }

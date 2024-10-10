@@ -1,36 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/widgets/Menu/menu.dart';
 
-class RankingEmpresaPage extends StatefulWidget {
-  const RankingEmpresaPage({Key? key}) : super(key: key);
+class RankingPage extends StatefulWidget {
+  const RankingPage({super.key});
 
   @override
-  State<RankingEmpresaPage> createState() => _RankingEmpresaPageState();
+  State<RankingPage> createState() => _RankingPageState();
 }
 
-class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
+class _RankingPageState extends State<RankingPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF0077C8),
-        leading: IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {
-            _scaffoldKey.currentState?.openDrawer();
-          },
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Icon(Icons.lightbulb, color: Colors.yellowAccent),
-          ],
-        ),
-      ),
-      drawer: MenuLateral(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(

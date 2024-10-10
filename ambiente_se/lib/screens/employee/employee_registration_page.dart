@@ -60,10 +60,6 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: const Text("Cadastro funcionário"),
-        backgroundColor: Colors.blue,
-      ),
       body: Column(children: [
         EmployeeForm(
             nameController: _nameController,

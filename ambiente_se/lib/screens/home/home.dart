@@ -9,39 +9,6 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5), // Set background color
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(85.0), // Set AppBar height
-        child: AppBar(
-          backgroundColor: const Color(0xFF0077C8), // Set AppBar color
-          automaticallyImplyLeading: false, // Remove default leading widget
-          flexibleSpace: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.menu),
-                    iconSize: 55,
-                    color: Colors.white,
-                    onPressed: () {
-                      // Open drawer or navigation menu
-                    },
-                  ),
-                  SizedBox(
-                    width: 85,
-                    height: 85,
-                    child: Image.asset(
-                      'assets/images/logo_background_removed.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
