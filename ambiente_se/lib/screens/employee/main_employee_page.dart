@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:ambiente_se/screens/company/company_details_page.dart';
 import 'package:ambiente_se/screens/employee/employee_details_page.dart';
 import 'package:ambiente_se/screens/employee/employee_registration_page.dart';
+import 'package:ambiente_se/utils.dart';
 import 'package:ambiente_se/widgets/default/new_register_button.dart';
 import 'package:ambiente_se/widgets/default/search_button.dart';
 import 'package:ambiente_se/widgets/default/default_search_bar.dart';
 import 'package:flutter/material.dart';
+
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class MainEmployeePage extends StatefulWidget {
   const MainEmployeePage({super.key});
@@ -13,26 +18,33 @@ class MainEmployeePage extends StatefulWidget {
   State<MainEmployeePage> createState() => MainEmployeePageState();
 }
 
-class MainEmployeePageState extends State<MainEmployeePage> {
+class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchBarController = TextEditingController();
   final List<Map<String, dynamic>> _employees = [];
+  String? _searchText = '';
   bool _isLoading = false;
   bool _hasMoreData = true;
-  int _currentPage = 1;
+  int _currentPage = 0;
   final int _itemsPerPage = 20;
 
   @override
-  void initState() {
-    super.initState();
-    _loadMoreEmployees();
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels ==
-              _scrollController.position.maxScrollExtent &&
-          !_isLoading) {
-        _loadMoreEmployees();
-      }
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute<dynamic>);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    // Recarrega a lista de funcionários quando a página de detalhes do funcionário é removida da pilha de navegação
+    _resetEmployees();
   }
 
   Future<void> _loadMoreEmployees() async {
@@ -40,8 +52,26 @@ class MainEmployeePageState extends State<MainEmployeePage> {
       _isLoading = true;
     });
 
-    List<Map<String, dynamic>> moreEmployees =
-        await fetchEmployees(_currentPage, _itemsPerPage);
+    List<Map<String, dynamic>> moreEmployees;
+    final url = '/api/auth/Employee/search';
+    final Map<String, dynamic> parameters = {
+      'page': _currentPage.toString(),
+      'size': _itemsPerPage.toString(),
+    };
+    if (_searchText != null && _searchText!.isNotEmpty) {
+      parameters['name'] = _searchText;
+    } else {
+      parameters.remove('name');
+    }
+
+    final response = await makeHttpRequest(url, parameters: parameters);
+
+    if (response.statusCode == 200) {
+      moreEmployees = List<Map<String, dynamic>>.from(
+          json.decode(utf8.decode(response.bodyBytes)));
+    } else {
+      moreEmployees = [];
+    }
 
     if (moreEmployees.length < _itemsPerPage) {
       _hasMoreData = false;
@@ -54,21 +84,32 @@ class MainEmployeePageState extends State<MainEmployeePage> {
     });
   }
 
-  Future<List<Map<String, dynamic>>> fetchEmployees(int page, int limit) async {
-    await Future.delayed(const Duration(seconds: 2));
-    return List.generate(limit, (index) {
-      return {
-        'id': (page - 1) * limit + index + 1,
-        'Nome': 'Lucas Costa',
-        'Cargo': 'Gestor',
-      };
+  void _search() {
+    if (_searchBarController.text.isEmpty) {
+      _searchText = '';
+    } else {
+      _searchText = _searchBarController.text;
+      print(_searchText);
+    }
+    _resetEmployees();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMoreEmployees();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
+          !_isLoading) {
+        _loadMoreEmployees();
+      }
     });
   }
 
   Future<void> _resetEmployees() async {
     setState(() {
       _employees.clear();
-      _currentPage = 1;
+      _currentPage = 0;
       _hasMoreData = true;
     });
     await _loadMoreEmployees();
@@ -97,8 +138,7 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              const EmployeeRegistrationPage()),
+                          builder: (context) => const EmployeeRegistrationPage()),
                     );
                   })
             ]),
@@ -116,7 +156,7 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                 const SizedBox(width: 16),
                 SearchButton(
                   label: "Buscar",
-                  onPressed: () {},
+                  onPressed: _search,
                 ),
               ],
             ),
@@ -135,8 +175,7 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                     child: _employees.isEmpty
                         ? const Center(
                             child: Text("Nenhum funcionário encontrado",
-                                style:
-                                    TextStyle(fontSize: 18, color: Colors.red)))
+                                style: TextStyle(fontSize: 18, color: Colors.red)))
                         : SingleChildScrollView(
                             controller: _scrollController,
                             child: Column(
@@ -153,8 +192,7 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                                                 child: Text('ID',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
+                                                        fontWeight: FontWeight.bold)),
                                               ),
                                             ),
                                           ),
@@ -165,8 +203,7 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                                                   'Nome ',
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold),
+                                                      fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                             ),
@@ -177,8 +214,7 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                                                 child: Text('Cargo',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold)),
+                                                        fontWeight: FontWeight.bold)),
                                               ),
                                             ),
                                           ),
@@ -191,56 +227,61 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                                                     Center(
                                                       child: Text(
                                                           item['id'].toString(),
-                                                          textAlign:
-                                                              TextAlign.center),
+                                                          textAlign: TextAlign.center),
                                                     ),
-                                                    onTap: () {
-                                                      Navigator.push(
+                                                    onTap: () async {
+                                                      final result = await Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               EmployeeDetailsPage(
-                                                                  id: item[
-                                                                      'id']),
+                                                                  id: item['id']),
                                                         ),
                                                       );
+                                                      if (result == true) {
+                                                        _resetEmployees();
+                                                      }
                                                     },
                                                   ),
                                                   DataCell(
                                                     Center(
                                                       child: Text(
-                                                          item['Nome'],
-                                                          textAlign:
-                                                              TextAlign.center),
+                                                          item['name'].toString(),
+                                                          textAlign: TextAlign.center),
                                                     ),
-                                                    onTap: () {
-                                                      Navigator.push(
+                                                    onTap: () async {
+                                                      final result = await Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               EmployeeDetailsPage(
-                                                                  id: item[
-                                                                      'id']),
+                                                                  id: item['id']),
                                                         ),
                                                       );
+                                                      if (result == true) {
+                                                        _resetEmployees();
+                                                      }
                                                     },
                                                   ),
                                                   DataCell(
                                                     Center(
-                                                      child: Text(item['Cargo'],
-                                                          textAlign:
-                                                              TextAlign.center),
+                                                      child: Text(
+                                                          item['role']['description']
+                                                              .toString(),
+                                                          textAlign: TextAlign.center),
                                                     ),
-                                                    onTap: () {
-                                                      Navigator.push(
+                                                    onTap: () async {
+                                                      final result = await Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               EmployeeDetailsPage(
-                                                                  id: item[
-                                                                      'id']),
+                                                                  id: item['id']),
                                                         ),
                                                       );
+                                                      if (result == true) {
+                                                        _resetEmployees();
+                                                      }
                                                     },
                                                   ),
                                                 ],
@@ -259,8 +300,7 @@ class MainEmployeePageState extends State<MainEmployeePage> {
                                     child: Text(
                                       "Fim da lista",
                                       style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
+                                          fontSize: 16, fontWeight: FontWeight.bold),
                                     ),
                                   ),
                               ],
@@ -270,11 +310,5 @@ class MainEmployeePageState extends State<MainEmployeePage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }

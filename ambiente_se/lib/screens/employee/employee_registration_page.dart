@@ -38,15 +38,43 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
   }
 
   bool verifyPage() {
-    if (_nameController.text.isNotEmpty &&
-        _cpfController.text.isNotEmpty &&
-        _birthDateController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
-        _loginController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty) {
-      return true;
+    if (_nameController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de nome não pode estar vazio.",
+      );
+      return false;
     }
-    return false;
+    if (_cpfController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de CPF não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_birthDateController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de data de nascimento não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_emailController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de e-mail não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_role.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de cargo não pode estar vazio.",
+      );
+      return false;
+    }
+
+    return true;
   }
 
   void _save() {

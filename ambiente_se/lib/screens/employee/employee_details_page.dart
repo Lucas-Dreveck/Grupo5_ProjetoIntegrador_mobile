@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:ambiente_se/screens/employee/edit_employee_page.dart';
 import 'package:ambiente_se/utils.dart';
 import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
@@ -6,6 +7,8 @@ import 'package:ambiente_se/widgets/default/default_modal.dart';
 import 'package:ambiente_se/widgets/default/default_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class EmployeeDetailsPage extends StatefulWidget {
   const EmployeeDetailsPage({super.key, required this.id});
@@ -16,7 +19,8 @@ class EmployeeDetailsPage extends StatefulWidget {
   State<EmployeeDetailsPage> createState() => EmployeeDetailsPageState();
 }
 
-class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
+class EmployeeDetailsPageState extends State<EmployeeDetailsPage>
+    with RouteAware {
   late int id;
 
   late TextEditingController nameController;
@@ -36,6 +40,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
     emailController = TextEditingController();
     loginController = TextEditingController();
     roleController = TextEditingController();
+    fetchEmployeeData();
   }
 
   @override
@@ -43,10 +48,61 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
     cpfController.dispose();
     birthDateController.dispose();
     emailController.dispose();
-    emailController.dispose();
     loginController.dispose();
     roleController.dispose();
+    routeObserver.unsubscribe(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(
+        this, ModalRoute.of(context)! as PageRoute<dynamic>);
+  }
+
+  @override
+  void didPopNext() {
+    fetchEmployeeData();
+  }
+
+  Future<void> fetchEmployeeData() async {
+    final response = await makeHttpRequest("/api/auth/Employee/$id");
+
+    if (response.statusCode == 200) {
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      var cpf = data['cpf'];
+      print("data");
+      setState(() {
+        nameController.text = data['name'] ?? '';
+        cpfController.text = formatCpf(data['cpf'] ?? '');
+        birthDateController.text = data['birthDate'] ?? '';
+        emailController.text = data['email'] ?? '';
+        loginController.text = data['login'] ?? '';
+        roleController.text = data['role']['description'] ?? '';
+      });
+    } else {
+      throw Exception('Failed to load funcioário data');
+    }
+  }
+
+  Future<void> _delete() async {
+    final response =
+        await makeHttpRequest("/api/auth/Employee/$id", method: 'DELETE');
+
+    if (response.statusCode == 200) {
+      AlertSnackBar.show(
+          context: context,
+          text: "Funcionário deletade com sucesso.",
+          backgroundColor: AppColors.green);
+      Navigator.pop(context, true);
+    } else {
+      AlertSnackBar.show(
+          context: context,
+          text: "Erro ao deletar funcionário.",
+          backgroundColor: AppColors.red);
+      throw Exception('Failed to delete funcionário');
+    }
   }
 
   @override
@@ -61,7 +117,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Text(
-              "Empresa",
+              "Funcionário",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             DefaultTextField(
@@ -80,7 +136,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
             const SizedBox(height: 16.0),
             DefaultTextField(
               label: 'Data de Nascimento',
-              hintText: 'Data de Nascimento', 
+              hintText: 'Data de Nascimento',
               controller: birthDateController,
               enabled: false,
             ),
@@ -99,7 +155,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
                       label: "Voltar",
                       color: AppColors.grey,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context, true);
                       }),
                 ),
                 const SizedBox(
@@ -115,6 +171,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
                             builder: (context) => EditEmployeePage(id: id),
                           ),
                         );
+                        fetchEmployeeData();
                       }),
                 ),
                 const SizedBox(
@@ -123,8 +180,22 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage> {
                 Expanded(
                     child: DefaultButton(
                         label: "Excluir",
-                        color: AppColors.red, onPressed: () {  },
-                    )),
+                        color: AppColors.red,
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return DefaultModal(
+                                  text:
+                                      "Deseja confirmar a exclusão da empresa",
+                                  function: _delete,
+                                  labelButtonOne: "Cancelar",
+                                  colorButtonOne: AppColors.grey,
+                                  labelButtonTwo: "Excluir",
+                                  colorButtonTwo: AppColors.red,
+                                );
+                              });
+                        })),
               ],
             )
           ],

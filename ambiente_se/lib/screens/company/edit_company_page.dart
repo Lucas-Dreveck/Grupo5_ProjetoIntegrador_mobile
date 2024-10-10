@@ -174,12 +174,45 @@ class EditCompanyPageState extends State<EditCompanyPage> {
     Navigator.of(context).pop();
   }
  
-  void _save() {
-    AlertSnackBar.show(context: context, text: "Empresa editada com sucesso.", backgroundColor: AppColors.green);
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop();
-    });
-    Navigator.of(context).pop();
+  void _save() async {
+    final companyData = {
+      'tradeName': _tradeNameController.text,
+      'applicantsName': _requesterNameController.text,
+      'applicantsPhone': _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      'companyName': _corporateNameController.text,
+      'cnpj': _cnpjController.text.replaceAll(RegExp(r'\D'), ''),
+      'socialInscription': _corporateNameController.text,
+      'address': {
+        'cep': _postalCodeController.text,
+        'number': int.tryParse(_numberController.text) ?? 0,
+        'patio': _publicSpaceController.text,
+        'complement': '', // Assuming you have a complement to provide here
+        'city': _cityController.text,
+        'neighborhood': _neighborhoodController.text,
+        'uf': _state,
+      },
+      'email': _companyEmailController.text,
+      'companyPhone': _companyPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      'segment': _industryController.text,
+      'companySize': _companySize,
+    };
+
+    
+
+    final response = await makeHttpRequest(
+      '/api/auth/Company/${widget.id}',
+      method: 'PUT',
+      body: json.encode(companyData),
+    );
+
+    if (response.statusCode == 200) {
+      AlertSnackBar.show(context: context, text: "Empresa editada com sucesso.", backgroundColor: AppColors.green);
+      Future.delayed(const Duration(seconds: 2), () {
+        Navigator.of(context).pop();
+      });
+    } else {
+      AlertSnackBar.show(context: context, text: "Ocorreu um erro ao editar a empresa.", backgroundColor: Colors.red);
+    }
   }
 
   @override
