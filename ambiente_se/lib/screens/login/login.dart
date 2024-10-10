@@ -1,3 +1,4 @@
+import 'package:ambiente_se/main.dart';
 import 'package:ambiente_se/screens/home/home.dart';
 import 'package:ambiente_se/widgets/login/forgot_password.dart';
 import 'package:ambiente_se/widgets/login/login_button.dart';
@@ -77,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
         // Navigate to the Home screen
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const Home()),
+          MaterialPageRoute(builder: (context) => const MainApp()),
         );
       } else {
         // Handle error, show message

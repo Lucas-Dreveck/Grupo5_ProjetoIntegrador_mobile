@@ -1,12 +1,34 @@
-import 'package:ambiente_se/screens/home/home.dart';
 import 'package:flutter/material.dart';
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/screens/login/login.dart';
+import 'package:ambiente_se/widgets/Menu/menu.dart';
+import 'package:ambiente_se/screens/home/home.dart';
+import 'package:ambiente_se/screens/ranking/ranking_page.dart';
 import 'package:ambiente_se/screens/company/main_company_page.dart';
 import 'package:ambiente_se/screens/employee/main_employee_page.dart';
-import 'package:ambiente_se/screens/evaluation/evaluation_page.dart';
 import 'package:ambiente_se/screens/question/main_question_page.dart';
-import 'package:ambiente_se/screens/ranking/ranking_page.dart';
-import 'package:ambiente_se/utils.dart';
-import 'package:ambiente_se/widgets/Menu/menu.dart';
+import 'package:ambiente_se/screens/evaluation/evaluation_page.dart';
+
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'App Ambiente SE',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const LoginPage(), // Inicia com a página de login
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
 
 class CustomMenuIcon extends StatelessWidget {
   const CustomMenuIcon({super.key});
@@ -110,8 +132,4 @@ class _MainAppState extends State<MainApp> {
       debugShowCheckedModeBanner: false,
     );
   }
-}
-
-void main() {
-  runApp(const MainApp());
 }
