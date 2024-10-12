@@ -1,9 +1,9 @@
 import 'package:ambiente_se/screens/login/login.dart';
-import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/verificar_codigo_button.dart';
-import 'package:ambiente_se/widgets/login_widgets/verification_code.dart';
-import 'package:ambiente_se/widgets/login_widgets/back_to_login.dart';
-import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
+import 'package:ambiente_se/widgets/login/logo_widget.dart';
+import 'package:ambiente_se/widgets/login/verificar_codigo_button.dart';
+import 'package:ambiente_se/widgets/login/verification_code.dart';
+import 'package:ambiente_se/widgets/login/back_to_login.dart';
+import 'package:ambiente_se/widgets/login/wave_painter.dart';
 import 'package:flutter/material.dart';
 
 class VerifyCode extends StatefulWidget {

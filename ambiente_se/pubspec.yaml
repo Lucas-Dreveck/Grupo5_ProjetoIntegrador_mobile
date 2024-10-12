@@ -66,6 +66,7 @@ flutter:
   assets:
   - assets/images/login_back.jpg
   - assets/images/logo.png
+  - assets/images/ambientese.png
   - assets/images/logo_background_removed.png
   #   - images/a_dot_ham.jpeg
 

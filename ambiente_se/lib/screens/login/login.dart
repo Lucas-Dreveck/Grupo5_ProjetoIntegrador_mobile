@@ -1,10 +1,11 @@
+import 'package:ambiente_se/main.dart';
 import 'package:ambiente_se/screens/home/home.dart';
-import 'package:ambiente_se/widgets/login_widgets/forgot_password.dart';
-import 'package:ambiente_se/widgets/login_widgets/login_button.dart';
-import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/email_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/password_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
+import 'package:ambiente_se/widgets/login/forgot_password.dart';
+import 'package:ambiente_se/widgets/login/login_button.dart';
+import 'package:ambiente_se/widgets/login/logo_widget.dart';
+import 'package:ambiente_se/widgets/login/email_field.dart';
+import 'package:ambiente_se/widgets/login/password_field.dart';
+import 'package:ambiente_se/widgets/login/wave_painter.dart';
 import 'package:flutter/material.dart';
 import 'package:ambiente_se/screens/login/login_recover_password.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -77,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
         // Navigate to the Home screen
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const Home()),
+          MaterialPageRoute(builder: (context) => const MainApp()),
         );
       } else {
         // Handle error, show message

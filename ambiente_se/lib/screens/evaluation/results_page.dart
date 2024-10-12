@@ -14,9 +14,6 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Resultados da Avaliação'),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(25.0),
         child: Column(

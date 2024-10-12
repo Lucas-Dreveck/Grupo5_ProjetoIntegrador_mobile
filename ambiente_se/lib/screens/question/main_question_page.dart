@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ambiente_se/widgets/default/new_register_button.dart';
 import 'package:ambiente_se/widgets/default/search_button.dart';
 import 'package:ambiente_se/widgets/default/default_search_bar.dart';
-import 'package:ambiente_se/widgets/question_widgets/question_form.dart';
-import 'package:ambiente_se/widgets/question_widgets/quest_view.dart';
+import 'package:ambiente_se/widgets/question/question_form.dart';
+import 'package:ambiente_se/widgets/question/quest_view.dart';
 
 
 class MainQuestionPage extends StatefulWidget {
@@ -25,10 +25,6 @@ class MainQuestionPageState extends State<MainQuestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Banco de Perguntas'),
-        backgroundColor: Colors.blue,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
