@@ -88,8 +88,6 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       'role': _role,
     };
 
-    print(employeeData.toString());
-
     final response = await makeHttpRequest(
       "/api/auth/Employee/$id",
       method: 'PUT',
@@ -103,7 +101,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
         backgroundColor: AppColors.green,
       );
 
-      Navigator.pop(context, true);
+      Navigator.of(context).pop(true);
     } else {
       AlertSnackBar.show(
         context: context,
@@ -137,7 +135,6 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
       var cpf = data['cpf'];
-      print(data);
       setState(() {
         _nameController.text = data['name'] ?? '';
         _cpfController.text = (data['cpf'] ?? '');

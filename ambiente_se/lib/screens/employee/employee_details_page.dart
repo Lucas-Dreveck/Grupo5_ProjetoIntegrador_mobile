@@ -63,7 +63,10 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage>
 
   @override
   void didPopNext() {
-    fetchEmployeeData();
+    final bool? result = ModalRoute.of(context)?.settings.arguments as bool?;
+    if (result == true) {
+      fetchEmployeeData();
+    }
   }
 
   Future<void> fetchEmployeeData() async {
@@ -72,7 +75,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage>
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
       var cpf = data['cpf'];
-      print("data");
+      print(data);
       setState(() {
         nameController.text = data['name'] ?? '';
         cpfController.text = formatCpf(data['cpf'] ?? '');
@@ -93,7 +96,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage>
     if (response.statusCode == 200) {
       AlertSnackBar.show(
           context: context,
-          text: "Funcionário deletade com sucesso.",
+          text: "Funcionário deletado com sucesso.",
           backgroundColor: AppColors.green);
       Navigator.pop(context, true);
     } else {
@@ -164,14 +167,18 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage>
                 Expanded(
                   child: DefaultButton(
                       label: "Editar",
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => EditEmployeePage(id: id),
                           ),
                         );
-                        fetchEmployeeData();
+
+                        // Use the result to refresh only if necessary
+                        if (result == true) {
+                          fetchEmployeeData();
+                        }
                       }),
                 ),
                 const SizedBox(
