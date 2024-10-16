@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_secure_storage: ^8.0.0
+  percent_indicator: ^4.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -64,6 +66,7 @@ flutter:
   assets:
   - assets/images/login_back.jpg
   - assets/images/logo.png
+  - assets/images/ambientese.png
   - assets/images/logo_background_removed.png
   #   - images/a_dot_ham.jpeg
 

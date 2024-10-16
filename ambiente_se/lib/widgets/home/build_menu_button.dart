@@ -1,3 +1,4 @@
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
 
 class BuildMenuButton extends StatelessWidget {
@@ -20,7 +21,7 @@ class BuildMenuButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0077C8), // Background color
+            backgroundColor: AppColors.blue, // Background color
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),

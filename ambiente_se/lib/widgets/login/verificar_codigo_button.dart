@@ -1,17 +1,17 @@
-import 'package:ambiente_se/screens/login/nova_senha.dart';
+import 'package:ambiente_se/screens/login/new_password.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/screens/login/verificar_codigo.dart'; // Ensure this path is correct
+import 'package:ambiente_se/screens/login/verify_code.dart'; // Ensure this path is correct
 
-class VerificarCodigoButton extends StatefulWidget {
+class VerifyCodeButton extends StatefulWidget {
   final Future<void> Function() onPressed;
 
-  const VerificarCodigoButton({Key? key, required this.onPressed}) : super(key: key);
+  const VerifyCodeButton({Key? key, required this.onPressed}) : super(key: key);
 
   @override
-  _VerificarCodigoButtonState createState() => _VerificarCodigoButtonState();
+  _VerifyCodeButtonState createState() => _VerifyCodeButtonState();
 }
 
-class _VerificarCodigoButtonState extends State<VerificarCodigoButton> {
+class _VerifyCodeButtonState extends State<VerifyCodeButton> {
   bool _isLoading = false;
 
   @override
@@ -30,7 +30,7 @@ class _VerificarCodigoButtonState extends State<VerificarCodigoButton> {
                   await widget.onPressed();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const NovaSenhaPage()),
+                    MaterialPageRoute(builder: (context) => const NewPasswordPage()),
                   );
                 } finally {
                   setState(() {

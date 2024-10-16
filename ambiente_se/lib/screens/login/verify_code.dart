@@ -1,21 +1,21 @@
 import 'package:ambiente_se/screens/login/login.dart';
-import 'package:ambiente_se/widgets/login_widgets/confirm_password_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/definir_senha_button.dart';
-import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/new_password_field.dart';
-import 'package:ambiente_se/widgets/login_widgets/voltar_login.dart';
-import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
+import 'package:ambiente_se/widgets/login/logo_widget.dart';
+import 'package:ambiente_se/widgets/login/verificar_codigo_button.dart';
+import 'package:ambiente_se/widgets/login/verification_code.dart';
+import 'package:ambiente_se/widgets/login/back_to_login.dart';
+import 'package:ambiente_se/widgets/login/wave_painter.dart';
 import 'package:flutter/material.dart';
 
-class NovaSenhaPage extends StatefulWidget {
-  const NovaSenhaPage({Key? key}) : super(key: key);
+class VerifyCode extends StatefulWidget {
+  const VerifyCode({Key? key}) : super(key: key);
 
   @override
-  _NovaSenhaPageState createState() => _NovaSenhaPageState();
+  _VerifyCodeState createState() => _VerifyCodeState();
 }
 
-class _NovaSenhaPageState extends State<NovaSenhaPage> {
+class _VerifyCodeState extends State<VerifyCode> {
   final TextEditingController _emailController = TextEditingController();
+  String? _errorText;
 
   @override
   void dispose() {
@@ -23,12 +23,26 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
     super.dispose();
   }
 
+  Future<void> _VerifyCode() async {
+    setState(() {
+      if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
+        _errorText = 'Por favor, insira um email válido.';
+      } else {
+        _errorText = null;
+      }
+    });
+
+    if (_errorText == null) {
+      await Future.delayed(const Duration(seconds: 2));
+      print('Email: ${_emailController.text}');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -37,7 +51,6 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
               ),
             ),
           ),
-          // White overlay with wave
           Positioned(
             bottom: 0,
             left: 0,
@@ -49,7 +62,6 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
               ),
             ),
           ),
-          // Content
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -67,7 +79,7 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'DEFINA SUA NOVA SENHA',
+                    'VERIFICAÇÃO DE CÓDIGO',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -75,17 +87,13 @@ class _NovaSenhaPageState extends State<NovaSenhaPage> {
                     ),
                   ),
                   const SizedBox(height: 22),
-                  const NewPasswordField(),
-                  const SizedBox(height: 20),
-                  const ConfirmPasswordField(),
+                  const VerificationCodeField(),
                   const SizedBox(height: 60),
-                  DefinirSenhaButton(
-                    onPressed: () async {
-                      // TODO: Implement login logic
-                    },
+                  VerifyCodeButton(
+                    onPressed: _VerifyCode,
                   ),
                   const SizedBox(height: 14),
-                  VoltarLogin(
+                  BackToLogin(
                     onPressed: () {
                       Navigator.push(
                         context,

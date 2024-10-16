@@ -1,19 +1,19 @@
 import 'package:ambiente_se/screens/login/login.dart';
-import 'package:ambiente_se/widgets/login_widgets/logo_widget.dart';
-import 'package:ambiente_se/widgets/login_widgets/verificar_codigo_button.dart';
-import 'package:ambiente_se/widgets/login_widgets/verification_code.dart';
-import 'package:ambiente_se/widgets/login_widgets/voltar_login.dart';
-import 'package:ambiente_se/widgets/login_widgets/wave_painter.dart';
+import 'package:ambiente_se/widgets/login/email_field.dart';
+import 'package:ambiente_se/widgets/login/logo_widget.dart';
+import 'package:ambiente_se/widgets/login/recover_password_button.dart';
+import 'package:ambiente_se/widgets/login/back_to_login.dart';
+import 'package:ambiente_se/widgets/login/wave_painter.dart';
 import 'package:flutter/material.dart';
 
-class VerificarCodigo extends StatefulWidget {
-  const VerificarCodigo({Key? key}) : super(key: key);
+class LoginRecoverPassword extends StatefulWidget {
+  const LoginRecoverPassword({Key? key}) : super(key: key);
 
   @override
-  _VerificarCodigoState createState() => _VerificarCodigoState();
+  _LoginRecoverPasswordState createState() => _LoginRecoverPasswordState();
 }
 
-class _VerificarCodigoState extends State<VerificarCodigo> {
+class _LoginRecoverPasswordState extends State<LoginRecoverPassword> {
   final TextEditingController _emailController = TextEditingController();
   String? _errorText;
 
@@ -23,7 +23,7 @@ class _VerificarCodigoState extends State<VerificarCodigo> {
     super.dispose();
   }
 
-  Future<void> _verificarCodigo() async {
+  Future<void> _RecoverPassword() async {
     setState(() {
       if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
         _errorText = 'Please enter a valid email';
@@ -33,8 +33,8 @@ class _VerificarCodigoState extends State<VerificarCodigo> {
     });
 
     if (_errorText == null) {
+      // Simulate async operation
       await Future.delayed(const Duration(seconds: 2));
-      // TODO: Implement verificar codigo logic
       print('Email: ${_emailController.text}');
     }
   }
@@ -80,7 +80,7 @@ class _VerificarCodigoState extends State<VerificarCodigo> {
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'VERIFICAÇÃO DE CÓDIGO',
+                    'RECUPERE A SUA SENHA',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w400,
@@ -88,13 +88,13 @@ class _VerificarCodigoState extends State<VerificarCodigo> {
                     ),
                   ),
                   const SizedBox(height: 22),
-                  const VerificationCodeField(),
+                  EmailField(controller: _emailController, errorText: _errorText),
                   const SizedBox(height: 60),
-                  VerificarCodigoButton(
-                    onPressed: _verificarCodigo,
+                  RecoverPasswordButton(
+                    onPressed: _RecoverPassword,
                   ),
                   const SizedBox(height: 14),
-                  VoltarLogin(
+                  BackToLogin(
                     onPressed: () {
                       Navigator.push(
                         context,

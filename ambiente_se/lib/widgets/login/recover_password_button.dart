@@ -1,16 +1,16 @@
-import 'package:ambiente_se/screens/login/login.dart';
 import 'package:flutter/material.dart';
+import 'package:ambiente_se/screens/login/verify_code.dart';
 
-class DefinirSenhaButton extends StatefulWidget {
+class RecoverPasswordButton extends StatefulWidget {
   final Future<void> Function() onPressed;
 
-  const DefinirSenhaButton({Key? key, required this.onPressed}) : super(key: key);
+  const RecoverPasswordButton({Key? key, required this.onPressed}) : super(key: key);
 
   @override
-  _DefinirSenhaButtonState createState() => _DefinirSenhaButtonState();
+  _RecoverPasswordButtonState createState() => _RecoverPasswordButtonState();
 }
 
-class _DefinirSenhaButtonState extends State<DefinirSenhaButton> {
+class _RecoverPasswordButtonState extends State<RecoverPasswordButton> {
   bool _isLoading = false;
 
   @override
@@ -29,7 +29,7 @@ class _DefinirSenhaButtonState extends State<DefinirSenhaButton> {
                   await widget.onPressed();
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    MaterialPageRoute(builder: (context) => const VerifyCode()),
                   );
                 } finally {
                   setState(() {
@@ -42,7 +42,7 @@ class _DefinirSenhaButtonState extends State<DefinirSenhaButton> {
                 color: Colors.white,
               )
             : const Text(
-                'Definir senha',
+                'Recuperar senha',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,

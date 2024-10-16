@@ -118,11 +118,6 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
-      appBar: AppBar(
-        title: const Text('Lista de Funcionários'),
-        backgroundColor: Colors.blue,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

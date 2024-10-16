@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String backendUrl = '10.200.161.165:8080'; // Substitua pelo endereço IP do seu servidor
+const String backendUrl = '172.16.0.1:8080'; // Substitua pelo endereço IP do seu servidor
 
 
 class AppColors {
   static const Color blue = Color(0xFF0077C8);
+  static const Color darkBlue = Color(0xFF005A9C);
   static const Color green = Color(0xFF0C9C6F);
+  static const Color logoGreen = Color.fromRGBO(118, 192, 77, 1);
   static const Color red = Color(0xFFDF2935);
   static const Color grey = Color(0xFF838B91);
   static const Color offWhite = Color.fromRGBO(207, 207, 207, 1);
@@ -186,21 +188,7 @@ String formatCpf(String cpf) {
     return cep;
   }
 
-  String formatDate(String date) {
-    if (date == null || date.isEmpty) {
-      return '';
-    }
-    List<String> parts = date.split('/');
-    if (parts.length != 3) {
-      return '';
-    }
-    String day = parts[0].padLeft(2, '0');
-    String month = parts[1].padLeft(2, '0');
-    String year = parts[2];
-    return '$year-$month-$day';
-  }
-
-  Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
+Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
   Uri url;
   if (parameters != null) {
     url = Uri.http(backendUrl, endpoint, parameters);
@@ -208,38 +196,15 @@ String formatCpf(String cpf) {
     url = Uri.http(backendUrl, endpoint);
   }
 
-  String token;
-  print(url);
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+  };
+
   http.Response response;
 
-
-  Map<String, String> authBody = {
-    "login": "root",
-    "password": "root"
-  };
-  Map<String, String> headers = {
-    'Content-Type': 'application/json'
-  };
-
-  try{
-    response = await http.post(Uri.parse("http://$backendUrl/api/login"), body: jsonEncode(authBody), headers: headers);
-    print(response.body);
-  } catch (e) {
-    print('Error making HTTP auth request: $e');
-    rethrow;
-  }
-
-  final Map<String, dynamic> responseBody = jsonDecode(response.body);
-  token = "Bearer ${responseBody['token']}";
-  headers = {
-    'Content-Type': 'application/json',
-    'Authorization': token,
-  };
-
-  try{
+  try {
     switch (method.toUpperCase()) {
       case 'POST':
-        
         response = await http.post(url, headers: headers, body: body);
         break;
       case 'PUT':
@@ -258,10 +223,10 @@ String formatCpf(String cpf) {
       return response;
     } else {
       throw Exception('Failed to load data: ${response.statusCode}');
-    } 
+    }
   } catch (e) {
     print('Error making HTTP request: $e');
     rethrow;
-  };
+  }
 }
 

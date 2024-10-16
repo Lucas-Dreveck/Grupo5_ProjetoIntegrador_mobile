@@ -29,8 +29,9 @@ class EmailField extends StatelessWidget {
           width: 300,
           child: TextField(
             controller: controller,
+            obscureText: true, // Hides the password input
             decoration: InputDecoration(
-              hintText: 'eduardo@gmail.com',
+              hintText: 'Insira seu email',
               hintStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,

@@ -303,10 +303,6 @@ class EditCompanyPageState extends State<EditCompanyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false, 
-      appBar: AppBar(
-        title: const Text("Aoba"),
-        backgroundColor: Colors.blue,
-      ),
       body: 
       PageView(
         physics: const NeverScrollableScrollPhysics(),
