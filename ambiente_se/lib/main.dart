@@ -70,14 +70,20 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int _selectedPageIndex = 0;
 
-  final List<Widget> _pages = [
-    const Home(),
-    const RankingPage(),
-    const MainCompanyPage(),
-    const MainEmployeePage(),
-    const MainQuestionPage(),
-    const EvaluationPage(),
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      Home(onSelectPage: _selectPage),
+      const RankingPage(),
+      const MainCompanyPage(),
+      const MainEmployeePage(),
+      const MainQuestionPage(),
+      const EvaluationPage(),
+    ];
+  }
 
   void _selectPage(int index) {
     setState(() {

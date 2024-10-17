@@ -7,7 +7,12 @@ import 'package:ambiente_se/widgets/home/build_menu_button.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key});
+  final Function(int) onSelectPage;
+
+  const Home({
+    super.key,
+    required this.onSelectPage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,35 +41,26 @@ class Home extends StatelessWidget {
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
-                    title: 'Empresas',
+                    title: 'Ranking',
                     onPressed: () {
                       // Navigate to company registration screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const MainCompanyPage()),
-                      );
+                      onSelectPage(1);
+                    },
+                  ),
+                  const SizedBox(height: 30), // Consistent 40px padding
+                  BuildMenuButton(
+                    title: 'Empresas',
+                    onPressed: () {
+                      // Navigate to employee registration screen
+                      onSelectPage(2);
                     },
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
                     title: 'Funcionários',
                     onPressed: () {
-                      // Navigate to employee registration screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const MainEmployeePage()),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 30), // Consistent 40px padding
-                  BuildMenuButton(
-                    title: 'Ranking',
-                    onPressed: () {
                       // Navigate to ranking screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const RankingPage()),
-                      );
+                      onSelectPage(3);
                     },
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
@@ -72,20 +68,14 @@ class Home extends StatelessWidget {
                     title: 'Perguntas',
                     onPressed: () {
                       // Navigate to questions screen
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const MainQuestionPage()),
-                      );
+                      onSelectPage(4);
                     },
                   ),
                   const SizedBox(height: 30), // Consistent 40px padding
                   BuildMenuButton(
                     title: 'Avaliação',
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const EvaluationPage()),
-                      );
+                      onSelectPage(5);
                       // Navigate to evaluation screen
                     },
                   ),
