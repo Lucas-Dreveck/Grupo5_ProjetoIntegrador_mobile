@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:ambiente_se/widgets/employee/employee_form.dart';
 import 'package:flutter/material.dart';
@@ -34,15 +38,85 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
   }
 
   bool verifyPage() {
-    if (_nameController.text.isNotEmpty &&
-        _cpfController.text.isNotEmpty &&
-        _birthDateController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
-        _loginController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty) {
-      return true;
+    if (_nameController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de nome não pode estar vazio.",
+      );
+      return false;
     }
-    return false;
+    if (_cpfController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de CPF não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_birthDateController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de data de nascimento não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_emailController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de e-mail não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_role.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de cargo não pode estar vazio.",
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  void _save() {
+    final employeeData = {
+      "name": _nameController.text,
+      "cpf": _cpfController.text.replaceAll(RegExp(r'\D'), ''),
+      "email": _emailController.text,
+      "birthDate": formatDate(_birthDateController.text),
+      "user": {
+        "login": _loginController.text,
+        "password": _passwordController.text,
+        "isAdmin": false
+      },
+      "role": _role,
+    };
+
+    _registerEmployee(employeeData);
+  }
+
+  void _registerEmployee(Map<String, dynamic> employeeData) async {
+    const url = '/api/auth/Employee';
+    try {
+      final response = await makeHttpRequest(url,
+          method: 'POST', body: jsonEncode(employeeData));
+      if (response.statusCode == 200) {
+        AlertSnackBar.show(
+            context: context,
+            text: "Funcionário cadastrado com sucesso.",
+            backgroundColor: AppColors.green);
+        Navigator.of(context).pop();
+      } else {
+        AlertSnackBar.show(
+            context: context,
+            text: "Erro ao cadastrar funcionário.",
+            backgroundColor: AppColors.red);
+      }
+    } catch (e) {
+      AlertSnackBar.show(
+          context: context,
+          text: "Erro ao cadastrar funcionário",
+          backgroundColor: AppColors.red);
+    }
   }
 
   @override
@@ -94,7 +168,7 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
                         label: "Salvar",
                         onPressed: () {
                           if (verifyPage()) {
-                            _finish();
+                            _save();
                           }
                         },
                         color: const Color(0xFF0C9C6F),

@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:ambiente_se/widgets/employee/employee_form.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +18,7 @@ class EditEmployeePage extends StatefulWidget {
 }
 
 class _EditEmployeePageState extends State<EditEmployeePage> {
+  late int id;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
@@ -31,23 +34,88 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   }
 
   bool verifyPage() {
-    if (_nameController.text.isNotEmpty &&
-        _cpfController.text.isNotEmpty &&
-        _birthDateController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
-        _loginController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty) {
-      return true;
+    if (_nameController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de nome não pode estar vazio.",
+      );
+      return false;
     }
-    return false;
+    if (_cpfController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de CPF não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_birthDateController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de data de nascimento não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_emailController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de e-mail não pode estar vazio.",
+      );
+      return false;
+    }
+    if (_role.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de cargo não pode estar vazio.",
+      );
+      return false;
+    }
+
+    return true;
   }
 
   void _cancel() {
-    Navigator.of(context).pop();
+    Navigator.pop(context, true);
   }
 
-  void _finish() {
-    Navigator.of(context).pop();
+  void _save() async {
+    final employeeData = {
+      'name': _nameController.text,
+      'cpf': _cpfController.text,
+      'birthDate': _birthDateController.text,
+      'email': _emailController.text,
+      'login': _loginController.text,
+      'password': _passwordController.text,
+      'role': _role,
+    };
+
+    final response = await makeHttpRequest(
+      "/api/auth/Employee/$id",
+      method: 'PUT',
+      body: json.encode(employeeData),
+    );
+
+    if (response.statusCode == 200) {
+      AlertSnackBar.show(
+        context: context,
+        text: "Funcionário editado com sucesso.",
+        backgroundColor: AppColors.green,
+      );
+
+      Navigator.of(context).pop(true);
+    } else {
+      AlertSnackBar.show(
+        context: context,
+        text: "Falha ao editar funcionário.",
+        backgroundColor: AppColors.red,
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    id = widget.id;
+    fetchEmployeeData();
   }
 
   @override
@@ -59,6 +127,25 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     _loginController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> fetchEmployeeData() async {
+    final response = await makeHttpRequest("/api/auth/Employee/$id");
+
+    if (response.statusCode == 200) {
+      final data = json.decode(utf8.decode(response.bodyBytes));
+      var cpf = data['cpf'];
+      setState(() {
+        _nameController.text = data['name'] ?? '';
+        _cpfController.text = (data['cpf'] ?? '');
+        _birthDateController.text = data['birthDate'] ?? '';
+        _emailController.text = data['email'] ?? '';
+        _loginController.text = data['login'] ?? '';
+        _role = data['role']['description'] ?? '';
+      });
+    } else {
+      throw Exception('Failed to load funcioário data');
+    }
   }
 
   @override
@@ -101,7 +188,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
                         label: "Salvar",
                         onPressed: () {
                           if (verifyPage()) {
-                            _finish();
+                            _save();
                           }
                         },
                         color: const Color(0xFF0C9C6F),
