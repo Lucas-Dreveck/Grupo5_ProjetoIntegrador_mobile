@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -189,6 +190,7 @@ String formatCpf(String cpf) {
   }
 
 Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
+  const FlutterSecureStorage secureStorage = FlutterSecureStorage();
   Uri url;
   if (parameters != null) {
     url = Uri.http(backendUrl, endpoint, parameters);
@@ -197,6 +199,7 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
   }
 
   Map<String, String> headers = {
+    'Authorization': 'Bearer ${await secureStorage.read(key: 'auth_token')}',
     'Content-Type': 'application/json',
   };
 
@@ -225,6 +228,7 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
       throw Exception('Failed to load data: ${response.statusCode}');
     }
   } catch (e) {
+    // ignore: avoid_print
     print('Error making HTTP request: $e');
     rethrow;
   }

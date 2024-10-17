@@ -76,10 +76,12 @@ class _LoginPageState extends State<LoginPage> {
         await _secureStorage.write(key: 'auth_token', value: token);
 
         // Navigate to the Home screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const MainApp()),
-        );
+        Navigator.of(context)
+          .pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context)=>MainApp()
+            ),(Route<dynamic> route) => false
+          );
       } else {
         // Handle error, show message
         showDialog(
