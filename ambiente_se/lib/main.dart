@@ -9,7 +9,6 @@ import 'package:ambiente_se/screens/employee/main_employee_page.dart';
 import 'package:ambiente_se/screens/question/main_question_page.dart';
 import 'package:ambiente_se/screens/evaluation/evaluation_page.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -24,38 +23,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(), // Inicia com a página de login
+      home: const LoginPage(),
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class CustomMenuIcon extends StatelessWidget {
-  const CustomMenuIcon({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 35, // Largura das barras do menu
-      height: 30, // Altura total do ícone
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment
-            .spaceBetween, // Controla o espaçamento entre as barras
-        children: <Widget>[
-          Container(
-            height: 3, // Altura de cada barra
-            color: Colors.white, // Cor da barra
-          ),
-          Container(
-            height: 3,
-            color: Colors.white,
-          ),
-          Container(
-            height: 3,
-            color: Colors.white,
-          ),
-        ],
-      ),
     );
   }
 }
@@ -68,9 +37,8 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  int _selectedPageIndex = 0;
-
   late List<Widget> _pages;
+  final List<int> _navigationStack = [0];
 
   @override
   void initState() {
@@ -87,20 +55,49 @@ class _MainAppState extends State<MainApp> {
 
   void _selectPage(int index) {
     setState(() {
-      _selectedPageIndex = index;
+      if (_navigationStack.last != index) {
+        _navigationStack.add(index);
+      }
     });
+  }
+
+  Future<bool> _onWillPop() async {
+    if (_navigationStack.length > 1) {
+      setState(() {
+        _navigationStack.removeLast();
+      });
+      return false;
+    } else {
+      return (await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Você gostaria de sair do aplicativo?'),
+              actions: [
+                TextButton(
+                  child: const Text('Não'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+                TextButton(
+                  child: const Text('Sim'),
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+              ],
+            ),
+          )) ??
+          false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
         appBar: PreferredSize(
-          preferredSize:
-              const Size.fromHeight(85), // Define a altura da AppBar para 85px
+          preferredSize: const Size.fromHeight(85),
           child: Container(
-            height: 85, // Altura da AppBar
-            color: AppColors.blue, // Cor de fundo da AppBar
+            height: 85,
+            color: AppColors.blue,
             child: Padding(
               padding: const EdgeInsets.only(left: 25.0),
               child: Row(
@@ -130,12 +127,40 @@ class _MainAppState extends State<MainApp> {
           ),
         ),
         drawer: MenuLateral(
-          selectedPageIndex: _selectedPageIndex,
+          selectedPageIndex: _navigationStack.last,
           onSelectPage: _selectPage,
         ),
-        body: _pages[_selectedPageIndex],
+        body: _pages[_navigationStack.last],
       ),
-      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class CustomMenuIcon extends StatelessWidget {
+  const CustomMenuIcon({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 35,
+      height: 30,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            height: 3,
+            color: Colors.white,
+          ),
+          Container(
+            height: 3,
+            color: Colors.white,
+          ),
+          Container(
+            height: 3,
+            color: Colors.white,
+          ),
+        ],
+      ),
     );
   }
 }

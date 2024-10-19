@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 const String backendUrl = '172.16.0.1:8080'; // Substitua pelo endereço IP do seu servidor
 
@@ -73,21 +72,18 @@ bool isValidCNPJ(String cnpj) {
 }    
 
 String formatCnpj(String cnpj) {
-  if (cnpj == null) {
-    return '';
-  }
   cnpj = cnpj.replaceAll(RegExp(r'[^0-9]'), '');
   if (cnpj.length > 2) {
-    cnpj = cnpj.substring(0, 2) + '.' + cnpj.substring(2);
+    cnpj = '${cnpj.substring(0, 2)}.${cnpj.substring(2)}';
   }
   if (cnpj.length > 6) {
-    cnpj = cnpj.substring(0, 6) + '.' + cnpj.substring(6);
+    cnpj = '${cnpj.substring(0, 6)}.${cnpj.substring(6)}';
   }
   if (cnpj.length > 10) {
-    cnpj = cnpj.substring(0, 10) + '/' + cnpj.substring(10);
+    cnpj = '${cnpj.substring(0, 10)}/${cnpj.substring(10)}';
   }
   if (cnpj.length > 15) {
-    cnpj = cnpj.substring(0, 15) + '-' + cnpj.substring(15);
+    cnpj = '${cnpj.substring(0, 15)}-${cnpj.substring(15)}';
   }
   return cnpj;
 }
@@ -145,52 +141,43 @@ bool isValidCPF(String cpf) {
 }
 
 String formatCpf(String cpf) {
-  if (cpf == null) {
-    return '';
-  }
   cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
   if (cpf.length > 3) {
-    cpf = cpf.substring(0, 3) + '.' + cpf.substring(3);
+    cpf = '${cpf.substring(0, 3)}.${cpf.substring(3)}';
   }
   if (cpf.length > 7) {
-    cpf = cpf.substring(0, 7) + '.' + cpf.substring(7);
+    cpf = '${cpf.substring(0, 7)}.${cpf.substring(7)}';
   }
   if (cpf.length > 11) {
-    cpf = cpf.substring(0, 11) + '-' + cpf.substring(11);
+    cpf = '${cpf.substring(0, 11)}-${cpf.substring(11)}';
   }
   return cpf;
 }
 
   String formatPhone(String phone) {
-    if (phone == null) {
-      return '';
-    }
     phone = phone.replaceAll(RegExp(r'[^0-9]'), '');
-    if (phone.length > 0) {
-      phone = '+' + phone.substring(0, 2) + ' (' + phone.substring(2);
+    if (phone.isNotEmpty) {
+      phone = '+${phone.substring(0, 2)} (${phone.substring(2)}';
     }
     if (phone.length > 6) {
-      phone = phone.substring(0, 6) + ') ' + phone.substring(6);
+      phone = '${phone.substring(0, 6)}) ${phone.substring(6)}';
     }
     if (phone.length > 12) {
-      phone = phone.substring(0, 11) + '-' + phone.substring(11);
+      phone = '${phone.substring(0, 11)}-${phone.substring(11)}';
     }
     return phone;
   }
 
   String formatCep(String cep) {
-    if (cep == null) {
-      return '';
-    }
     cep = cep.replaceAll(RegExp(r'[^0-9]'), '');
     if (cep.length > 5) {
-      cep = cep.substring(0, 5) + '-' + cep.substring(5);
+      cep = '${cep.substring(0, 5)}-${cep.substring(5)}';
     }
     return cep;
   }
 
   String formatDate(String date) {
-    if (date == null || date.isEmpty) {
+    if (date.isEmpty) {
       return '';
     }
     List<String> parts = date.split('/');
@@ -211,9 +198,10 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
   } else {
     url = Uri.http(backendUrl, endpoint);
   }
+  String? token = await secureStorage.read(key: 'auth_token');
 
   Map<String, String> headers = {
-    'Authorization': 'Bearer ${await secureStorage.read(key: 'auth_token')}',
+    'Authorization': 'Bearer $token',
     'Content-Type': 'application/json',
   };
 
