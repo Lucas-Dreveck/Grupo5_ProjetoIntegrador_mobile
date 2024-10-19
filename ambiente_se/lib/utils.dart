@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-const String backendUrl = '172.16.0.1:8080'; // Substitua pelo endereço IP do seu servidor
+const String backendUrl = 'localhost:8080'; // Substitua pelo endereço IP do seu servidor
 
 
 class AppColors {
