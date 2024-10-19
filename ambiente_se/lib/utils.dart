@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-const String backendUrl = '10.200.75.29:8080'; // Substitua pelo endereço IP do seu servidor
+
+const String backendUrl = '172.31.208.1:8080';
 
 
 class AppColors {

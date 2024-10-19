@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const LoginPage(), // Inicia com a página de login
+      home: const Home(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -72,7 +72,7 @@ class _MainAppState extends State<MainApp> {
 
   final List<Widget> _pages = [
     const Home(),
-    const RankingPage(),
+    const RankingEmpresaPage(),
     const MainCompanyPage(),
     const MainEmployeePage(),
     const MainQuestionPage(),

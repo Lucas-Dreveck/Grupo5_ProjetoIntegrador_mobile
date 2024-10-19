@@ -63,7 +63,7 @@ class Home extends StatelessWidget {
                       // Navigate to ranking screen
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const RankingPage()),
+                        MaterialPageRoute(builder: (context) => const RankingEmpresaPage()),
                       );
                     },
                   ),
