@@ -189,6 +189,20 @@ String formatCpf(String cpf) {
     return cep;
   }
 
+  String formatDate(String date) {
+    if (date == null || date.isEmpty) {
+      return '';
+    }
+    List<String> parts = date.split('/');
+    if (parts.length != 3) {
+      return '';
+    }
+    String day = parts[0].padLeft(2, '0');
+    String month = parts[1].padLeft(2, '0');
+    String year = parts[2];
+    return '$year-$month-$day';
+  }
+
 Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
   const FlutterSecureStorage secureStorage = FlutterSecureStorage();
   Uri url;
