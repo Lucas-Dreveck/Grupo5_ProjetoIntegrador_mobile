@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:flutter/material.dart';
 
 class QuestionRegistrationDialog extends StatefulWidget {
@@ -8,8 +12,8 @@ class QuestionRegistrationDialog extends StatefulWidget {
 }
 
 class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog> {
-  String? selectedAxis; // Variável para armazenar o eixo selecionado
-  String question = ''; // Variável para armazenar a pergunta
+  String? selectedAxis; 
+  String question = ''; 
 
   @override
   Widget build(BuildContext context) {
@@ -91,8 +95,11 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
         ),
         ElevatedButton(
           onPressed: () {
-            // Lógica para salvar a pergunta
-            Navigator.of(context).pop(); // Fecha o pop-up após salvar
+            if (selectedAxis != null && question.isNotEmpty) {
+              saveQuestion(selectedAxis!, question);
+            } else {
+              AlertSnackBar.show(text: "Por favor, preencha todos os campos.", backgroundColor: AppColors.red, context: context);
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green, // Cor de fundo do botão "Salvar"
@@ -108,4 +115,24 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
       ],
     );
   }
+  
+    void saveQuestion(String axis, String question) async {
+      const url = '/api/auth/Question';
+      final questionData = {
+        'pillar': axis,
+        'description': question,
+      };
+      try {
+        final response = await makeHttpRequest(url, method: 'POST', body: jsonEncode(questionData));
+        if (response.statusCode == 200) {
+          AlertSnackBar.show(text: "Pergunta cadastrada com sucesso.", backgroundColor: AppColors.green, context: context);
+          Navigator.of(context).pop();
+        } else {
+            AlertSnackBar.show(text: "Erro ao cadastrar pergunta!", backgroundColor: AppColors.red, context: context);          
+        }
+      } catch (e) {
+            AlertSnackBar.show(text: "Erro ao cadastrar pergunta!", backgroundColor: AppColors.red, context: context);
+      }
+    }
+  
 }
