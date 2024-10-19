@@ -15,6 +15,7 @@ class EmployeeForm extends StatefulWidget {
   final bool isEditing;
 
   EmployeeForm({
+    required Key key,
     required this.nameController,
     required this.cpfController,
     required this.birthDateController,
@@ -24,7 +25,7 @@ class EmployeeForm extends StatefulWidget {
     required this.loginController,
     required this.passwordController,
     this.isEditing = false,
-  });
+  }) : super(key: key); 
 
   @override
   _EmployeeFormState createState() => _EmployeeFormState();

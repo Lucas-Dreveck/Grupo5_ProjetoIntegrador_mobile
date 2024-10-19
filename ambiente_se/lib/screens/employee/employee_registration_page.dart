@@ -140,6 +140,8 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
             cpfController: _cpfController,
             birthDateController: _birthDateController,
             onroleChanged: _updaterole,
+            role: _role,
+            key: UniqueKey(),
             emailController: _emailController,
             loginController: _loginController,
             passwordController: _passwordController),
