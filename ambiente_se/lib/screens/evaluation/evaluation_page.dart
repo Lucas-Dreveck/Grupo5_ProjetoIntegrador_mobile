@@ -25,16 +25,17 @@ class EvaluationPage extends StatefulWidget {
 class _EvaluationPageState extends State<EvaluationPage> {
   // Controllers
   final TextEditingController _searchController = TextEditingController();
-  final GlobalKey _searchFieldKey = GlobalKey();
   final PageController _pageController = PageController();
   int currentPage = 0;
-  bool isDropdownOpen = false;
-  double dropdownTop = 0.0;
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+  final FocusNode _focusNode = FocusNode();
 
   // Variables
   List<Map<String, dynamic>> companies = [];
   Map<String, dynamic>? selectedCompany;
   bool isNewEvaluation = false;
+  bool _isUpdatingTextField = false;
 
   int socialScore = 0;
   int governmentalScore = 0;
@@ -46,10 +47,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
     'Ambiental': [],
   };
 
-  @override
+@override
   void initState() {
     super.initState();
     _searchController.addListener(_onSearchChanged);
+    _focusNode.addListener(_onFocusChange);
   }
 
   @override
@@ -57,30 +59,99 @@ class _EvaluationPageState extends State<EvaluationPage> {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     _pageController.dispose();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    _hideOverlay();
     super.dispose();
   }
 
-  void _onSearchChanged() {
-    if (_searchController.text.isNotEmpty) {
-      fetchCompanies(_searchController.text);
+  void _onFocusChange() {
+    if (_focusNode.hasFocus) {
+      _showOverlay();
     } else {
-      setState(() {
-        companies = [];
-        isDropdownOpen = false;
-      });
+      _hideOverlay();
     }
   }
 
-  void _calculateDropdownPosition() {
-    final RenderBox renderBox = _searchFieldKey.currentContext!.findRenderObject() as RenderBox;
-    final Offset position = renderBox.localToGlobal(Offset.zero);
+  void _selectFirstCompany() {
+    if (companies.isNotEmpty) {
+      _selectCompany(companies.first);
+    }
+  }
+
+  void _selectCompany(Map<String, dynamic> company) {
+    _isUpdatingTextField = true;
     setState(() {
-      dropdownTop = position.dy - renderBox.size.height;
+      selectedCompany = company;
+      _searchController.text = company['tradeName'] ?? '';
+    });
+    _hideOverlay();
+    Future.microtask(() {
+      _focusNode.unfocus();
+      _isUpdatingTextField = false;
     });
   }
 
+  void _hideOverlay() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.remove();
+      _overlayEntry = null;
+    }
+  }
+
+  void _showOverlay() {
+    if (_overlayEntry == null) {
+      _overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          width: 300,
+          child: CompositedTransformFollower(
+            link: _layerLink,
+            showWhenUnlinked: false,
+            offset: const Offset(0.0, 55.0),
+            child: Material(
+              elevation: 4.0,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 200,
+                  minHeight: 50,
+                ),
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  itemCount: companies.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text(companies[index]['tradeName'] ?? ''),
+                      onTap: () {
+                        _selectCompany(companies[index]);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      Overlay.of(context).insert(_overlayEntry!);
+    } else {
+      _overlayEntry!.markNeedsBuild();
+    }
+  }
+
+  void _onSearchChanged() {
+    if (!_isUpdatingTextField) {
+      if (_searchController.text.isEmpty) {
+        setState(() {
+          companies = [];
+        });
+      }
+      fetchCompanies(_searchController.text);
+    }
+  }
+
   Future<void> fetchCompanies(String filter) async {
-    final queryParams = {'name': filter.isEmpty ? 'a' : filter};
+    final queryParams = {'name': filter};
     const url = 'api/auth/Company/evaluation/search';
     
     try {
@@ -89,13 +160,16 @@ class _EvaluationPageState extends State<EvaluationPage> {
         final List<dynamic> jsonResponse = json.decode(response.body);
         setState(() {
           companies = jsonResponse.map((company) => company as Map<String, dynamic>).toList();
-          isDropdownOpen = true;
         });
       } else {
         throw Exception('Failed to load companies');
       }
     } catch (e) {
       print('Error fetching companies: $e');
+    } finally {
+      if (mounted) {
+        _showOverlay();
+      }
     }
   }
 
@@ -270,12 +344,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
             context: context,
             text: 'Avaliação finalizada com sucesso',
             backgroundColor: AppColors.green,
+            duration: 2,
           );
         } else {
           AlertSnackBar.show(
             context: context,
             text: 'Respostas salvas com sucesso',
             backgroundColor: AppColors.green,
+            duration: 1,
           );
         }
       } else {
@@ -288,105 +364,77 @@ class _EvaluationPageState extends State<EvaluationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          physics:
-          const NeverScrollableScrollPhysics(), // Desativa o deslizar manual
-          children: [
-            _buildCompanySelectionPage(),
-            // Segunda página: Perguntas governamentais
-            _buildGovernmentQuestionsPage(),
-            // Terceira página: Perguntas ambientais
-            _buildEnvironmentalQuestionsPage(),
-            // Quarta página: Perguntas sociais
-            _buildSocialQuestionsPage(),
-            // Quinta página: Resultados
-            _buildResultPage(),
-         ],
+    return GestureDetector(
+      onTap: () {
+        _focusNode.unfocus();
+        _hideOverlay();
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: PageView(
+            controller: _pageController,
+            physics:
+            const NeverScrollableScrollPhysics(),
+            children: [
+              _buildCompanySelectionPage(),
+              _buildGovernmentQuestionsPage(),
+              _buildEnvironmentalQuestionsPage(),
+              _buildSocialQuestionsPage(),
+              _buildResultPage(),
+          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildCompanySelectionPage() {
-    return Stack(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Escolha a empresa para a avaliação',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 50),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
+    return GestureDetector(
+      onTap: () {
+        _focusNode.unfocus();
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const Text(
+            'Escolha a empresa para a avaliação',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 50),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                CompositedTransformTarget(
+                  link: _layerLink,
+                  child: Container(
                     width: 300,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: TextField(
-                      key: _searchFieldKey,
+                      focusNode: _focusNode,
                       controller: _searchController,
                       decoration: const InputDecoration(
                         hintText: 'Buscar empresa...',
                         contentPadding: EdgeInsets.symmetric(horizontal: 10),
                         border: InputBorder.none,
                       ),
-                      onTap: _calculateDropdownPosition,
+                      onSubmitted: (_) => _selectFirstCompany(),
                     ),
                   ),
-                ],
-              ),
-            ),
-            CustomButton(
-              label: 'Avaliar',
-              onPressed: selectedCompany != null ? _onEvaluatePressed : null,
-            ),
-          ],
-        ),
-        if (isDropdownOpen)
-          Positioned(
-            top: dropdownTop,
-            left: MediaQuery.of(context).size.width / 2 - 150,
-            child: Material(
-              elevation: 4.0,
-              child: Container(
-                width: 300,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.grey),
                 ),
-                child: ListView.builder(
-                  itemCount: companies.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(companies[index]['tradeName'] ?? ''),
-                      onTap: () {
-                        setState(() {
-                          _searchController.removeListener(_onSearchChanged);
-                          selectedCompany = companies[index];
-                          _searchController.text = selectedCompany?['tradeName'] ?? '';
-                          isDropdownOpen = false;
-                          _searchController.addListener(_onSearchChanged);
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
+              ],
             ),
           ),
-      ],
+          CustomButton(
+            label: 'Avaliar',
+            onPressed: selectedCompany != null ? _onEvaluatePressed : null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -618,6 +666,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
               PreviousPageButton(pageController: _pageController),
               const SizedBox(width: 50),
               FinishButton(
+                onSelectPage: (int index) => widget.onSelectPage(index),
                 pageController: _pageController,
                 sendQuestions: (bool isComplete) => _sendQuestions(isComplete),
                 label: 'Finalizar',

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class FinishButton extends StatelessWidget {
   final Map<String, List<EvaluationAnswer>> answers;
+  final Function(int) onSelectPage;
   final PageController pageController;
   final Future<void> Function(bool isComplete)? sendQuestions;
   final String label;
@@ -12,6 +13,7 @@ class FinishButton extends StatelessWidget {
   const FinishButton({
     super.key,
     required this.answers,
+    required this.onSelectPage,
     required this.pageController,
     this.sendQuestions,
     required this.label,
@@ -77,22 +79,27 @@ class FinishButton extends StatelessWidget {
             if (sendQuestions != null) {
               await sendQuestions!(false);
             }
-            _navigateToResultsPage(context);
+            _navigateToResultsPage(context, false);
           }
         } else {
           if (sendQuestions != null) {
             await sendQuestions!(true); 
           }
-          _navigateToResultsPage(context);
+          _navigateToResultsPage(context, true);
         }
       },
     );
   }
 
-  void _navigateToResultsPage(BuildContext context) {
-    pageController.nextPage(
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
+  void _navigateToResultsPage(BuildContext context, bool isFinished) {
+    if (isFinished) {
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+      return;
+    }
+
+    onSelectPage(0);
   }
 }
