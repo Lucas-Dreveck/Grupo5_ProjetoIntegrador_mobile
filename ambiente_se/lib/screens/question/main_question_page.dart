@@ -44,7 +44,7 @@ class MainQuestionPageState extends State<MainQuestionPage> {
     });
 
     List<Map<String, dynamic>> moreQuestions;
-    final url = '/api/auth/Question/search';
+    const url = '/api/auth/Question/search';
     final Map<String, dynamic> parameters = {
       'page': _currentPage.toString(),
       'size': _itemsPerPage.toString(),
@@ -111,7 +111,7 @@ class MainQuestionPageState extends State<MainQuestionPage> {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => const QuestionRegistrationDialog(), // Ensure this class is defined
+                      builder: (context) => const QuestionRegistrationDialog(),
                     ).then((_) {
                       _resetQuestions();
                     });

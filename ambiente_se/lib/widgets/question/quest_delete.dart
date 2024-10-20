@@ -7,9 +7,9 @@ class QuestionDeleteDialog extends StatefulWidget {
   final int id;
 
   const QuestionDeleteDialog({
-    Key? key,
+    super.key,
     required this.id,
-  }) : super(key: key);
+  });
 
   @override
   _QuestionDeleteDialogState createState() => _QuestionDeleteDialogState();
@@ -55,7 +55,7 @@ class _QuestionDeleteDialogState extends State<QuestionDeleteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Confirmar exclusão de pergunta ${widget.id}', style: TextStyle(fontSize: 20)),
+      title: Text('Confirmar exclusão de pergunta ${widget.id}', style: const TextStyle(fontSize: 20)),
       content: SizedBox(
         width: 300,
         child: Column(

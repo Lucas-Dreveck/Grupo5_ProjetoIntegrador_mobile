@@ -5,7 +5,7 @@ import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:flutter/material.dart';
 
 class QuestionRegistrationDialog extends StatefulWidget {
-  const QuestionRegistrationDialog({Key? key}) : super(key: key);
+  const QuestionRegistrationDialog({super.key});
 
   @override
   _QuestionRegistrationDialogState createState() => _QuestionRegistrationDialogState();
@@ -20,7 +20,7 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
     return AlertDialog(
       title: const Text('Cadastro de Pergunta'),
       content: SizedBox(
-        width: 300, // Largura do pop-up
+        width: 300,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -39,15 +39,15 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  selectedAxis = newValue; // Atualiza o eixo selecionado
+                  selectedAxis = newValue;
                 });
               },
               decoration: InputDecoration(
-                filled: true, // Preenche o fundo
-                fillColor: const Color(0xFFD5E2E7), // Cor de fundo
+                filled: true,
+                fillColor: const Color(0xFFD5E2E7),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8), // Bordas arredondadas
-                  borderSide: BorderSide.none, // Remove a borda padrão
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
                 hintText: 'Selecione um eixo',
               ),
@@ -60,16 +60,16 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
             TextField(
               onChanged: (value) {
                 setState(() {
-                  question = value; // Atualiza a pergunta
+                  question = value;
                 });
               },
               decoration: InputDecoration(
-                filled: true, // Preenche o fundo
-                fillColor: const Color(0xFFD5E2E7), // Cor de fundo
+                filled: true,
+                fillColor: const Color(0xFFD5E2E7),
                 hintText: 'Digite sua pergunta aqui....',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8), // Bordas arredondadas
-                  borderSide: BorderSide.none, // Remove a borda padrão
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
               ),
               maxLines: 3,
@@ -80,17 +80,17 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(); // Fecha o pop-up
+            Navigator.of(context).pop();
           },
           style: TextButton.styleFrom(
-            backgroundColor: Colors.grey, // Cor de fundo do botão "Cancelar"
+            backgroundColor: Colors.grey,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8), // Bordas arredondadas
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
           child: const Text(
             'Cancelar',
-            style: TextStyle(color: Colors.white), // Cor do texto
+            style: TextStyle(color: Colors.white),
           ),
         ),
         ElevatedButton(
@@ -102,14 +102,14 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green, // Cor de fundo do botão "Salvar"
+            backgroundColor: Colors.green,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8), // Bordas arredondadas
+              borderRadius: BorderRadius.circular(8),
             ),
           ),
           child: const Text(
             'Salvar',
-            style: TextStyle(color: Colors.white), // Cor do texto
+            style: TextStyle(color: Colors.white),
           ),
         ),
       ],

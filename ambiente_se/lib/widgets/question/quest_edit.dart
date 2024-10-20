@@ -7,9 +7,9 @@ class QuestionEditDialog extends StatefulWidget {
   final int id;
 
   const QuestionEditDialog({
-    Key? key,
+    super.key,
     required this.id,
-  }) : super(key: key);
+  });
 
   @override
   _QuestionEditDialogState createState() => _QuestionEditDialogState();
@@ -54,7 +54,7 @@ class _QuestionEditDialogState extends State<QuestionEditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Editar pergunta ${widget.id}', style: TextStyle(fontSize: 20)),
+      title: Text('Editar pergunta ${widget.id}', style: const TextStyle(fontSize: 20)),
       content: SizedBox(
         width: 300,
         child: Column(

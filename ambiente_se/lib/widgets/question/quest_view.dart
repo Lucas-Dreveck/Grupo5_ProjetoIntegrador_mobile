@@ -8,9 +8,9 @@ class QuestionDetailDialog extends StatefulWidget {
   final int id;
 
   const QuestionDetailDialog({
-    Key? key,
+    super.key,
     required this.id,
-  }) : super(key: key);
+  });
 
   @override
   _QuestionDetailDialogState createState() => _QuestionDetailDialogState();
@@ -40,7 +40,7 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Pergunta ${widget.id}', style: TextStyle(fontSize: 20)),
+      title: Text('Pergunta ${widget.id}', style: const TextStyle(fontSize: 20)),
       content: SizedBox(
         width: 300,
         child: Column(
