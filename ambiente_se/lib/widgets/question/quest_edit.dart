@@ -5,10 +5,10 @@ class QuestionEditDialog extends StatelessWidget {
   final String question; // Texto da pergunta
 
   const QuestionEditDialog({
-    Key? key,
+    super.key,
     required this.axis,
     required this.question,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

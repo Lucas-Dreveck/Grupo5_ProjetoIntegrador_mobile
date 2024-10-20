@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class VerificationCodeField extends StatefulWidget {
-  const VerificationCodeField({Key? key}) : super(key: key);
+  const VerificationCodeField({super.key});
 
   @override
   _VerificationCodeFieldState createState() => _VerificationCodeFieldState();
@@ -24,7 +24,7 @@ class _VerificationCodeFieldState extends State<VerificationCodeField> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
+        SizedBox(
           height: 40,
           width: 300,
           child: TextField(

@@ -63,7 +63,7 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
     });
 
     List<Map<String, dynamic>> moreCompanies;
-    final url = '/api/auth/Company/search';
+    const url = '/api/auth/Company/search';
     final Map<String, dynamic> parameters = {
       'page': _currentPage.toString(),
       'size': _itemsPerPage.toString(),

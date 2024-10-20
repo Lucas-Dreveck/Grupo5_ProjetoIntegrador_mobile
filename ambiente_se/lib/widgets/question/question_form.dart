@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class QuestionRegistrationDialog extends StatefulWidget {
-  const QuestionRegistrationDialog({Key? key}) : super(key: key);
+  const QuestionRegistrationDialog({super.key});
 
   @override
   _QuestionRegistrationDialogState createState() => _QuestionRegistrationDialogState();

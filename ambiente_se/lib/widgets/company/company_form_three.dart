@@ -38,7 +38,7 @@ class CompanyFormThreeState extends State<CompanyFormThree> {
   late TextEditingController publicSpaceController;
   late TextEditingController neighborhoodController;
   late TextEditingController numberController;
-  var uf;
+  late String uf;
 
   var postalCodeMask = MaskTextInputFormatter(
     mask: '#####-###', 
@@ -146,7 +146,7 @@ class CompanyFormThreeState extends State<CompanyFormThree> {
             initialValue: uf != "" ? uf : null,
             onChanged: (newUF) {
               setState(() {
-                uf = newUF;
+                uf = newUF!;
               });
               widget.onUfChanged(newUF.toString());
             },

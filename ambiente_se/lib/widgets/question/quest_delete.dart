@@ -6,11 +6,11 @@ class QuestionDeleteDialog extends StatelessWidget {
   final VoidCallback onDelete; // Função de callback para exclusão
 
   const QuestionDeleteDialog({
-    Key? key,
+    super.key,
     required this.axis,
     required this.question,
     required this.onDelete, // Adiciona o parâmetro de exclusão
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,4 @@
 import 'package:ambiente_se/main.dart';
-import 'package:ambiente_se/screens/home/home.dart';
 import 'package:ambiente_se/widgets/login/forgot_password.dart';
 import 'package:ambiente_se/widgets/login/login_button.dart';
 import 'package:ambiente_se/widgets/login/logo_widget.dart';
@@ -10,11 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:ambiente_se/screens/login/login_recover_password.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:ambiente_se/utils.dart'; 
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -79,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.of(context)
           .pushAndRemoveUntil(
             MaterialPageRoute(
-              builder: (context)=>MainApp()
+              builder: (context)=>const MainApp()
             ),(Route<dynamic> route) => false
           );
       } else {

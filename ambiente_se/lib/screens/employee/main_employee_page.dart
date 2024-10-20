@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:ambiente_se/screens/company/company_details_page.dart';
 import 'package:ambiente_se/screens/employee/employee_details_page.dart';
 import 'package:ambiente_se/screens/employee/employee_registration_page.dart';
 import 'package:ambiente_se/utils.dart';
@@ -53,7 +52,7 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
     });
 
     List<Map<String, dynamic>> moreEmployees;
-    final url = '/api/auth/Employee/search';
+    const url = '/api/auth/Employee/search';
     final Map<String, dynamic> parameters = {
       'page': _currentPage.toString(),
       'size': _itemsPerPage.toString(),

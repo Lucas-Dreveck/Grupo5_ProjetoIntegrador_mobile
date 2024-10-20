@@ -6,10 +6,10 @@ class BuildMenuButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const BuildMenuButton({
-    Key? key,
+    super.key,
     required this.title,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
