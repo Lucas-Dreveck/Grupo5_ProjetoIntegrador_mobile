@@ -154,7 +154,7 @@ String formatCpf(String cpf) {
   return cpf;
 }
 
-  String formatPhone(String phone) {
+String formatPhone(String phone) {
     phone = phone.replaceAll(RegExp(r'[^0-9]'), '');
     if (phone.isNotEmpty) {
       phone = '+${phone.substring(0, 2)} (${phone.substring(2)}';
@@ -168,7 +168,7 @@ String formatCpf(String cpf) {
     return phone;
   }
 
-  String formatCep(String cep) {
+String formatCep(String cep) {
     cep = cep.replaceAll(RegExp(r'[^0-9]'), '');
     if (cep.length > 5) {
       cep = '${cep.substring(0, 5)}-${cep.substring(5)}';
@@ -176,7 +176,7 @@ String formatCpf(String cpf) {
     return cep;
   }
 
-  String formatDate(String date) {
+String formatDate(String date) {
     if (date.isEmpty) {
       return '';
     }
@@ -235,4 +235,3 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
     rethrow;
   }
 }
-
