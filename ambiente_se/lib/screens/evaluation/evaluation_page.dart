@@ -10,8 +10,13 @@ import 'package:ambiente_se/widgets/evaluation/previous_page_button.dart';
 import 'package:flutter/material.dart';
 
 class EvaluationPage extends StatefulWidget {
-  const EvaluationPage({super.key});
+  final Function(int) onSelectPage;
 
+
+  const EvaluationPage({
+    super.key,
+    required this.onSelectPage,
+  });
   @override
   State<EvaluationPage> createState() => _EvaluationPageState();
 }
@@ -182,19 +187,19 @@ class _EvaluationPageState extends State<EvaluationPage> {
             _categoryAnswers['Governamental'] = governmentQuestions.map((q) => EvaluationAnswer(
               question_id: q['questionId'].toString(),
               question_registered: q['questionDescription'],
-              answer_registered: q['userAnswer'],
+              answer_registered: q['userAnswer'] ?? '',
             )).toList();
 
             _categoryAnswers['Ambiental'] = environmentalQuestions.map((q) => EvaluationAnswer(
               question_id: q['questionId'].toString(),
               question_registered: q['questionDescription'],
-              answer_registered: q['userAnswer'],
+              answer_registered: q['userAnswer'] ?? '',
             )).toList();
 
             _categoryAnswers['Social'] = socialQuestions.map((q) => EvaluationAnswer(
               question_id: q['questionId'].toString(),
               question_registered: q['questionDescription'],
-              answer_registered: q['userAnswer'],
+              answer_registered: q['userAnswer'] ?? '',
             )).toList();
           });
         } else {
@@ -250,6 +255,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
           AlertSnackBar.show(
             context: context,
             text: 'Avaliação finalizada com sucesso',
+            backgroundColor: AppColors.green,
+          );
+        } else {
+          AlertSnackBar.show(
+            context: context,
+            text: 'Respostas salvas com sucesso',
             backgroundColor: AppColors.green,
           );
         }
@@ -388,65 +399,50 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 textAlign: TextAlign.center,
               ),
               actions: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-                          isNewEvaluation = true;
-                          await fetchQuestions();
-                          _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-                          setState(() {
-                            currentPage++;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        child: const Text(
-                          'Iniciar nova avaliação',
-                          style: TextStyle(color: Colors.white),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      isNewEvaluation = true;
+                      await fetchQuestions();
+                      _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                      setState(() {
+                        currentPage++;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, backgroundColor: AppColors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-                          isNewEvaluation = false;
-                          await fetchQuestions();
-                          _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-                          setState(() {
-                            currentPage++;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.blue,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                        child: const Text(
-                          'Continuar avaliação',
-                          style: TextStyle(color: Colors.white),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                    child: const Text(
+                      'Iniciar nova avaliação',
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      Navigator.of(context).pop();
+                      isNewEvaluation = false;
+                      await fetchQuestions();
+                      _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                      setState(() {
+                        currentPage++;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, backgroundColor: AppColors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                  ],
+                    child: const Text(
+                      'Continuar avaliação',
+                    ),
+                  ),
                 ),
               ],
             );
@@ -607,6 +603,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
               const SizedBox(width: 50),
               FinishButton(
                 pageController: _pageController,
+                sendQuestions: (bool isComplete) => _sendQuestions(isComplete),
                 label: 'Finalizar',
                 companyName: selectedCompany?['tradeName'] ?? 'Nenhuma empresa selecionada',
                 answers: _categoryAnswers,

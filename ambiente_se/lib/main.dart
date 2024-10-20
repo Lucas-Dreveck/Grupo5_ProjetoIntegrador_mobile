@@ -49,7 +49,7 @@ class _MainAppState extends State<MainApp> {
       const MainCompanyPage(),
       const MainEmployeePage(),
       const MainQuestionPage(),
-      const EvaluationPage(),
+      EvaluationPage(onSelectPage: _selectPage),
     ];
   }
 
