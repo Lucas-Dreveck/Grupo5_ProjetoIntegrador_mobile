@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const String backendUrl = 'localhost:8080'; // Substitua pelo endereço IP do seu servidor
 
@@ -10,8 +14,10 @@ class AppColors {
   static const Color blue = Color(0xFF0077C8);
   static const Color darkBlue = Color(0xFF005A9C);
   static const Color green = Color(0xFF0C9C6F);
-  static const Color logoGreen = Color.fromRGBO(118, 192, 77, 1);
   static const Color red = Color(0xFFDF2935);
+  static const Color socialPillar = Color.fromRGBO(240, 135, 11, 1.0);
+  static const Color environmentalPillar = Color.fromRGBO(106, 192, 74, 1.0);
+  static const Color governmentPillar = Color.fromRGBO(0, 113, 191, 1.0);
   static const Color grey = Color(0xFF838B91);
   static const Color offWhite = Color.fromRGBO(207, 207, 207, 1);
   static const Color offBlack = Color(0xFF202020);
@@ -232,5 +238,43 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
   } catch (e) {
     print('Error making HTTP request: $e');
     rethrow;
+  }
+}
+
+Future<void> downloadReport(BuildContext context, dynamic company) async {
+  try {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Download iniciado!'), duration: Duration(seconds: 2)),
+    );
+
+    final response = await makeHttpRequest('api/pdf/${company['id'].toString()}');
+
+    if (response.statusCode == 200) {
+      if (Platform.isAndroid) {
+        var status = await Permission.storage.status;
+        if (!status.isGranted) {
+          await Permission.storage.request();
+        }
+      }
+
+      final directory = await getTemporaryDirectory();
+      final filePath = '${directory.path}/report_${company['tradeName']}.pdf';
+
+      File file = File(filePath);
+      await file.writeAsBytes(response.bodyBytes);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Download concluído!'), duration: Duration(seconds: 2)),
+      );
+
+      await OpenFile.open(filePath);
+    } else {
+      throw Exception('Failed to download PDF');
+    }
+  } catch (e) {
+    print('Error downloading report: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Erro ao baixar o relatório'), duration: Duration(seconds: 2)),
+    );
   }
 }

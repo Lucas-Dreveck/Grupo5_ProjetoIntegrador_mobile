@@ -1,13 +1,14 @@
-import 'dart:convert';
-import 'package:ambiente_se/utils.dart';
-import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
-import 'package:ambiente_se/widgets/evaluation/evaluation_answer.dart';
-import 'package:ambiente_se/widgets/evaluation/finish_button.dart';
-import 'package:ambiente_se/widgets/evaluation/questions.dart';
-import 'package:ambiente_se/widgets/custom_button.dart';
-import 'package:ambiente_se/widgets/evaluation/next_page_button.dart';
-import 'package:ambiente_se/widgets/evaluation/previous_page_button.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/custom_button.dart';
+import 'package:ambiente_se/widgets/evaluation/questions.dart';
+import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
+import 'package:ambiente_se/widgets/evaluation/finish_button.dart';
+import 'package:ambiente_se/widgets/evaluation/next_page_button.dart';
+import 'package:ambiente_se/widgets/evaluation/evaluation_answer.dart';
+import 'package:ambiente_se/widgets/evaluation/previous_page_button.dart';
 
 class EvaluationPage extends StatefulWidget {
   final Function(int) onSelectPage;
@@ -22,15 +23,22 @@ class EvaluationPage extends StatefulWidget {
 }
 
 class _EvaluationPageState extends State<EvaluationPage> {
+  // Controllers
   final TextEditingController _searchController = TextEditingController();
   final GlobalKey _searchFieldKey = GlobalKey();
   final PageController _pageController = PageController();
   int currentPage = 0;
+  bool isDropdownOpen = false;
+  double dropdownTop = 0.0;
+
+  // Variables
   List<Map<String, dynamic>> companies = [];
   Map<String, dynamic>? selectedCompany;
   bool isNewEvaluation = false;
-  bool isDropdownOpen = false;
-  double dropdownTop = 0.0;
+
+  int socialScore = 0;
+  int governmentalScore = 0;
+  int environmentalScore = 0;
 
   final Map<String, List<EvaluationAnswer>> _categoryAnswers = {
     'Social': [],
@@ -251,7 +259,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
     try {
       final response = await makeHttpRequest(url, method: 'POST', parameters: queryParams, body: json.encode(body));
       if (response.statusCode == 200) {
+        final jsonResponse = json.decode(response.body);
         if (isComplete) {
+          setState(() {
+            socialScore = jsonResponse['socialScore'];
+            governmentalScore = jsonResponse['governmentScore'];
+            environmentalScore = jsonResponse['enviornmentalScore'];
+          });
           AlertSnackBar.show(
             context: context,
             text: 'Avaliação finalizada com sucesso',
@@ -270,8 +284,6 @@ class _EvaluationPageState extends State<EvaluationPage> {
     } catch (e) {
       print('Error saving answers: $e');
     }
-
-    
   }
 
   @override
@@ -290,6 +302,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
             _buildEnvironmentalQuestionsPage(),
             // Quarta página: Perguntas sociais
             _buildSocialQuestionsPage(),
+            // Quinta página: Resultados
+            _buildResultPage(),
          ],
         ),
       ),
@@ -399,50 +413,52 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 textAlign: TextAlign.center,
               ),
               actions: <Widget>[
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      isNewEvaluation = true;
-                      await fetchQuestions();
-                      _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-                      setState(() {
-                        currentPage++;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: AppColors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        isNewEvaluation = true;
+                        await fetchQuestions();
+                        _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        setState(() {
+                          currentPage++;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Iniciar nova avaliação',
                       ),
                     ),
-                    child: const Text(
-                      'Iniciar nova avaliação',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      isNewEvaluation = false;
-                      await fetchQuestions();
-                      _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-                      setState(() {
-                        currentPage++;
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: AppColors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                    ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+                        isNewEvaluation = false;
+                        await fetchQuestions();
+                        _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                        setState(() {
+                          currentPage++;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'Continuar avaliação',
                       ),
                     ),
-                    child: const Text(
-                      'Continuar avaliação',
-                    ),
-                  ),
+                  ],
                 ),
               ],
             );
@@ -605,13 +621,237 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 pageController: _pageController,
                 sendQuestions: (bool isComplete) => _sendQuestions(isComplete),
                 label: 'Finalizar',
-                companyName: selectedCompany?['tradeName'] ?? 'Nenhuma empresa selecionada',
                 answers: _categoryAnswers,
               )
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildResultPage() {
+    return Scaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(25.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHeader(),
+            const SizedBox(height: 20),
+            _buildPercentageRow(),
+            const SizedBox(height: 20),
+            _buildResultsCategory('Social', AppColors.socialPillar),
+            _buildResultsCategory('Governamental', AppColors.governmentPillar),
+            _buildResultsCategory('Ambiental', AppColors.environmentalPillar),
+            const SizedBox(height: 20),
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await downloadReport(context, selectedCompany!);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      side: const BorderSide(
+                        color: Color.fromRGBO(192, 188, 188, 1),
+                        width: 1.0,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                  ).copyWith(
+                    elevation: WidgetStateProperty.all(0),
+                  ),
+                  child: const Text(
+                    'Baixar',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: ElevatedButton(
+                  onPressed: () {
+                    widget.onSelectPage(0);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      side: const BorderSide(
+                        color: Color.fromRGBO(192, 188, 188, 1),
+                        width: 1.0,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+                  ).copyWith(
+                    elevation: WidgetStateProperty.all(0),
+                  ),
+                  child: const Text(
+                    'Voltar a tela principal',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        const CircleAvatar(
+          radius: 80,
+          backgroundColor: Colors.black,
+          child: CircleAvatar(
+            radius: 75,
+            backgroundImage: AssetImage('images/logo.png'),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          'Resultados \n ${selectedCompany?['tradeName'] ?? 'Nenhuma empresa selecionada'}',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPercentageRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildPercentageAccordance('Social', socialScore, AppColors.socialPillar),
+        _buildPercentageAccordance('Governamental', governmentalScore, const Color.fromRGBO(0, 119, 200, 1.0)),
+        _buildPercentageAccordance('Ambiental', environmentalScore, AppColors.environmentalPillar),
+      ],
+    );
+  }
+
+  Widget _buildPercentageAccordance(String category, int percentage, Color color) {
+    return Column(
+      children: [
+        CircularPercentIndicator(
+          radius: 50,
+          backgroundColor: const Color.fromRGBO(254, 247, 255, 1.0),
+          lineWidth: 10.0,
+          percent: percentage / 100,
+          progressColor: color,
+          animation: true,
+          animationDuration: 1200,
+          circularStrokeCap: CircularStrokeCap.round,
+          center: Text(
+            '$percentage%',
+            style: const TextStyle(fontSize: 21, color: Colors.black),
+          ),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          category,
+          style: const TextStyle(fontSize: 21, color: Colors.black),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildResultsCategory(String category, Color color) {
+    List<TableRow> rows = [
+      _buildHeaderRow(),
+    ];
+
+    bool alternate = true;
+
+    for (var answer in _categoryAnswers[category]!) {
+      rows.add(
+        TableRow(
+          children: [
+            _buildTableCell(answer.question_registered, color, alternate),
+            _buildTableCell(answer.answer_registered, color, alternate),
+          ],
+        ),
+      );
+      alternate = !alternate;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            foregroundDecoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Table(
+              columnWidths: const {
+                0: FlexColumnWidth(2),
+                1: FlexColumnWidth(1),
+              },
+              border: const TableBorder(
+                verticalInside: BorderSide(color: Colors.black, width: 0.5),
+              ),
+              children: rows,
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  TableRow _buildHeaderRow() {
+    return TableRow(
+      children: [
+        _buildHeaderCell('Perguntas'),
+        _buildHeaderCell('Respostas'),
+      ],
+    );
+  }
+
+  Widget _buildHeaderCell(String title) {
+    return Container(
+      padding: const EdgeInsets.all(12.0),
+      child: Center(
+        child: Text(
+          title,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTableCell(String content, Color color, bool alternate) {
+    return Container(
+      color: alternate ? color.withOpacity(1.0) : color.withOpacity(0.5),
+      padding: const EdgeInsets.all(12.0),
+      height: 90,
+      child: Center(
+        child: Text(
+          content,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }

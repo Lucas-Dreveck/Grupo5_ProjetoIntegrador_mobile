@@ -1,11 +1,9 @@
-import 'package:ambiente_se/screens/evaluation/results_page.dart';
 import 'package:ambiente_se/utils.dart';
 import 'package:ambiente_se/widgets/custom_button.dart';
 import 'package:ambiente_se/widgets/evaluation/evaluation_answer.dart';
 import 'package:flutter/material.dart';
 
 class FinishButton extends StatelessWidget {
-  final String companyName;
   final Map<String, List<EvaluationAnswer>> answers;
   final PageController pageController;
   final Future<void> Function(bool isComplete)? sendQuestions;
@@ -13,7 +11,6 @@ class FinishButton extends StatelessWidget {
 
   const FinishButton({
     super.key,
-    required this.companyName,
     required this.answers,
     required this.pageController,
     this.sendQuestions,
@@ -93,15 +90,9 @@ class FinishButton extends StatelessWidget {
   }
 
   void _navigateToResultsPage(BuildContext context) {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ResultsPage(
-          companyName: companyName,
-          categoryAnswers: answers,
-        ),
-      ),
-      (Route<dynamic> route) => false,
+    pageController.nextPage(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
     );
   }
 }
