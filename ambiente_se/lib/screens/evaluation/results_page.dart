@@ -148,8 +148,8 @@ class ResultsPage extends StatelessWidget {
     for (String question in questions) {
       final answer = categoryAnswers[category]?.firstWhere(
         (a) => a.question_registered == question,
-        orElse: () => EvaluationAnswer(question_registered: question, answer_registered: 'N/A'),
-      ) ?? EvaluationAnswer(question_registered: question, answer_registered: 'N/A'); // Substitua 'N/A' por um valor padrão, se necessário
+        orElse: () => EvaluationAnswer(question_id: '', question_registered: question, answer_registered: 'N/A'),
+      ) ?? EvaluationAnswer(question_id: '', question_registered: question, answer_registered: 'N/A'); // Substitua 'N/A' por um valor padrão, se necessário
 
       rows.add(
         TableRow(

@@ -230,7 +230,6 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
       throw Exception('Failed to load data: ${response.statusCode}');
     }
   } catch (e) {
-    // ignore: avoid_print
     print('Error making HTTP request: $e');
     rethrow;
   }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:ambiente_se/utils.dart';
+import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:ambiente_se/widgets/evaluation/evaluation_answer.dart';
-import 'package:ambiente_se/widgets/evaluation/evaluations_questions_list.dart';
 import 'package:ambiente_se/widgets/evaluation/finish_button.dart';
 import 'package:ambiente_se/widgets/evaluation/questions.dart';
 import 'package:ambiente_se/widgets/custom_button.dart';
@@ -23,6 +23,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
   int currentPage = 0;
   List<Map<String, dynamic>> companies = [];
   Map<String, dynamic>? selectedCompany;
+  bool isNewEvaluation = false;
   bool isDropdownOpen = false;
   double dropdownTop = 0.0;
 
@@ -101,24 +102,165 @@ class _EvaluationPageState extends State<EvaluationPage> {
     }
   }
 
+  Future<void> fetchQuestions() async {
+    final url = 'api/auth/evaluation/$isNewEvaluation';
+    final queryParams = {'companyId': selectedCompany!['id'].toString()};
+
+    try {
+      final response = await makeHttpRequest(url, parameters: queryParams);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        if (isNewEvaluation && data['questions'] is List) {
+          List<Map<String, dynamic>> governmentQuestions = [];
+          List<Map<String, dynamic>> environmentalQuestions = [];
+          List<Map<String, dynamic>> socialQuestions = [];
+
+          for (var item in data['questions']) {
+            if (item['pillar'] is String) {
+              switch (item['pillar']) {
+                case 'Governamental':
+                  governmentQuestions.add(item);
+                  break;
+                case 'Ambiental':
+                  environmentalQuestions.add(item);
+                  break;
+                case 'Social':
+                  socialQuestions.add(item);
+                  break;
+              }
+            } else {
+              print('Unexpected pillar type: ${item['pillar']}');
+            }
+          }
+
+          setState(() {
+            _categoryAnswers['Governamental'] = governmentQuestions.map((q) => EvaluationAnswer(
+              question_id: q['id'].toString(),
+              question_registered: q['description'],
+              answer_registered: '',
+            )).toList();
+
+            _categoryAnswers['Ambiental'] = environmentalQuestions.map((q) => EvaluationAnswer(
+              question_id: q['id'].toString(),
+              question_registered: q['description'],
+              answer_registered: '',
+            )).toList();
+
+            _categoryAnswers['Social'] = socialQuestions.map((q) => EvaluationAnswer(
+              question_id: q['id'].toString(),
+              question_registered: q['description'],
+              answer_registered: '',
+            )).toList();
+          });
+
+        } else if (!isNewEvaluation && data['evaluationRequests'] is List) {
+          List<Map<String, dynamic>> governmentQuestions = [];
+          List<Map<String, dynamic>> environmentalQuestions = [];
+          List<Map<String, dynamic>> socialQuestions = [];
+
+          for (var item in data['evaluationRequests']) {
+            if (item['questionPillar'] is String) {
+              switch (item['questionPillar']) {
+                case 'Governamental':
+                  governmentQuestions.add(item);
+                  break;
+                case 'Ambiental':
+                  environmentalQuestions.add(item);
+                  break;
+                case 'Social':
+                  socialQuestions.add(item);
+                  break;
+              }
+            } else {
+              print('Unexpected questionPillar type: ${item['questionPillar']}');
+            }
+          }
+
+          setState(() {
+            _categoryAnswers['Governamental'] = governmentQuestions.map((q) => EvaluationAnswer(
+              question_id: q['questionId'].toString(),
+              question_registered: q['questionDescription'],
+              answer_registered: q['userAnswer'],
+            )).toList();
+
+            _categoryAnswers['Ambiental'] = environmentalQuestions.map((q) => EvaluationAnswer(
+              question_id: q['questionId'].toString(),
+              question_registered: q['questionDescription'],
+              answer_registered: q['userAnswer'],
+            )).toList();
+
+            _categoryAnswers['Social'] = socialQuestions.map((q) => EvaluationAnswer(
+              question_id: q['questionId'].toString(),
+              question_registered: q['questionDescription'],
+              answer_registered: q['userAnswer'],
+            )).toList();
+          });
+        } else {
+          print('Error: Expected a list in questions or evaluationRequests');
+        }
+
+      } else {
+        throw Exception('Erro ao carregar perguntas');
+      }
+    } catch (e) {
+      print('Erro ao buscar perguntas: $e');
+    }
+  }
+
   void _saveAnswer(String category, String question, String answer) {
     final List<EvaluationAnswer> categoryAnswerList =
         _categoryAnswers[category]!;
 
     final existingAnswer = categoryAnswerList.firstWhere(
-      (ans) => ans.question_registered == question,
-      orElse: () => EvaluationAnswer(
-          question_registered: question, answer_registered: answer),
+      (ans) => ans.question_registered == question
     );
 
     setState(() {
-      if (categoryAnswerList.contains(existingAnswer)) {
-        existingAnswer.answer_registered = answer;
-      } else {
-        categoryAnswerList.add(EvaluationAnswer(
-            question_registered: question, answer_registered: answer));
-      }
+      existingAnswer.answer_registered = answer;
     });
+  }
+
+  Future<void> _sendQuestions(bool isComplete) async {
+    final String? companyId = selectedCompany?['id'].toString();
+    if (companyId == null) {
+      return;
+    }
+    final List<Map<String, dynamic>> answers = [];
+
+    for (var category in _categoryAnswers.keys) {
+      for (var answer in _categoryAnswers[category]!) {
+        answers.add({
+          'questionId': answer.question_id,
+          'userAnswer': answer.answer_registered != '' ? answer.answer_registered : null,
+          'questionPillar': category,
+        });
+      }
+    }
+
+    final body = answers;
+    final queryParams = {'companyId': companyId, 'isComplete': isComplete.toString()};
+    const url = "api/auth/processAnswers";
+
+    try {
+      final response = await makeHttpRequest(url, method: 'POST', parameters: queryParams, body: json.encode(body));
+      if (response.statusCode == 200) {
+        if (isComplete) {
+          AlertSnackBar.show(
+            context: context,
+            text: 'Avaliação finalizada com sucesso',
+            backgroundColor: AppColors.green,
+          );
+        }
+      } else {
+        throw Exception('Failed to save answers');
+      }
+    } catch (e) {
+      print('Error saving answers: $e');
+    }
+
+    
   }
 
   @override
@@ -131,194 +273,13 @@ class _EvaluationPageState extends State<EvaluationPage> {
           const NeverScrollableScrollPhysics(), // Desativa o deslizar manual
           children: [
             _buildCompanySelectionPage(),
-            // Segunda página: Perguntas sociais
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                ),
-                const Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    'Social',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: EvaluationsQuestionsList.socialQuestions.length,
-                    itemBuilder: (context, index) {
-                      String savedAnswer = _categoryAnswers['Social']!
-                          .firstWhere(
-                            (ans) =>
-                                ans.question_registered ==
-                                EvaluationsQuestionsList.socialQuestions[index],
-                            orElse: () => EvaluationAnswer(
-                                question_registered: EvaluationsQuestionsList
-                                    .socialQuestions[index],
-                                answer_registered: ''),
-                          )
-                          .answer_registered;
-
-                      return Questions(
-                        question:
-                            EvaluationsQuestionsList.socialQuestions[index],
-                        onSelected: (answer) => _saveAnswer(
-                            'Social',
-                            EvaluationsQuestionsList.socialQuestions[index],
-                            answer),
-                        selectedOption: savedAnswer,
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      NextPageButton(
-                        pageController: _pageController,
-                        label: 'Próxima página',
-                        width: 255,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-// Terceira página: Perguntas governamentais
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                ),
-                const Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    'Governamental',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount:
-                        EvaluationsQuestionsList.governmentQuestions.length,
-                    itemBuilder: (context, index) {
-                      String savedAnswer = _categoryAnswers['Governamental']!
-                          .firstWhere(
-                            (ans) =>
-                                ans.question_registered ==
-                                EvaluationsQuestionsList
-                                    .governmentQuestions[index],
-                            orElse: () => EvaluationAnswer(
-                                question_registered: EvaluationsQuestionsList
-                                    .governmentQuestions[index],
-                                answer_registered: ''),
-                          )
-                          .answer_registered;
-
-                      return Questions(
-                        question:
-                            EvaluationsQuestionsList.governmentQuestions[index],
-                        onSelected: (answer) => _saveAnswer(
-                            'Governamental',
-                            EvaluationsQuestionsList.governmentQuestions[index],
-                            answer),
-                        selectedOption: savedAnswer,
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      PreviousPageButton(pageController: _pageController),
-                      const SizedBox(width: 50),
-                      NextPageButton(pageController: _pageController),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-// Quarta página: Perguntas ambientais
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                ),
-                const Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    'Ambiental',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount:
-                        EvaluationsQuestionsList.environmentalQuestions.length,
-                    itemBuilder: (context, index) {
-                      String savedAnswer = _categoryAnswers['Ambiental']!
-                          .firstWhere(
-                            (ans) =>
-                                ans.question_registered ==
-                                EvaluationsQuestionsList
-                                    .environmentalQuestions[index],
-                            orElse: () => EvaluationAnswer(
-                                question_registered: EvaluationsQuestionsList
-                                    .environmentalQuestions[index],
-                                answer_registered: ''),
-                          )
-                          .answer_registered;
-
-                      return Questions(
-                        question: EvaluationsQuestionsList
-                            .environmentalQuestions[index],
-                        onSelected: (answer) => _saveAnswer(
-                            'Ambiental',
-                            EvaluationsQuestionsList
-                                .environmentalQuestions[index],
-                            answer),
-                        selectedOption: savedAnswer,
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      PreviousPageButton(pageController: _pageController),
-                      const SizedBox(width: 50),
-                      FinishButton(
-                        pageController: _pageController,
-                        label: 'Finalizar',
-                        companyName: selectedCompany?['tradeName'] ??
-                            'Nenhuma empresa selecionada',
-                        answers: _categoryAnswers,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
+            // Segunda página: Perguntas governamentais
+            _buildGovernmentQuestionsPage(),
+            // Terceira página: Perguntas ambientais
+            _buildEnvironmentalQuestionsPage(),
+            // Quarta página: Perguntas sociais
+            _buildSocialQuestionsPage(),
+         ],
         ),
       ),
     );
@@ -404,10 +365,12 @@ class _EvaluationPageState extends State<EvaluationPage> {
     );
   }
 
-  void _onEvaluatePressed() async {
+  Future<void> _onEvaluatePressed() async {
     if (selectedCompany != null) {
       bool hasActiveEvaluation = await verifyActiveEvaluation(selectedCompany!['id']);
       if (!hasActiveEvaluation) {
+        isNewEvaluation = true;
+        await fetchQuestions();
         _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
         setState(() {
           currentPage++;
@@ -430,8 +393,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   children: <Widget>[
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.of(context).pop();
+                          isNewEvaluation = true;
+                          await fetchQuestions();
                           _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                           setState(() {
                             currentPage++;
@@ -456,9 +421,14 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.of(context).pop();
-                          // Implement logic to continue existing evaluation
+                          isNewEvaluation = false;
+                          await fetchQuestions();
+                          _pageController.nextPage(duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                          setState(() {
+                            currentPage++;
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.blue,
@@ -489,4 +459,162 @@ class _EvaluationPageState extends State<EvaluationPage> {
       );
     }
   }
+
+  Widget _buildGovernmentQuestionsPage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 15),
+        ),
+        const Align(
+          alignment: Alignment.topCenter,
+          child: Text(
+            'Governamental',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _categoryAnswers['Governamental']!.length,
+            itemBuilder: (context, index) {
+              String savedAnswer = _categoryAnswers['Governamental']![index].answer_registered;
+              String question = _categoryAnswers['Governamental']![index].question_registered;
+
+              return Questions(
+                question: question,
+                onSelected: (answer) => _saveAnswer(
+                    'Governamental',
+                    question,
+                    answer),
+                selectedOption: savedAnswer,
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              NextPageButton(
+                pageController: _pageController,
+                sendQuestions: () => _sendQuestions(false),
+                label: 'Próxima página',
+                width: 255,
+              )
+            ],
+          ),
+        ),
+      ],
+    );
   }
+
+  Widget _buildEnvironmentalQuestionsPage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 15),
+        ),
+        const Align(
+          alignment: Alignment.topCenter,
+          child: Text(
+            'Ambiental',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _categoryAnswers['Ambiental']!.length,
+            itemBuilder: (context, index) {
+              String savedAnswer = _categoryAnswers['Ambiental']![index].answer_registered;
+              String question = _categoryAnswers['Ambiental']![index].question_registered;
+
+              return Questions(
+                question: question,
+                onSelected: (answer) => _saveAnswer(
+                    'Ambiental',
+                    question,
+                    answer),
+                selectedOption: savedAnswer,
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              PreviousPageButton(pageController: _pageController),
+              const SizedBox(width: 50),
+              NextPageButton(sendQuestions: () => _sendQuestions(false), pageController: _pageController),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialQuestionsPage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 15),
+        ),
+        const Align(
+          alignment: Alignment.topCenter,
+          child: Text(
+            'Social',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _categoryAnswers['Social']!.length,
+            itemBuilder: (context, index) {
+              String savedAnswer = _categoryAnswers['Social']![index].answer_registered;
+              String question = _categoryAnswers['Social']![index].question_registered;
+
+              return Questions(
+                question: question,
+                onSelected: (answer) => _saveAnswer(
+                    'Social',
+                    question,
+                    answer),
+                selectedOption: savedAnswer,
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              PreviousPageButton(pageController: _pageController),
+              const SizedBox(width: 50),
+              FinishButton(
+                pageController: _pageController,
+                label: 'Finalizar',
+                companyName: selectedCompany?['tradeName'] ?? 'Nenhuma empresa selecionada',
+                answers: _categoryAnswers,
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
