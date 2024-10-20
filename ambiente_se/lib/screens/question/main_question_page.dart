@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:ambiente_se/widgets/default/new_register_button.dart';
 import 'package:ambiente_se/widgets/default/search_button.dart';
@@ -14,13 +17,80 @@ class MainQuestionPage extends StatefulWidget {
 }
 
 class MainQuestionPageState extends State<MainQuestionPage> {
+  final List<Map<String, dynamic>> _questions = [];
+  String? _searchText = '';
+  bool _isLoading = false;
+  bool _hasMoreData = true;
+  int _currentPage = 0;
+  final int _itemsPerPage = 20;
   final TextEditingController _searchBarController = TextEditingController();
-  final List<Map<String, dynamic>> _questions = List.generate(10, (index) {
-    return {
-      'id': index + 1,
-      'pergunta': 'Quem vive sob a sombra da estátua?',
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMoreQuestions();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent && !_isLoading) {
+        _loadMoreQuestions();
+      }
+    });
+  }
+
+  Future<void> _loadMoreQuestions() async {
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    List<Map<String, dynamic>> moreQuestions;
+    const url = '/api/auth/Question/search';
+    final Map<String, dynamic> parameters = {
+      'page': _currentPage.toString(),
+      'size': _itemsPerPage.toString(),
     };
-  });
+    if (_searchText != null && _searchText!.isNotEmpty) {
+      parameters['name'] = _searchText;
+    } else {
+      parameters.remove('name');
+    }
+
+    final response = await makeHttpRequest(url, parameters: parameters);
+    
+    if (response.statusCode == 200) {
+      moreQuestions = List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
+    } else {
+      moreQuestions = [];
+    }
+
+    if (moreQuestions.length < _itemsPerPage) {
+      _hasMoreData = false;
+    }
+    _hasMoreData = false;
+    setState(() {
+      _questions.addAll(moreQuestions);
+      _currentPage++;
+      _isLoading = false;
+    });
+  }
+  Future<void> _resetQuestions() async {
+    setState(() {
+      _questions.clear();
+      _currentPage = 0;
+      _hasMoreData = true;
+    });
+    await _loadMoreQuestions();
+  }
+
+  _search(){
+    if(_searchBarController.text.isEmpty){
+      _searchText = '';
+    }
+    else {
+      _searchText = _searchBarController.text;
+    }
+    _resetQuestions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +111,11 @@ class MainQuestionPageState extends State<MainQuestionPage> {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => const QuestionRegistrationDialog(), // Ensure this class is defined
-                    );
+                      builder: (context) => const QuestionRegistrationDialog(),
+                    ).then((_) {
+                      _resetQuestions();
+                    });
+                    
                   },
                 ),
               ],
@@ -61,9 +134,7 @@ class MainQuestionPageState extends State<MainQuestionPage> {
                 const SizedBox(width: 16),
                 SearchButton(
                   label: "Buscar",
-                  onPressed: () {
-                    // Implementar lógica de busca
-                  },
+                  onPressed: _search,
                 ),
               ],
             ),
@@ -77,32 +148,94 @@ class MainQuestionPageState extends State<MainQuestionPage> {
             ),
             const SizedBox(height: 5),
             Expanded(
-              child: ListView.builder(
-                itemCount: _questions.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text('Pergunta ${index + 1}'), // Exibe um texto genérico
-                    leading: Text((index + 1).toString()), // Exibe o índice da pergunta
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => QuestionDetailDialog( // Certifique-se de que este nome está correto
-                          axis: 'Eixo padrão', // Passa um valor padrão ou genérico
-                          question: 'Detalhes da pergunta', // Passa um texto genérico
-                          onDelete: () {
-                            // Lógica para exclusão, se necessário
-                            print('Pergunta excluída');
-                          },
-                        ),
-                      );
-                    },
-                  );
-                },
+              child: RefreshIndicator(
+                onRefresh: _resetQuestions,
+                child: _questions.isEmpty
+                  ? const Center(child: Text("Nenhuma pergunta encontrada", style: TextStyle(fontSize: 18, color: Colors.red)))
+                  : SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Column(
+                        children: [
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              return SizedBox(
+                                width: constraints.maxWidth,
+                                child: DataTable(
+                                  columns: const [
+                                    DataColumn(
+                                      label: Expanded(
+                                        child: Center(
+                                          child: Text('ID', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                    ),
+                                    DataColumn(
+                                      label: Expanded(
+                                        child: Center(
+                                          child: Text('Pergunta', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                  rows: _questions.map(
+                                    (item) => DataRow(
+                                      cells: [
+                                        DataCell(
+                                          Center(
+                                            child: Text((item['id']).toString(), textAlign: TextAlign.center),
+                                          ),
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => QuestionDetailDialog(
+                                                id: item['id'],
+                                              ),
+                                            ).then((_) {
+                                              _resetQuestions();
+                                            });
+                                          },
+                                        ),
+                                        DataCell(
+                                          Center(
+                                            child: Text(item['description'], textAlign: TextAlign.center),
+                                          ),
+                                          onTap: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) => QuestionDetailDialog(
+                                                id: item['id'],
+                                              ),
+                                            ).then((_) {
+                                              _resetQuestions();
+                                            });
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ).toList(),
+                                ),
+                              );
+                            },
+                          ),
+                          if (_isLoading)
+                            const CircularProgressIndicator()
+                          else if (!_hasMoreData)
+                            const Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Fim da lista",
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
               ),
-            ),
+            )
           ],
         ),
       ),
     );
   }
 }
+
