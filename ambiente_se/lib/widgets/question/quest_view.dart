@@ -1,25 +1,48 @@
+import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/widgets/question/quest_delete.dart'; 
+import 'package:ambiente_se/widgets/question/quest_delete.dart';
 import 'package:ambiente_se/widgets/question/quest_edit.dart';
+import 'dart:convert';
 
-class QuestionDetailDialog extends StatelessWidget {
-  final String axis; // Eixo da pergunta
-  final String question; // Texto da pergunta
-  final VoidCallback onDelete; // Função de callback para exclusão
+class QuestionDetailDialog extends StatefulWidget {
+  final int id;
 
   const QuestionDetailDialog({
     super.key,
-    required this.axis,
-    required this.question,
-    required this.onDelete, // Adiciona o parâmetro de exclusão
+    required this.id,
   });
+
+  @override
+  _QuestionDetailDialogState createState() => _QuestionDetailDialogState();
+}
+
+class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
+  String axis = 'Ambiental';
+  String question = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQuestion();
+  }
+
+  fetchQuestion() async {
+    final response = await makeHttpRequest('/api/auth/Question/search/id/${widget.id}');
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> questionData = jsonDecode(utf8.decode(response.bodyBytes));
+      setState(() {
+        axis = questionData['pillar'];
+        question = questionData['description'];
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Pergunta 1', style: TextStyle(fontSize: 20)),
+      title: Text('Pergunta ${widget.id}', style: const TextStyle(fontSize: 20)),
       content: SizedBox(
-        width: 300, // Largura do pop-up
+        width: 300,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -29,10 +52,10 @@ class QuestionDetailDialog extends StatelessWidget {
             ),
             TextField(
               controller: TextEditingController(text: axis),
-              readOnly: true, // Torna o campo somente leitura
+              readOnly: true,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xFFD5E2E7), // Cor de fundo
+                fillColor: const Color(0xFFD5E2E7),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
@@ -46,10 +69,10 @@ class QuestionDetailDialog extends StatelessWidget {
             ),
             TextField(
               controller: TextEditingController(text: question),
-              readOnly: true, // Torna o campo somente leitura
+              readOnly: true,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: const Color(0xFFD5E2E7), // Cor de fundo
+                fillColor: const Color(0xFFD5E2E7),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide.none,
@@ -63,34 +86,34 @@ class QuestionDetailDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(); // Fecha o pop-up
+            Navigator.of(context).pop();
           },
           style: TextButton.styleFrom(
-            backgroundColor: Colors.grey, // Cor do botão "Cancelar"
+            backgroundColor: Colors.grey,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
           child: const Text(
-            'Cancelar',
+            'Voltar',
             style: TextStyle(color: Colors.white),
           ),
         ),
         TextButton(
           onPressed: () {
-            // Chama o modal de edição ao pressionar "Editar"
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return QuestionEditDialog(
-                  axis: axis, // Passa o eixo da pergunta
-                  question: question, // Passa a pergunta
-                );
-              },
-            );
+              return QuestionEditDialog(
+                id: widget.id,
+              );
+              }
+            ).then((_) {
+              fetchQuestion();
+            });
           },
           style: TextButton.styleFrom(
-            backgroundColor: Colors.blue, // Cor do botão "Editar"
+            backgroundColor: Colors.blue,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
@@ -102,20 +125,15 @@ class QuestionDetailDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            // Chame o QuestionDeleteDialog aqui
             showDialog(
               context: context,
               builder: (context) => QuestionDeleteDialog(
-                axis: axis, // Passa o eixo da pergunta
-                question: question, // Passa a pergunta
-                onDelete: () {
-                  // Lógica para exclusão
-                },
+                id: widget.id,
               ),
             );
           },
           style: TextButton.styleFrom(
-            backgroundColor: Colors.red, // Cor do botão "Excluir"
+            backgroundColor: Colors.red,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
