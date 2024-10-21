@@ -3,6 +3,7 @@ import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async'; // Importa para usar Timer
 
 class RankingEmpresaPage extends StatefulWidget {
   const RankingEmpresaPage({Key? key}) : super(key: key);
@@ -13,41 +14,23 @@ class RankingEmpresaPage extends StatefulWidget {
 
 class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
   List<dynamic> rankings = [];
-  String? selectedSegment;
-  String? selectedSize;
-  String searchQuery = ""; // Adiciona uma variável para a consulta de busca
-
-  final FocusNode segmentFocusNode = FocusNode();
-  final FocusNode sizeFocusNode = FocusNode();
+  String searchQuery = "";
+  Timer? _debounce; // Timer para debounce
 
   @override
   void initState() {
     super.initState();
-    fetchRankingData();
-
-    segmentFocusNode.addListener(() {
-      if (!segmentFocusNode.hasFocus) {
-        setState(() {});
-      }
-    });
-
-    sizeFocusNode.addListener(() {
-      if (!sizeFocusNode.hasFocus) {
-        setState(() {});
-      }
-    });
+    fetchRankingData(); // Carrega rankings inicialmente
   }
 
   @override
   void dispose() {
-    segmentFocusNode.dispose();
-    sizeFocusNode.dispose();
+    _debounce?.cancel(); // Cancela o Timer se existir
     super.dispose();
   }
 
   Future<void> fetchRankingData() async {
     final response = await makeHttpRequest("/api/ranking/score", method: 'GET');
-
     if (response.statusCode == 200) {
       setState(() {
         rankings = json.decode(utf8.decode(response.bodyBytes));
@@ -61,25 +44,43 @@ class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
       throw Exception('Failed to load rankings');
     }
   }
+Future<void> fetchFilteredRankingData(String segment, String companySize, String tradeName) async {
+  try {
+    // Montando os parâmetros da query
+    final queryParams = {
+      if (segment.isNotEmpty) 'segment': segment,
+      if (companySize.isNotEmpty) 'companySize': companySize,
+      if (tradeName.isNotEmpty) 'tradeName': tradeName,
+    };
 
-  // Função para aplicar filtros, incluindo busca por nome e cidade
-  List<dynamic> getFilteredRankings() {
-    return rankings.where((ranking) {
-      final matchesSegment = selectedSegment == null || ranking['segment'] == selectedSegment;
-      final matchesSize = selectedSize == null || ranking['size'] == selectedSize;
-      final matchesSearchQuery = ranking['companyName'] != null &&
-          ranking['companyName'].toLowerCase().contains(searchQuery.toLowerCase()) ||
-          ranking['city'] != null &&
-          ranking['city'].toLowerCase().contains(searchQuery.toLowerCase());
+    // Montando a URL com os parâmetros
+    final uri = Uri.http("/api/ranking/score");
 
-      return matchesSegment && matchesSize && matchesSearchQuery; // Aplica todos os filtros
-    }).toList();
+    final response = await makeHttpRequest(uri.toString(), method: 'GET', parameters: queryParams);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        rankings = json.decode(utf8.decode(response.bodyBytes));
+      });
+    } else {
+      AlertSnackBar.show(
+        context: context,
+        text: "Erro ao carregar rankings filtrados. Código: ${response.statusCode}",
+        backgroundColor: AppColors.red,
+      );
+    }
+  } catch (e) {
+    AlertSnackBar.show(
+      context: context,
+      text: "Erro ao carregar rankings filtrados: ${e.toString()}",
+      backgroundColor: AppColors.red,
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    final filteredRankings = getFilteredRankings();
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.blue,
@@ -102,13 +103,18 @@ class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
                   padding: EdgeInsets.all(16.0),
                   child: TextField(
                     decoration: InputDecoration(
-                      labelText: "Buscar por nome ou cidade",
+                      labelText: "Buscar por nome",
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.search),
                     ),
                     onChanged: (value) {
-                      setState(() {
-                        searchQuery = value; // Atualiza a consulta de busca
+                      // Atualiza a consulta de busca
+                      searchQuery = value; 
+
+                      // Inicia o debounce
+                      if (_debounce?.isActive ?? false) _debounce?.cancel();
+                      _debounce = Timer(const Duration(milliseconds: 300), () {
+                        fetchFilteredRankingData(value); // Chama a função de busca filtrada
                       });
                     },
                   ),
@@ -178,49 +184,56 @@ class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
                   ),
                 SizedBox(height: 40),
 
-                // Filtros
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Filtro por Ramo
                       SizedBox(
                         width: 150,
                         child: DropdownButtonFormField<String>(
-                          value: selectedSegment,
-                          focusNode: segmentFocusNode,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
                           ),
                           hint: Text("Filtrar por ramo", style: TextStyle(fontSize: 12)),
-                          items: [
-                            'Filtrar por ramo', // Este item indica que nenhum filtro foi selecionado
-                            'Construção',
-                            'Educação',
-                            'Comércio',
-                            'Indústria',
-                            'Agricultura',
-                          ].map((String value) {
+                          items: ['Ramo 1', 'Ramo 2']
+                              .map((String value) {
                             return DropdownMenuItem<String>(
-                              value: value == 'Filtrar por ramo' ? null : value,
+                              value: value,
                               child: Text(value, style: TextStyle(fontSize: 12)),
                             );
                           }).toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              selectedSegment = newValue;
-                            });
-                          },
+                          onChanged: (newValue) {},
                         ),
                       ),
                       SizedBox(width: 10),
+                      
+                      SizedBox(
+                        width: 150,
+                        child: DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
+                          ),
+                          hint: Text("Filtrar por porte", style: TextStyle(fontSize: 12)),
+                          items: ['Porte 1', 'Porte 2']
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value, style: TextStyle(fontSize: 12)),
+                            );
+                          }).toList(),
+                          onChanged: (newValue) {},
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                SizedBox(height: 10),
+
                 // Seção da Tabela de Ranking
-                filteredRankings.isNotEmpty
+                rankings.isNotEmpty
                     ? Center(
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 10.0),
@@ -244,7 +257,7 @@ class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
                                       label: Text('Cidade',
                                           style: TextStyle(fontWeight: FontWeight.bold))),
                                 ],
-                                rows: filteredRankings.map((ranking) {
+                                rows: rankings.map((ranking) {
                                   return DataRow(cells: [
                                     DataCell(Text('${ranking['ranking'] ?? '0'}º')),
                                     DataCell(Text(ranking['companyName'] ?? 'Nome não informado')),
