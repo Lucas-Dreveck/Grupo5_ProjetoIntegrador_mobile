@@ -31,7 +31,7 @@ class _RankingPageState extends State<RankingPage> {
   }
 
   fetchDropdownsData() async {
-    final response = await makeHttpRequest("/api/auth/Company/", method: 'GET');
+    final response = await makeHttpRequest("api/auth/Company", method: 'GET');
 
     try {
       if (response.statusCode == 200) {
@@ -41,12 +41,10 @@ class _RankingPageState extends State<RankingPage> {
           setState(() {
             _segmentList = dropdowns.map((item) => item['segment']).toSet().toList();
             _sizeCompanyList = dropdowns.map((item) => item['companySize']).toSet().toList();
+            _segmentList.insert(0, "Sem filtro");
+            _sizeCompanyList.insert(0, "Sem filtro");
           });
         }
-
-        print(dropdowns);
-        print(_segmentList);
-        print(_sizeCompanyList);
 
       } else {
         AlertSnackBar.show(
@@ -68,7 +66,9 @@ class _RankingPageState extends State<RankingPage> {
   Future<void> fetchRankingData(String? segment, String? companySize, String? tradeName) async {
     final queryParams = {
       if (segment?.isNotEmpty ?? false) 'segment': segment,
+      if(segment == "Sem filtro") 'segment': null,
       if (companySize?.isNotEmpty ?? false) 'companySize': companySize,
+      if(companySize == "Sem filtro") 'companySize': null,
       if (tradeName?.isNotEmpty ?? false) 'tradeName': tradeName,
     };
     
@@ -99,16 +99,6 @@ class _RankingPageState extends State<RankingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.blue,
-        leading: Icon(Icons.menu),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Icon(Icons.lightbulb, color: Colors.yellowAccent),
-          ],
-        ),
-      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -237,7 +227,7 @@ class _RankingPageState extends State<RankingPage> {
                             );
                           }).toList(),
                           onChanged: (newValue) {
-                            fetchRankingData(newValue, null, null); 
+                            fetchRankingData(null, newValue, null); 
                           },
 ),
                       ),
@@ -246,7 +236,6 @@ class _RankingPageState extends State<RankingPage> {
                 ),
                 SizedBox(height: 10),
 
-                // Seção da Tabela de Ranking
                 rankings.isNotEmpty
                     ? Center(
                         child: Padding(
@@ -284,7 +273,8 @@ class _RankingPageState extends State<RankingPage> {
                           ),
                         ),
                       )
-                    : Center(child: CircularProgressIndicator()),
+                    : Center(child: Text("Nenhuma Empresa foi encontrada",
+                                style: TextStyle(fontSize: 18, color: Colors.red))),
               ],
             ),
           );
