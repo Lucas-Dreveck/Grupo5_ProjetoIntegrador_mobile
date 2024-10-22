@@ -6,6 +6,7 @@ class AlertSnackBar {
     required BuildContext context,
     required String text,
     Color backgroundColor = AppColors.red,
+    int duration = 3,
   }) {
     OverlayEntry overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
@@ -33,7 +34,7 @@ class AlertSnackBar {
 
     Overlay.of(context).insert(overlayEntry);
 
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: duration), () {
       overlayEntry.remove();
     });
 

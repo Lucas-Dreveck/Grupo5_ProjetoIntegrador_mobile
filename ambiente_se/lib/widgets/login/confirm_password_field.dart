@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ConfirmPasswordField extends StatefulWidget {
-  const ConfirmPasswordField({Key? key}) : super(key: key);
+  const ConfirmPasswordField({super.key});
 
   @override
   _ConfirmPasswordFieldState createState() => _ConfirmPasswordFieldState();
@@ -24,7 +24,7 @@ class _ConfirmPasswordFieldState extends State<ConfirmPasswordField> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
+        SizedBox(
           height: 40,
           width: 300,
           child: TextField(

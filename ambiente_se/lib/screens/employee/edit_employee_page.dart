@@ -3,9 +3,6 @@ import 'package:ambiente_se/utils.dart';
 import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:ambiente_se/widgets/employee/employee_form.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
 class EditEmployeePage extends StatefulWidget {
@@ -134,7 +131,6 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
 
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
-      var cpf = data['cpf'];
       setState(() {
         _nameController.text = data['name'] ?? '';
         _cpfController.text = (data['cpf'] ?? '');

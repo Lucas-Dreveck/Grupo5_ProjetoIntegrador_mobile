@@ -4,7 +4,7 @@ import 'package:ambiente_se/screens/login/verify_code.dart';
 class RecoverPasswordButton extends StatefulWidget {
   final Future<void> Function() onPressed;
 
-  const RecoverPasswordButton({Key? key, required this.onPressed}) : super(key: key);
+  const RecoverPasswordButton({super.key, required this.onPressed});
 
   @override
   _RecoverPasswordButtonState createState() => _RecoverPasswordButtonState();
@@ -37,6 +37,13 @@ class _RecoverPasswordButtonState extends State<RecoverPasswordButton> {
                   });
                 }
               },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF0065A9),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
         child: _isLoading
             ? const CircularProgressIndicator(
                 color: Colors.white,
@@ -49,13 +56,6 @@ class _RecoverPasswordButtonState extends State<RecoverPasswordButton> {
                   color: Color.fromARGB(255, 245, 245, 245),
                 ),
               ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0065A9),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
       ),
     );
   }

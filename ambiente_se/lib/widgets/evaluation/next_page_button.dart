@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class NextPageButton extends StatelessWidget {
   final PageController pageController;
+  final Future<void> Function()? sendQuestions;
   final String label;
   final Color color;
   final double width;
@@ -11,6 +12,7 @@ class NextPageButton extends StatelessWidget {
   const NextPageButton({
     super.key,
     required this.pageController,
+    this.sendQuestions,
     this.label = 'Próxima',
     this.color = Colors.blue,
     this.width = 200,
@@ -22,10 +24,19 @@ class NextPageButton extends StatelessWidget {
     return CustomButton(
       label: label,
       onPressed: () {
-        pageController.nextPage(
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
+        if (sendQuestions != null) {
+          sendQuestions!().then((_) {
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
+          });
+        } else {
+          pageController.nextPage(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+          );
+        }
       },
       width: width,
       height: height,
