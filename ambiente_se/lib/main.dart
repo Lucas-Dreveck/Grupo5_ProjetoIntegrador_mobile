@@ -49,7 +49,7 @@ class _MainAppState extends State<MainApp> {
       const MainCompanyPage(),
       const MainEmployeePage(),
       const MainQuestionPage(),
-      const EvaluationPage(),
+      EvaluationPage(onSelectPage: _selectPage),
     ];
   }
 
@@ -90,6 +90,7 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BackToLogin extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const BackToLogin({Key? key, required this.onPressed}) : super(key: key);
+  const BackToLogin({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

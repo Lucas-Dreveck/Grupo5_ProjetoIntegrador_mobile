@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NewPasswordField extends StatefulWidget {
-  const NewPasswordField({Key? key}) : super(key: key);
+  const NewPasswordField({super.key});
 
   @override
   _NewPasswordFieldState createState() => _NewPasswordFieldState();
@@ -24,7 +24,7 @@ class _NewPasswordFieldState extends State<NewPasswordField> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
+        SizedBox(
           height: 40,
           width: 300,
           child: TextField(

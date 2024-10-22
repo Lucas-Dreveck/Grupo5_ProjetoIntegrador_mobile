@@ -14,7 +14,7 @@ class EmployeeForm extends StatefulWidget {
   final TextEditingController passwordController;
   final bool isEditing;
 
-  EmployeeForm({
+  const EmployeeForm({
     required Key key,
     required this.nameController,
     required this.cpfController,
@@ -32,8 +32,8 @@ class EmployeeForm extends StatefulWidget {
 }
 
 class _EmployeeFormState extends State<EmployeeForm> {
-  var role;
-  var isEditing;
+  late String role;
+  late bool isEditing;
 
   var maskCpf = MaskTextInputFormatter(
       mask: '###.###.###-##',
@@ -60,7 +60,7 @@ class _EmployeeFormState extends State<EmployeeForm> {
         children: [
           Text(
             widget.isEditing ? "Editar Funcionário" : "Cadastro de Funcionário",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 15),
           DefaultTextField(
@@ -86,7 +86,7 @@ class _EmployeeFormState extends State<EmployeeForm> {
           const SizedBox(height: 15),
           DefaultDropdown(
             key: UniqueKey(),
-            items: ["Gestor", "Consultor"],
+            items: const ["Gestor", "Consultor"],
             label: "Cargo",
             initialValue: role != "" ? role : null,
             onChanged: (newrole) {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class SetPasswordButton extends StatefulWidget {
   final Future<void> Function() onPressed;
 
-  const SetPasswordButton({Key? key, required this.onPressed}) : super(key: key);
+  const SetPasswordButton({super.key, required this.onPressed});
 
   @override
   _SetPasswordButtonState createState() => _SetPasswordButtonState();
@@ -37,6 +37,13 @@ class _SetPasswordButtonState extends State<SetPasswordButton> {
                   });
                 }
               },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF0065A9),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
         child: _isLoading
             ? const CircularProgressIndicator(
                 color: Colors.white,
@@ -49,13 +56,6 @@ class _SetPasswordButtonState extends State<SetPasswordButton> {
                   color: Color.fromARGB(255, 245, 245, 245),
                 ),
               ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0065A9),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
       ),
     );
   }

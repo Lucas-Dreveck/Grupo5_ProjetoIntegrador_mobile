@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 class EvaluationOptions extends StatefulWidget {
   final List<String> options;
+  final List<String> optionsValue;
   final String selectedOption;
   final ValueChanged<String>? onSelected; // Adiciona um callback
 
   const EvaluationOptions({
     super.key,
     this.options = const ['Conforme', 'Não Conforme', 'Não Aplicável'],
+    this.optionsValue = const ['Conforme', 'NaoConforme', 'NaoSeAdequa'],
     this.selectedOption = '',
     this.onSelected, // Inicializa o callback
   });
@@ -30,7 +32,7 @@ class _EvaluationOptionsState extends State<EvaluationOptions> {
       children: widget.options.map((String option) {
         return RadioListTile<String>(
           title: Text(option),
-          value: option,
+          value: widget.optionsValue[widget.options.indexOf(option)],
           groupValue: _selectedOption,
           onChanged: (String? value) {
             setState(() {
