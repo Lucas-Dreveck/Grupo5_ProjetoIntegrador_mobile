@@ -15,69 +15,86 @@ class RankingEmpresaPage extends StatefulWidget {
 class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
   List<dynamic> rankings = [];
   String searchQuery = "";
-  Timer? _debounce; // Timer para debounce
+  var _segmentList = [];
+  var _sizeCompanyList = [];
 
   @override
   void initState() {
     super.initState();
-    fetchRankingData(); // Carrega rankings inicialmente
+    fetchRankingData("", "", ""); 
+    fetchDropdownsData();
   }
 
   @override
   void dispose() {
-    _debounce?.cancel(); // Cancela o Timer se existir
     super.dispose();
   }
 
-  Future<void> fetchRankingData() async {
-    final response = await makeHttpRequest("/api/ranking/score", method: 'GET');
-    if (response.statusCode == 200) {
-      setState(() {
-        rankings = json.decode(utf8.decode(response.bodyBytes));
-      });
-    } else {
+  fetchDropdownsData() async {
+    final response = await makeHttpRequest("/api/auth/Company/", method: 'GET');
+
+    try {
+      if (response.statusCode == 200) {
+        final dropdowns = json.decode(utf8.decode(response.bodyBytes));
+        
+        if (dropdowns.isNotEmpty) {
+          setState(() {
+            _segmentList = dropdowns.map((item) => item['segment']).toSet().toList();
+            _sizeCompanyList = dropdowns.map((item) => item['companySize']).toSet().toList();
+          });
+        }
+
+        print(dropdowns);
+        print(_segmentList);
+        print(_sizeCompanyList);
+
+      } else {
+        AlertSnackBar.show(
+          context: context,
+          text: "Erro ao carregar dropdowns.",
+          backgroundColor: AppColors.red,
+        );
+        throw Exception('Failed to load dropdowns');
+      }
+    } catch (e) {
       AlertSnackBar.show(
         context: context,
-        text: "Erro ao carregar rankings.",
+        text: "Erro ao carregar dropdowns: ${e.toString()}",
         backgroundColor: AppColors.red,
       );
-      throw Exception('Failed to load rankings');
     }
-  }
-Future<void> fetchFilteredRankingData(String segment, String companySize, String tradeName) async {
-  try {
-    // Montando os parâmetros da query
+  } 
+
+  Future<void> fetchRankingData(String? segment, String? companySize, String? tradeName) async {
     final queryParams = {
-      if (segment.isNotEmpty) 'segment': segment,
-      if (companySize.isNotEmpty) 'companySize': companySize,
-      if (tradeName.isNotEmpty) 'tradeName': tradeName,
+      if (segment?.isNotEmpty ?? false) 'segment': segment,
+      if (companySize?.isNotEmpty ?? false) 'companySize': companySize,
+      if (tradeName?.isNotEmpty ?? false) 'tradeName': tradeName,
     };
+    
+    final response = await makeHttpRequest("/api/ranking/score", method: 'GET', parameters: queryParams);
 
-    // Montando a URL com os parâmetros
-    final uri = Uri.http("/api/ranking/score");
-
-    final response = await makeHttpRequest(uri.toString(), method: 'GET', parameters: queryParams);
-
-    if (response.statusCode == 200) {
-      setState(() {
-        rankings = json.decode(utf8.decode(response.bodyBytes));
-      });
-    } else {
+    try {
+      if (response.statusCode == 200) {
+        setState(() {
+          rankings = json.decode(utf8.decode(response.bodyBytes));
+        });
+      } else {
+        AlertSnackBar.show(
+          context: context,
+          text: "Erro ao carregar rankings.",
+          backgroundColor: AppColors.red,
+        );
+        throw Exception('Failed to load rankings');
+      }
+    } catch (e) {
       AlertSnackBar.show(
         context: context,
-        text: "Erro ao carregar rankings filtrados. Código: ${response.statusCode}",
+        text: "Erro ao carregar rankings: ${e.toString()}",
         backgroundColor: AppColors.red,
       );
     }
-  } catch (e) {
-    AlertSnackBar.show(
-      context: context,
-      text: "Erro ao carregar rankings filtrados: ${e.toString()}",
-      backgroundColor: AppColors.red,
-    );
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -108,14 +125,7 @@ Future<void> fetchFilteredRankingData(String segment, String companySize, String
                       prefixIcon: Icon(Icons.search),
                     ),
                     onChanged: (value) {
-                      // Atualiza a consulta de busca
-                      searchQuery = value; 
-
-                      // Inicia o debounce
-                      if (_debounce?.isActive ?? false) _debounce?.cancel();
-                      _debounce = Timer(const Duration(milliseconds: 300), () {
-                        fetchFilteredRankingData(value); // Chama a função de busca filtrada
-                      });
+                      fetchRankingData(null, null, value);
                     },
                   ),
                 ),
@@ -197,14 +207,16 @@ Future<void> fetchFilteredRankingData(String segment, String companySize, String
                             contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
                           ),
                           hint: Text("Filtrar por ramo", style: TextStyle(fontSize: 12)),
-                          items: ['Ramo 1', 'Ramo 2']
-                              .map((String value) {
+                          items: _segmentList
+                              .map<DropdownMenuItem<String>>((dynamic value) {  // Mudança aqui
                             return DropdownMenuItem<String>(
-                              value: value,
+                              value: value as String,
                               child: Text(value, style: TextStyle(fontSize: 12)),
                             );
                           }).toList(),
-                          onChanged: (newValue) {},
+                          onChanged: (newValue) {
+                            fetchRankingData(newValue, null, null); 
+                          },
                         ),
                       ),
                       SizedBox(width: 10),
@@ -217,15 +229,17 @@ Future<void> fetchFilteredRankingData(String segment, String companySize, String
                             contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
                           ),
                           hint: Text("Filtrar por porte", style: TextStyle(fontSize: 12)),
-                          items: ['Porte 1', 'Porte 2']
-                              .map((String value) {
+                          items: _sizeCompanyList
+                              .map<DropdownMenuItem<String>>((dynamic value) {  // Mudança aqui
                             return DropdownMenuItem<String>(
-                              value: value,
+                              value: value as String,
                               child: Text(value, style: TextStyle(fontSize: 12)),
                             );
                           }).toList(),
-                          onChanged: (newValue) {},
-                        ),
+                          onChanged: (newValue) {
+                            fetchRankingData(newValue, null, null); 
+                          },
+),
                       ),
                     ],
                   ),
