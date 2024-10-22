@@ -3,7 +3,7 @@ import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:async'; // Importa para usar Timer
+import 'dart:async';
 
 class RankingPage extends StatefulWidget {
   const RankingPage({Key? key}) : super(key: key);
@@ -13,16 +13,21 @@ class RankingPage extends StatefulWidget {
 }
 
 class _RankingPageState extends State<RankingPage> {
+  final queryParams = <String, dynamic>{};
+
   List<dynamic> rankings = [];
   String searchQuery = "";
   var _segmentList = [];
   var _sizeCompanyList = [];
+  bool flagInit = true;
+  dynamic firstPlace;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchRankingData("", "", ""); 
-    fetchDropdownsData();
+    fetchRankingData(null, null, null);
+    fetchDropdownsData().then((value) => fetchRankingData(null, null, null));
   }
 
   @override
@@ -31,12 +36,13 @@ class _RankingPageState extends State<RankingPage> {
   }
 
   fetchDropdownsData() async {
+    isLoading = true;
     final response = await makeHttpRequest("api/auth/Company", method: 'GET');
 
     try {
       if (response.statusCode == 200) {
         final dropdowns = json.decode(utf8.decode(response.bodyBytes));
-        
+
         if (dropdowns.isNotEmpty) {
           setState(() {
             _segmentList = dropdowns.map((item) => item['segment']).toSet().toList();
@@ -45,8 +51,8 @@ class _RankingPageState extends State<RankingPage> {
             _sizeCompanyList.insert(0, "Sem filtro");
           });
         }
-
       } else {
+        isLoading = false;
         AlertSnackBar.show(
           context: context,
           text: "Erro ao carregar dropdowns.",
@@ -55,23 +61,38 @@ class _RankingPageState extends State<RankingPage> {
         throw Exception('Failed to load dropdowns');
       }
     } catch (e) {
+      isLoading = false;
       AlertSnackBar.show(
         context: context,
         text: "Erro ao carregar dropdowns: ${e.toString()}",
         backgroundColor: AppColors.red,
       );
     }
-  } 
+    isLoading = false;
+  }
 
   Future<void> fetchRankingData(String? segment, String? companySize, String? tradeName) async {
-    final queryParams = {
-      if (segment?.isNotEmpty ?? false) 'segment': segment,
-      if(segment == "Sem filtro") 'segment': null,
-      if (companySize?.isNotEmpty ?? false) 'companySize': companySize,
-      if(companySize == "Sem filtro") 'companySize': null,
-      if (tradeName?.isNotEmpty ?? false) 'tradeName': tradeName,
-    };
-    
+    if (segment == null) {
+    } else if (segment == "Sem filtro") {
+      queryParams.remove('segment');
+    } else {
+      queryParams['segment'] = segment;
+    }
+
+    if (companySize == null) {
+    } else if (companySize == "Sem filtro") {
+      queryParams.remove('companySize');
+    } else {
+      queryParams['companySize'] = companySize;
+    }
+
+    if (tradeName == null) {
+    } else if (tradeName.isEmpty) {
+      queryParams.remove('tradeName');
+    } else {
+      queryParams['tradeName'] = tradeName;
+    }
+
     final response = await makeHttpRequest("/api/ranking/score", method: 'GET', parameters: queryParams);
 
     try {
@@ -79,6 +100,11 @@ class _RankingPageState extends State<RankingPage> {
         setState(() {
           rankings = json.decode(utf8.decode(response.bodyBytes));
         });
+
+        if (flagInit && rankings.isNotEmpty) {
+          flagInit = false;
+          firstPlace = rankings[0];
+        }
       } else {
         AlertSnackBar.show(
           context: context,
@@ -122,68 +148,71 @@ class _RankingPageState extends State<RankingPage> {
                 SizedBox(height: 10),
 
                 // Seção de Ranking Geral
-                if (rankings.isNotEmpty)
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Center(
-                      child: Container(
-                        width: 450,
-                        height: 250,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 160, // Tamanho do círculo
-                              height: 160, // Tamanho do círculo
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color.fromARGB(0, 255, 255, 255), // Cor de fundo, se necessário
-                              ),
-                              child: ClipOval(
-                                child: OverflowBox(
-                                  minWidth: 0.0,
-                                  minHeight: 0.0,
-                                  maxWidth: 150.0,
-                                  maxHeight: 150.0,
-                                  child: Image.network(
-                                    rankings[0]['imageUrl'] ?? 'assets/images/trofeu.png',
-                                    fit: BoxFit.fill, // Use BoxFit.fill para esticar a imagem
+                (firstPlace != null)
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Center(
+                          child: Container(
+                            width: 450,
+                            height: 250,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 160,
+                                  height: 160,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: ClipOval(
+                                    child: OverflowBox(
+                                      minWidth: 0.0,
+                                      minHeight: 0.0,
+                                      maxWidth: 150.0,
+                                      maxHeight: 150.0,
+                                      child: Image.network(
+                                        rankings.isNotEmpty
+                                            ? (rankings[0]['imageUrl'] ?? 'assets/images/trofeu.png')
+                                            : 'assets/images/trofeu.png',
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(width: 40),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Ranking Geral',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  '1ª Posição',
-                                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  rankings[0]['companyName'] ?? 'Nome não informado',
-                                  style: TextStyle(fontSize: 22),
-                                ),
-                                Text(
-                                  'Ramo: ${rankings[0]['segment'] ?? 'Segmento não informado'}',
-                                  style: TextStyle(fontSize: 18, color: const Color.fromARGB(255, 4, 100, 190)),
+                                SizedBox(width: 40),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Ranking Geral',
+                                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      '1ª Posição',
+                                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      firstPlace['companyName'] ?? 'Nome não informado',
+                                      style: TextStyle(fontSize: 22),
+                                    ),
+                                    Text(
+                                      'Ramo: ${firstPlace['segment'] ?? 'Segmento não informado'}',
+                                      style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 4, 100, 190)),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
+                      )
+                    : Center(child: CircularProgressIndicator()),
                 SizedBox(height: 40),
 
+                // Filtros
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: Row(
@@ -198,19 +227,18 @@ class _RankingPageState extends State<RankingPage> {
                           ),
                           hint: Text("Filtrar por ramo", style: TextStyle(fontSize: 12)),
                           items: _segmentList
-                              .map<DropdownMenuItem<String>>((dynamic value) {  // Mudança aqui
+                              .map<DropdownMenuItem<String>>((dynamic value) {
                             return DropdownMenuItem<String>(
                               value: value as String,
                               child: Text(value, style: TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (newValue) {
-                            fetchRankingData(newValue, null, null); 
+                            fetchRankingData(newValue, null, null);
                           },
                         ),
                       ),
                       SizedBox(width: 10),
-                      
                       SizedBox(
                         width: 150,
                         child: DropdownButtonFormField<String>(
@@ -220,14 +248,14 @@ class _RankingPageState extends State<RankingPage> {
                           ),
                           hint: Text("Filtrar por porte", style: TextStyle(fontSize: 12)),
                           items: _sizeCompanyList
-                              .map<DropdownMenuItem<String>>((dynamic value) {  // Mudança aqui
+                              .map<DropdownMenuItem<String>>((dynamic value) {
                             return DropdownMenuItem<String>(
                               value: value as String,
                               child: Text(value, style: TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (newValue) {
-                            fetchRankingData(null, newValue, null); 
+                            fetchRankingData(null, newValue, null);
                           },
                         ),
                       ),
@@ -236,45 +264,52 @@ class _RankingPageState extends State<RankingPage> {
                 ),
                 SizedBox(height: 10),
 
-                rankings.isNotEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 10.0),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(minWidth: constraints.maxWidth - 40),
-                              child: DataTable(
-                                columnSpacing: 20,
-                                columns: const [
-                                  DataColumn(
-                                      label: Text('Posição',
-                                          style: TextStyle(fontWeight: FontWeight.bold))),
-                                  DataColumn(
-                                      label: Text('Nome',
-                                          style: TextStyle(fontWeight: FontWeight.bold))),
-                                  DataColumn(
-                                      label: Text('Ramo',
-                                          style: TextStyle(fontWeight: FontWeight.bold))),
-                                  DataColumn(
-                                      label: Text('Cidade',
-                                          style: TextStyle(fontWeight: FontWeight.bold))),
-                                ],
-                                rows: rankings.map((ranking) {
-                                  return DataRow(cells: [
-                                    DataCell(Text('${ranking['ranking'] ?? '0'}º')),
-                                    DataCell(Text(ranking['companyName'] ?? 'Nome não informado')),
-                                    DataCell(Text(ranking['segment'] ?? 'Segmento não informado')),
-                                    DataCell(Text(ranking['city'] ?? 'Cidade não informada')),
-                                  ]);
-                                }).toList(),
+                // Tabela de Rankings
+                isLoading
+                    ? Center(child: CircularProgressIndicator())
+                    : (rankings.isNotEmpty)
+                        ? Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: constraints.maxWidth - 40),
+                                  child: DataTable(
+                                    columnSpacing: 20,
+                                    columns: const [
+                                      DataColumn(
+                                          label: Text('Posição',
+                                              style: TextStyle(fontWeight: FontWeight.bold))),
+                                      DataColumn(
+                                          label: Text('Nome',
+                                              style: TextStyle(fontWeight: FontWeight.bold))),
+                                      DataColumn(
+                                          label: Text('Ramo',
+                                              style: TextStyle(fontWeight: FontWeight.bold))),
+                                      DataColumn(
+                                          label: Text('Cidade',
+                                              style: TextStyle(fontWeight: FontWeight.bold))),
+                                    ],
+                                    rows: rankings
+                                        .map<DataRow>(
+                                          (ranking) => DataRow(cells: [
+                                            DataCell(Text(
+                                              ranking['ranking'].toString(),
+                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                            )),
+                                            DataCell(Text(ranking['companyName'] ?? 'Nome não informado')),
+                                            DataCell(Text(ranking['segment'] ?? 'Segmento não informado')),
+                                            DataCell(Text(ranking['city'] ?? 'Cidade não informada')),
+                                          ]),
+                                        )
+                                        .toList(),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      )
-                    : Center(child: Text("Nenhuma Empresa foi encontrada",
-                                style: TextStyle(fontSize: 18, color: Colors.red))),
+                          )
+                        : Center(child: Text("Nenhum resultado encontrado")),
               ],
             ),
           );
