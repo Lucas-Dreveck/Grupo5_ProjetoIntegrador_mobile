@@ -383,6 +383,15 @@ class _EvaluationPageState extends State<EvaluationPage> {
     }
   }
 
+  static String getDisplayValue(String dbValue) {
+    final Map<String, String> valueToDisplay = {
+      'Conforme': 'Conforme',
+      'NaoConforme': 'Não Conforme',
+      'NaoSeAdequa': 'Não Aplicável',
+    };
+    return valueToDisplay[dbValue] ?? dbValue;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -771,7 +780,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
                     elevation: WidgetStateProperty.all(0),
                   ),
                   child: const Text(
-                    'Voltar a tela principal',
+                    'Voltar ao início',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18,
@@ -857,7 +866,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
         TableRow(
           children: [
             _buildTableCell(answer.question_registered, color, alternate),
-            _buildTableCell(answer.answer_registered, color, alternate),
+            _buildTableCell(getDisplayValue(answer.answer_registered), color, alternate),
           ],
         ),
       );
