@@ -69,7 +69,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
     if (_focusNode.hasFocus) {
       _showOverlay();
     } else {
-      _hideOverlay();
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (!_focusNode.hasFocus) {
+          _hideOverlay();
+        }
+      });
     }
   }
 
@@ -85,8 +89,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
       selectedCompany = company;
       _searchController.text = company['tradeName'] ?? '';
     });
-    _hideOverlay();
+    
     Future.microtask(() {
+      _hideOverlay();
       _focusNode.unfocus();
       _isUpdatingTextField = false;
     });
@@ -100,6 +105,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   void _showOverlay() {
+    _hideOverlay();
+    
     if (_overlayEntry == null) {
       _overlayEntry = OverlayEntry(
         builder: (context) => Positioned(
@@ -120,11 +127,22 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   shrinkWrap: true,
                   itemCount: companies.length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(companies[index]['tradeName'] ?? ''),
+                    return InkWell(
                       onTap: () {
-                        _selectCompany(companies[index]);
+                        Future.microtask(() {
+                          _selectCompany(companies[index]);
+                        });
                       },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 12.0,
+                        ),
+                        child: Text(
+                          companies[index]['tradeName'] ?? '',
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -133,7 +151,10 @@ class _EvaluationPageState extends State<EvaluationPage> {
           ),
         ),
       );
-      Overlay.of(context).insert(_overlayEntry!);
+      
+      if (mounted) {
+        Overlay.of(context).insert(_overlayEntry!);
+      }
     } else {
       _overlayEntry!.markNeedsBuild();
     }
@@ -391,7 +412,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
   Widget _buildCompanySelectionPage() {
     return GestureDetector(
       onTap: () {
-        _focusNode.unfocus();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _focusNode.unfocus();
+        });
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
