@@ -5,14 +5,14 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async'; // Importa para usar Timer
 
-class RankingEmpresaPage extends StatefulWidget {
-  const RankingEmpresaPage({Key? key}) : super(key: key);
+class RankingPage extends StatefulWidget {
+  const RankingPage({Key? key}) : super(key: key);
 
   @override
-  State<RankingEmpresaPage> createState() => _RankingEmpresaPageState();
+  State<RankingPage> createState() => _RankingPageState();
 }
 
-class _RankingEmpresaPageState extends State<RankingEmpresaPage> {
+class _RankingPageState extends State<RankingPage> {
   List<dynamic> rankings = [];
   String searchQuery = "";
   var _segmentList = [];
