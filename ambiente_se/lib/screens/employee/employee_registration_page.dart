@@ -33,10 +33,6 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
     Navigator.of(context).pop();
   }
 
-  void _finish() {
-    Navigator.of(context).pop();
-  }
-
   bool verifyPage() {
     if (_nameController.text.isEmpty) {
       AlertSnackBar.show(

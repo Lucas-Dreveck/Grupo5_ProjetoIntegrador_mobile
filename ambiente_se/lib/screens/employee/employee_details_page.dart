@@ -6,7 +6,6 @@ import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:ambiente_se/widgets/default/default_modal.dart';
 import 'package:ambiente_se/widgets/default/default_text_field.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
@@ -74,7 +73,6 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage>
 
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
-      var cpf = data['cpf'];
       print(data);
       setState(() {
         nameController.text = data['name'] ?? '';

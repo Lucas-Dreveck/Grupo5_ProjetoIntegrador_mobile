@@ -1,11 +1,10 @@
 import 'package:ambiente_se/screens/login/new_password.dart';
 import 'package:flutter/material.dart';
-import 'package:ambiente_se/screens/login/verify_code.dart'; // Ensure this path is correct
 
 class VerifyCodeButton extends StatefulWidget {
   final Future<void> Function() onPressed;
 
-  const VerifyCodeButton({Key? key, required this.onPressed}) : super(key: key);
+  const VerifyCodeButton({super.key, required this.onPressed});
 
   @override
   _VerifyCodeButtonState createState() => _VerifyCodeButtonState();
@@ -38,6 +37,13 @@ class _VerifyCodeButtonState extends State<VerifyCodeButton> {
                   });
                 }
               },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF0065A9),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
         child: _isLoading
             ? const CircularProgressIndicator(
                 color: Colors.white,
@@ -50,13 +56,6 @@ class _VerifyCodeButtonState extends State<VerifyCodeButton> {
                   color: Color.fromARGB(255, 245, 245, 245),
                 ),
               ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF0065A9),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
       ),
     );
   }
