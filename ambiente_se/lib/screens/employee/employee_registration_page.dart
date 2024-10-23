@@ -48,6 +48,13 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
       );
       return false;
     }
+    if (!isValidCPF(_cpfController.text)) {
+        AlertSnackBar.show(
+          context: context,
+          text: "O CPF informado é inválido.",
+        );
+        return false;
+      }
     if (_birthDateController.text.isEmpty) {
       AlertSnackBar.show(
         context: context,
@@ -69,7 +76,6 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
       );
       return false;
     }
-
     return true;
   }
 
@@ -78,7 +84,7 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
       "name": _nameController.text,
       "cpf": _cpfController.text.replaceAll(RegExp(r'\D'), ''),
       "email": _emailController.text,
-      "birthDate": formatDate(_birthDateController.text),
+      "birthDate": parseDateBackFront(_birthDateController.text),
       "user": {
         "login": _loginController.text,
         "password": _passwordController.text,

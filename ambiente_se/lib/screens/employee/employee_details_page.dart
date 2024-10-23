@@ -77,7 +77,7 @@ class EmployeeDetailsPageState extends State<EmployeeDetailsPage>
       setState(() {
         nameController.text = data['name'] ?? '';
         cpfController.text = formatCpf(data['cpf'] ?? '');
-        birthDateController.text = data['birthDate'] ?? '';
+        birthDateController.text = formatDate(data['birthDate'] ?? '');
         emailController.text = data['email'] ?? '';
         loginController.text = data['login'] ?? '';
         roleController.text = data['role']['description'] ?? '';
