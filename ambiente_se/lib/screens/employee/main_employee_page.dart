@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:ambiente_se/screens/company/company_details_page.dart';
 import 'package:ambiente_se/screens/employee/employee_details_page.dart';
 import 'package:ambiente_se/screens/employee/employee_registration_page.dart';
@@ -31,12 +30,14 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute<dynamic>);
+    routeObserver.subscribe(
+        this, ModalRoute.of(context)! as PageRoute<dynamic>);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchBarController.dispose();
     routeObserver.unsubscribe(this);
     super.dispose();
   }
@@ -76,7 +77,6 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
     if (moreEmployees.length < _itemsPerPage) {
       _hasMoreData = false;
     }
-    _hasMoreData = false;
     setState(() {
       _employees.addAll(moreEmployees);
       _currentPage++;
@@ -99,11 +99,13 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
     super.initState();
     _loadMoreEmployees();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent &&
+      if (_scrollController.position.pixels ==
+              _scrollController.position.maxScrollExtent &&
           !_isLoading) {
         _loadMoreEmployees();
       }
     });
+    _searchBarController.addListener(_search);
   }
 
   Future<void> _resetEmployees() async {
@@ -134,7 +136,8 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const EmployeeRegistrationPage()),
+                          builder: (context) =>
+                              const EmployeeRegistrationPage()),
                     );
                   })
             ]),
@@ -171,7 +174,8 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                     child: _employees.isEmpty
                         ? const Center(
                             child: Text("Nenhum funcionário encontrado",
-                                style: TextStyle(fontSize: 18, color: Colors.red)))
+                                style:
+                                    TextStyle(fontSize: 18, color: Colors.red)))
                         : SingleChildScrollView(
                             controller: _scrollController,
                             child: Column(
@@ -188,7 +192,8 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                                                 child: Text('ID',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
-                                                        fontWeight: FontWeight.bold)),
+                                                        fontWeight:
+                                                            FontWeight.bold)),
                                               ),
                                             ),
                                           ),
@@ -199,7 +204,8 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                                                   'Nome ',
                                                   textAlign: TextAlign.center,
                                                   style: TextStyle(
-                                                      fontWeight: FontWeight.bold),
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ),
                                             ),
@@ -210,7 +216,8 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                                                 child: Text('Cargo',
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
-                                                        fontWeight: FontWeight.bold)),
+                                                        fontWeight:
+                                                            FontWeight.bold)),
                                               ),
                                             ),
                                           ),
@@ -223,15 +230,18 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                                                     Center(
                                                       child: Text(
                                                           item['id'].toString(),
-                                                          textAlign: TextAlign.center),
+                                                          textAlign:
+                                                              TextAlign.center),
                                                     ),
                                                     onTap: () async {
-                                                      final result = await Navigator.push(
+                                                      final result =
+                                                          await Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               EmployeeDetailsPage(
-                                                                  id: item['id']),
+                                                                  id: item[
+                                                                      'id']),
                                                         ),
                                                       );
                                                       if (result == true) {
@@ -242,37 +252,45 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                                                   DataCell(
                                                     Center(
                                                       child: Text(
-                                                          item['name'].toString(),
-                                                          textAlign: TextAlign.center),
-                                                    ),
-                                                    onTap: () async {
-                                                      final result = await Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              EmployeeDetailsPage(
-                                                                  id: item['id']),
-                                                        ),
-                                                      );
-                                                      if (result == true) {
-                                                        _resetEmployees();
-                                                      }
-                                                    },
-                                                  ),
-                                                  DataCell(
-                                                    Center(
-                                                      child: Text(
-                                                          item['role']['description']
+                                                          item['name']
                                                               .toString(),
-                                                          textAlign: TextAlign.center),
+                                                          textAlign:
+                                                              TextAlign.center),
                                                     ),
                                                     onTap: () async {
-                                                      final result = await Navigator.push(
+                                                      final result =
+                                                          await Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
                                                           builder: (context) =>
                                                               EmployeeDetailsPage(
-                                                                  id: item['id']),
+                                                                  id: item[
+                                                                      'id']),
+                                                        ),
+                                                      );
+                                                      if (result == true) {
+                                                        _resetEmployees();
+                                                      }
+                                                    },
+                                                  ),
+                                                  DataCell(
+                                                    Center(
+                                                      child: Text(
+                                                          item['role'][
+                                                                  'description']
+                                                              .toString(),
+                                                          textAlign:
+                                                              TextAlign.center),
+                                                    ),
+                                                    onTap: () async {
+                                                      final result =
+                                                          await Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              EmployeeDetailsPage(
+                                                                  id: item[
+                                                                      'id']),
                                                         ),
                                                       );
                                                       if (result == true) {
@@ -296,7 +314,8 @@ class MainEmployeePageState extends State<MainEmployeePage> with RouteAware {
                                     child: Text(
                                       "Fim da lista",
                                       style: TextStyle(
-                                          fontSize: 16, fontWeight: FontWeight.bold),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
                               ],

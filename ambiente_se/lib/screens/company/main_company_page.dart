@@ -6,6 +6,7 @@ import 'package:ambiente_se/widgets/default/search_button.dart';
 import 'package:ambiente_se/widgets/default/default_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
+
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class MainCompanyPage extends StatefulWidget {
@@ -15,7 +16,7 @@ class MainCompanyPage extends StatefulWidget {
   State<MainCompanyPage> createState() => MainCompanyPageState();
 }
 
-class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
+class MainCompanyPageState extends State<MainCompanyPage> with RouteAware {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchBarController = TextEditingController();
   final List<Map<String, dynamic>> _companies = [];
@@ -28,24 +29,28 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
   @override
   void initState() {
     super.initState();
-    _loadMoreCompanies(); 
+    _loadMoreCompanies();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
               _scrollController.position.maxScrollExtent &&
           !_isLoading) {
-        _loadMoreCompanies(); 
+        _loadMoreCompanies();
       }
     });
+    _searchBarController.addListener(_search);
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute<dynamic>);
+    routeObserver.subscribe(
+        this, ModalRoute.of(context)! as PageRoute<dynamic>);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchBarController.dispose();
     routeObserver.unsubscribe(this);
     super.dispose();
   }
@@ -55,9 +60,7 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
     _resetCompanies();
   }
 
-
   Future<void> _loadMoreCompanies() async {
-
     setState(() {
       _isLoading = true;
     });
@@ -75,9 +78,10 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
     }
 
     final response = await makeHttpRequest(url, parameters: parameters);
-    
+
     if (response.statusCode == 200) {
-      moreCompanies = List<Map<String, dynamic>>.from(json.decode(utf8.decode(response.bodyBytes)));
+      moreCompanies = List<Map<String, dynamic>>.from(
+          json.decode(utf8.decode(response.bodyBytes)));
     } else {
       moreCompanies = [];
     }
@@ -85,14 +89,12 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
     if (moreCompanies.length < _itemsPerPage) {
       _hasMoreData = false;
     }
-    _hasMoreData = false;
     setState(() {
       _companies.addAll(moreCompanies);
       _currentPage++;
       _isLoading = false;
     });
   }
-
 
   Future<void> _resetCompanies() async {
     setState(() {
@@ -103,11 +105,10 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
     await _loadMoreCompanies();
   }
 
-  _search(){
-    if(_searchBarController.text.isEmpty){
+  _search() {
+    if (_searchBarController.text.isEmpty) {
       _searchText = '';
-    }
-    else {
+    } else {
       _searchText = _searchBarController.text;
     }
     _resetCompanies();
@@ -122,17 +123,25 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
           children: [
             Row(
               children: [
-                const Text("Empresas",
+                const Text(
+                  "Empresas",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const Expanded(child: SizedBox()),
-                NewRegisterButton(label: "Novo Registro", onPressed: () { Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const CompanyRegistrationPage()),
-            );})
-              ]
+                NewRegisterButton(
+                  label: "Novo Registro",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const CompanyRegistrationPage()),
+                    );
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 15,),
+            const SizedBox(height: 15),
             Row(
               children: [
                 Expanded(
@@ -159,118 +168,145 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware{
             const SizedBox(height: 5),
             Expanded(
               child: RefreshIndicator(
-              onRefresh: _resetCompanies,
-              child: _companies.isEmpty
-                ? const Center(child: Text("Nenhuma empresa encontrada", style: TextStyle(fontSize: 18, color: Colors.red)))
-                :SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    children: [
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          return SizedBox(
-                            width: constraints.maxWidth,
-                            child: DataTable(
-                              columns: const [
-                                DataColumn(
-                                  label: Expanded(
-                                    child: Center(
-                                      child: Text('ID', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Expanded(
-                                    child: Center(
-                                      child: Text('Nome Fantasia', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold),),
-                                    ),
-                                  ),
-                                ),
-                                DataColumn(
-                                  label: Expanded(
-                                    child: Center(
-                                      child: Text('Ramo', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              rows: _companies.map(
-                                (item) => DataRow(
-                                  cells: [
-                                    DataCell(
-                                      Center(
-                                        child: Text(item['id'].toString(), textAlign: TextAlign.center),
-                                      ),
-                                      onTap: () async {
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => CompanyDetailsPage(id: item['id']),
-                                            
-                                          ),
-                                        );
-                                        _resetCompanies();
-                                      },
-                                    ),
-                                    DataCell(
-                                      Center(
-                                        child: Text(item['tradeName'], textAlign: TextAlign.center),
-                                      ),
-                                      onTap: () async {
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => CompanyDetailsPage(id: item['id']),
-                                          ),
-                                        );
-                                        _resetCompanies();
-                                      },
-                                    ),
-                                    DataCell(
-                                      Center(
-                                        child: Text(item['segment'], textAlign: TextAlign.center),
-                                      ),
-                                      onTap: () async {
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => CompanyDetailsPage(id: item['id']),
-                                          ),
-                                        );
-                                        _resetCompanies();
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ).toList(),
-                            ),
-                          );
-                        },
-                      ),
-                      if (_isLoading)
-                        const CircularProgressIndicator()
-                      else if (!_hasMoreData)
-                        const Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            "Fim da lista",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
+                onRefresh: _resetCompanies,
+                child: _companies.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Nenhuma empresa encontrada",
+                          style: TextStyle(fontSize: 18, color: Colors.red),
                         ),
-                    ],
-                  ),
-                )
-              )
+                      )
+                    : SingleChildScrollView(
+                        controller: _scrollController,
+                        child: Column(
+                          children: [
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                return SizedBox(
+                                  width: constraints.maxWidth,
+                                  child: DataTable(
+                                    columns: const [
+                                      DataColumn(
+                                        label: Expanded(
+                                          child: Center(
+                                            child: Text('ID',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
+                                        ),
+                                      ),
+                                      DataColumn(
+                                        label: Expanded(
+                                          child: Center(
+                                            child: Text('Nome Fantasia',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
+                                        ),
+                                      ),
+                                      DataColumn(
+                                        label: Expanded(
+                                          child: Center(
+                                            child: Text('Ramo',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    rows: _companies
+                                        .map(
+                                          (item) => DataRow(
+                                            cells: [
+                                              DataCell(
+                                                Center(
+                                                  child: Text(
+                                                      item['id'].toString(),
+                                                      textAlign:
+                                                          TextAlign.center),
+                                                ),
+                                                onTap: () async {
+                                                  await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          CompanyDetailsPage(
+                                                              id: item['id']),
+                                                    ),
+                                                  );
+                                                  _resetCompanies();
+                                                },
+                                              ),
+                                              DataCell(
+                                                Center(
+                                                  child: Text(item['tradeName'],
+                                                      textAlign:
+                                                          TextAlign.center),
+                                                ),
+                                                onTap: () async {
+                                                  await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          CompanyDetailsPage(
+                                                              id: item['id']),
+                                                    ),
+                                                  );
+                                                  _resetCompanies();
+                                                },
+                                              ),
+                                              DataCell(
+                                                Center(
+                                                  child: Text(item['segment'],
+                                                      textAlign:
+                                                          TextAlign.center),
+                                                ),
+                                                onTap: () async {
+                                                  await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          CompanyDetailsPage(
+                                                              id: item['id']),
+                                                    ),
+                                                  );
+                                                  _resetCompanies();
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                        .toList(),
+                                  ),
+                                );
+                              },
+                            ),
+                            if (_isLoading)
+                              const CircularProgressIndicator()
+                            else if (!_hasMoreData)
+                              const Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: Text(
+                                  "Fim da lista",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+              ),
             ),
           ],
         ),
       ),
     );
   }
-
-
-
-
-
-
 }

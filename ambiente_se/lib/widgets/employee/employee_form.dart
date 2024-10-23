@@ -25,7 +25,7 @@ class EmployeeForm extends StatefulWidget {
     required this.loginController,
     required this.passwordController,
     this.isEditing = false,
-  }) : super(key: key); 
+  }) : super(key: key);
 
   @override
   _EmployeeFormState createState() => _EmployeeFormState();

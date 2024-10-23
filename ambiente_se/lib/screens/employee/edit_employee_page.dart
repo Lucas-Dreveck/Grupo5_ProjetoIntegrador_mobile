@@ -48,6 +48,13 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       );
       return false;
     }
+    if (!isValidCPF(_cpfController.text)) {
+        AlertSnackBar.show(
+          context: context,
+          text: "O CPF informado é inválido.",
+        );
+        return false;
+      }
     if (_birthDateController.text.isEmpty) {
       AlertSnackBar.show(
         context: context,
@@ -80,8 +87,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   void _save() async {
     final employeeData = {
       'name': _nameController.text,
-      'cpf': _cpfController.text,
-      'birthDate': _birthDateController.text,
+      'cpf': _cpfController.text.replaceAll(RegExp(r'\D'), ''),
+      'birthDate': parseDateBackFront(_birthDateController.text),
       'email': _emailController.text,
       'login': _loginController.text,
       'password': _passwordController.text,
@@ -135,10 +142,11 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
       var cpf = data['cpf'];
+      var birthDate = parseDateBackFront(data['birthDate']);
       setState(() {
         _nameController.text = data['name'] ?? '';
-        _cpfController.text = (data['cpf'] ?? '');
-        _birthDateController.text = data['birthDate'] ?? '';
+        _cpfController.text = formatCpf(data['cpf']?.toString() ?? '');
+        _birthDateController.text = formatDate(data['birthDate'] ?? '');
         _emailController.text = data['email'] ?? '';
         _loginController.text = data['login'] ?? '';
         _role = data['role']['description'] ?? '';
@@ -205,4 +213,5 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       ]),
     );
   }
+  
 }

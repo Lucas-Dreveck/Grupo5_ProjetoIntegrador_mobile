@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-const String backendUrl = 'localhost:8080'; // Substitua pelo endereço IP do seu servidor
+const String backendUrl = '10.200.167.140:8080'; // Substitua pelo endereço IP do seu servidor
 
 
 class AppColors {
@@ -177,18 +177,19 @@ String formatCpf(String cpf) {
   }
 
   String formatDate(String date) {
-    if (date.isEmpty) {
-      return '';
-    }
-    List<String> parts = date.split('/');
-    if (parts.length != 3) {
-      return '';
-    }
-    String day = parts[0].padLeft(2, '0');
-    String month = parts[1].padLeft(2, '0');
-    String year = parts[2];
-    return '$year-$month-$day';
+    if (date.isEmpty) return '';
+    final parts = date.split('-');
+    if (parts.length != 3) return date; 
+    return '${parts[2]}/${parts[1]}/${parts[0]}';
+}
+
+  String parseDateBackFront(data) {
+    if (data == null) return '';
+    final parts = data.split('/');
+    if (parts.length != 3) return data;
+    return '${parts[2]}-${parts[1]}-${parts[0]}';
   }
+
 
 Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
   const FlutterSecureStorage secureStorage = FlutterSecureStorage();

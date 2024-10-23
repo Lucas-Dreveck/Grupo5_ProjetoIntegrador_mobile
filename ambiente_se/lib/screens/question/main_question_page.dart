@@ -8,7 +8,6 @@ import 'package:ambiente_se/widgets/default/default_search_bar.dart';
 import 'package:ambiente_se/widgets/question/question_form.dart';
 import 'package:ambiente_se/widgets/question/quest_view.dart';
 
-
 class MainQuestionPage extends StatefulWidget {
   const MainQuestionPage({super.key});
 
@@ -35,10 +34,10 @@ class MainQuestionPageState extends State<MainQuestionPage> {
         _loadMoreQuestions();
       }
     });
+    _searchBarController.addListener(_search);
   }
 
   Future<void> _loadMoreQuestions() async {
-
     setState(() {
       _isLoading = true;
     });
@@ -73,6 +72,7 @@ class MainQuestionPageState extends State<MainQuestionPage> {
       _isLoading = false;
     });
   }
+
   Future<void> _resetQuestions() async {
     setState(() {
       _questions.clear();
@@ -82,13 +82,10 @@ class MainQuestionPageState extends State<MainQuestionPage> {
     await _loadMoreQuestions();
   }
 
-  _search(){
-    if(_searchBarController.text.isEmpty){
-      _searchText = '';
-    }
-    else {
+  void _search() {
+    setState(() {
       _searchText = _searchBarController.text;
-    }
+    });
     _resetQuestions();
   }
 
@@ -115,7 +112,6 @@ class MainQuestionPageState extends State<MainQuestionPage> {
                     ).then((_) {
                       _resetQuestions();
                     });
-                    
                   },
                 ),
               ],
@@ -151,85 +147,94 @@ class MainQuestionPageState extends State<MainQuestionPage> {
               child: RefreshIndicator(
                 onRefresh: _resetQuestions,
                 child: _questions.isEmpty
-                  ? const Center(child: Text("Nenhuma pergunta encontrada", style: TextStyle(fontSize: 18, color: Colors.red)))
-                  : SingleChildScrollView(
-                      controller: _scrollController,
-                      child: Column(
-                        children: [
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              return SizedBox(
-                                width: constraints.maxWidth,
-                                child: DataTable(
-                                  columns: const [
-                                    DataColumn(
-                                      label: Expanded(
-                                        child: Center(
-                                          child: Text('ID', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                    ? const Center(
+                        child: Text(
+                          "Nenhuma pergunta encontrada",
+                          style: TextStyle(fontSize: 18, color: Colors.red),
+                        ),
+                      )
+                    : SingleChildScrollView(
+                        controller: _scrollController,
+                        child: Column(
+                          children: [
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                return SizedBox(
+                                  width: constraints.maxWidth,
+                                  child: DataTable(
+                                    columns: const [
+                                      DataColumn(
+                                        label: Expanded(
+                                          child: Center(
+                                            child: Text('ID',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(fontWeight: FontWeight.bold)),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    DataColumn(
-                                      label: Expanded(
-                                        child: Center(
-                                          child: Text('Pergunta', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                                      DataColumn(
+                                        label: Expanded(
+                                          child: Center(
+                                            child: Text('Pergunta',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(fontWeight: FontWeight.bold)),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                  rows: _questions.map(
-                                    (item) => DataRow(
-                                      cells: [
-                                        DataCell(
-                                          Center(
-                                            child: Text((item['id']).toString(), textAlign: TextAlign.center),
+                                    ],
+                                    rows: _questions.map(
+                                      (item) => DataRow(
+                                        cells: [
+                                          DataCell(
+                                            Center(
+                                              child: Text((item['id']).toString(), textAlign: TextAlign.center),
+                                            ),
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => QuestionDetailDialog(
+                                                  id: item['id'],
+                                                ),
+                                              ).then((_) {
+                                                _resetQuestions();
+                                              });
+                                            },
                                           ),
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => QuestionDetailDialog(
-                                                id: item['id'],
-                                              ),
-                                            ).then((_) {
-                                              _resetQuestions();
-                                            });
-                                          },
-                                        ),
-                                        DataCell(
-                                          Center(
-                                            child: Text(item['description'], textAlign: TextAlign.center),
+                                          DataCell(
+                                            Center(
+                                              child: Text(item['description'], textAlign: TextAlign.center),
+                                            ),
+                                            onTap: () {
+                                              showDialog(
+                                                context: context,
+                                                builder: (context) => QuestionDetailDialog(
+                                                  id: item['id'],
+                                                ),
+                                              ).then((_) {
+                                                _resetQuestions();
+                                              });
+                                            },
                                           ),
-                                          onTap: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) => QuestionDetailDialog(
-                                                id: item['id'],
-                                              ),
-                                            ).then((_) {
-                                              _resetQuestions();
-                                            });
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ).toList(),
-                                ),
-                              );
-                            },
-                          ),
-                          if (_isLoading)
-                            const CircularProgressIndicator()
-                          else if (!_hasMoreData)
-                            const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Text(
-                                "Fim da lista",
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
+                                        ],
+                                      ),
+                                    ).toList(),
+                                  ),
+                                );
+                              },
                             ),
-                        ],
+                            if (_isLoading)
+                              const CircularProgressIndicator()
+                            else if (!_hasMoreData)
+                              const Padding(
+                                padding: EdgeInsets.all(16.0),
+                                child: Text(
+                                  "Fim da lista",
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
               ),
             )
           ],
@@ -238,4 +243,3 @@ class MainQuestionPageState extends State<MainQuestionPage> {
     );
   }
 }
-
