@@ -1,12 +1,11 @@
 import 'package:ambiente_se/utils.dart';
 import 'package:ambiente_se/widgets/default/alert_snack_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
 class RankingPage extends StatefulWidget {
-  const RankingPage({Key? key}) : super(key: key);
+  const RankingPage({super.key});
 
   @override
   State<RankingPage> createState() => _RankingPageState();
@@ -133,9 +132,9 @@ class _RankingPageState extends State<RankingPage> {
               children: <Widget>[
                 // Campo de Busca
                 Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: TextField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: "Buscar por nome",
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.search),
@@ -145,14 +144,14 @@ class _RankingPageState extends State<RankingPage> {
                     },
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 // Seção de Ranking Geral
                 (firstPlace != null)
                     ? Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Center(
-                          child: Container(
+                          child: SizedBox(
                             width: 450,
                             height: 250,
                             child: Row(
@@ -161,7 +160,7 @@ class _RankingPageState extends State<RankingPage> {
                                 Container(
                                   width: 160,
                                   height: 160,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     shape: BoxShape.circle,
                                   ),
                                   child: ClipOval(
@@ -179,28 +178,28 @@ class _RankingPageState extends State<RankingPage> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 40),
+                                const SizedBox(width: 40),
                                 Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    const Text(
                                       'Ranking Geral',
                                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
+                                    const SizedBox(height: 8),
+                                    const Text(
                                       '1ª Posição',
                                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                                     ),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     Text(
                                       firstPlace['companyName'] ?? 'Nome não informado',
-                                      style: TextStyle(fontSize: 22),
+                                      style: const TextStyle(fontSize: 22),
                                     ),
                                     Text(
                                       'Ramo: ${firstPlace['segment'] ?? 'Segmento não informado'}',
-                                      style: TextStyle(fontSize: 18, color: Color.fromARGB(255, 4, 100, 190)),
+                                      style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 4, 100, 190)),
                                     ),
                                   ],
                                 ),
@@ -209,8 +208,8 @@ class _RankingPageState extends State<RankingPage> {
                           ),
                         ),
                       )
-                    : Center(child: CircularProgressIndicator()),
-                SizedBox(height: 40),
+                    : const Center(child: CircularProgressIndicator()),
+                const SizedBox(height: 40),
 
                 // Filtros
                 Padding(
@@ -221,16 +220,16 @@ class _RankingPageState extends State<RankingPage> {
                       SizedBox(
                         width: 150,
                         child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
                           ),
-                          hint: Text("Filtrar por ramo", style: TextStyle(fontSize: 12)),
+                          hint: const Text("Filtrar por ramo", style: TextStyle(fontSize: 12)),
                           items: _segmentList
                               .map<DropdownMenuItem<String>>((dynamic value) {
                             return DropdownMenuItem<String>(
                               value: value as String,
-                              child: Text(value, style: TextStyle(fontSize: 12)),
+                              child: Text(value, style: const TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (newValue) {
@@ -238,20 +237,20 @@ class _RankingPageState extends State<RankingPage> {
                           },
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       SizedBox(
                         width: 150,
                         child: DropdownButtonFormField<String>(
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
                           ),
-                          hint: Text("Filtrar por porte", style: TextStyle(fontSize: 12)),
+                          hint: const Text("Filtrar por porte", style: TextStyle(fontSize: 12)),
                           items: _sizeCompanyList
                               .map<DropdownMenuItem<String>>((dynamic value) {
                             return DropdownMenuItem<String>(
                               value: value as String,
-                              child: Text(value, style: TextStyle(fontSize: 12)),
+                              child: Text(value, style: const TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (newValue) {
@@ -262,15 +261,15 @@ class _RankingPageState extends State<RankingPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
 
                 // Tabela de Rankings
                 isLoading
-                    ? Center(child: CircularProgressIndicator())
+                    ? const Center(child: CircularProgressIndicator())
                     : (rankings.isNotEmpty)
                         ? Center(
                             child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              padding: const EdgeInsets.symmetric(horizontal: 10.0),
                               child: SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: ConstrainedBox(
@@ -296,7 +295,7 @@ class _RankingPageState extends State<RankingPage> {
                                           (ranking) => DataRow(cells: [
                                             DataCell(Text(
                                               ranking['ranking'].toString(),
-                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                              style: const TextStyle(fontWeight: FontWeight.bold),
                                               
                                             ), 
                                             onTap: () {
@@ -322,7 +321,7 @@ class _RankingPageState extends State<RankingPage> {
                               ),
                             ),
                           )
-                        : Center(child: Text("Nenhum resultado encontrado")),
+                        : const Center(child: Text("Nenhum resultado encontrado")),
               ],
             ),
           );
