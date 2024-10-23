@@ -10,13 +10,13 @@ class CustomButton extends StatelessWidget {
 
   // Construtor do componente, permitindo a personalização através dos parâmetros
   const CustomButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.color = Colors.blue,
     this.width = 200,
     this.height = 50,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

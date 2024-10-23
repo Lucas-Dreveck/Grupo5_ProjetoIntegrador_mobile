@@ -5,10 +5,10 @@ class EmailField extends StatelessWidget {
   final String? errorText;
 
   const EmailField({
-    Key? key,
+    super.key,
     required this.controller,
     this.errorText,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

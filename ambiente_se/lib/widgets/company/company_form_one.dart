@@ -29,7 +29,7 @@ class CompanyFormOne extends StatefulWidget {
 }
 
 class CompanyFormOneState extends State<CompanyFormOne> {
-  var companySize;
+  late String companySize;
 
   var cnpjMask = MaskTextInputFormatter(
     mask: '##.###.###/####-##', 

@@ -1,8 +1,3 @@
-import 'package:ambiente_se/screens/company/main_company_page.dart';
-import 'package:ambiente_se/screens/employee/main_employee_page.dart';
-import 'package:ambiente_se/screens/evaluation/evaluation_page.dart';
-import 'package:ambiente_se/screens/question/main_question_page.dart';
-import 'package:ambiente_se/screens/ranking/ranking_page.dart';
 import 'package:ambiente_se/widgets/home/build_menu_button.dart';
 import 'package:flutter/material.dart';
 

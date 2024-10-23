@@ -7,7 +7,7 @@ import 'package:ambiente_se/widgets/login/wave_painter.dart';
 import 'package:flutter/material.dart';
 
 class LoginRecoverPassword extends StatefulWidget {
-  const LoginRecoverPassword({Key? key}) : super(key: key);
+  const LoginRecoverPassword({super.key});
 
   @override
   _LoginRecoverPasswordState createState() => _LoginRecoverPasswordState();
@@ -98,7 +98,7 @@ class _LoginRecoverPasswordState extends State<LoginRecoverPassword> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
                       );
                     },
                   ),

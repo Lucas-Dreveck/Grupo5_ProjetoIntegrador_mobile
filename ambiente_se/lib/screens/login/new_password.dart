@@ -8,7 +8,7 @@ import 'package:ambiente_se/widgets/login/wave_painter.dart';
 import 'package:flutter/material.dart';
 
 class NewPasswordPage extends StatefulWidget {
-  const NewPasswordPage({Key? key}) : super(key: key);
+  const NewPasswordPage({super.key});
 
   @override
   _NewPasswordPageState createState() => _NewPasswordPageState();
@@ -88,7 +88,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        MaterialPageRoute(builder: (context) => const LoginPage()),
                       );
                     },
                   ),
