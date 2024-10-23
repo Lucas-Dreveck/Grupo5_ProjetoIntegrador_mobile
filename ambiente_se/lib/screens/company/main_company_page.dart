@@ -92,7 +92,7 @@ class MainCompanyPageState extends State<MainCompanyPage> with RouteAware {
         parameters['name'] = _searchText;
       }
 
-      final response = await makeHttpRequest(url, parameters: parameters);
+      final response = await makeHttpRequest(context, url, parameters: parameters);
 
       if (response.statusCode == 200) {
         final List<Map<String, dynamic>> moreCompanies = List<Map<String, dynamic>>.from(

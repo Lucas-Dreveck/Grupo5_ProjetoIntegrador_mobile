@@ -21,7 +21,7 @@ class _QuestionDeleteDialogState extends State<QuestionDeleteDialog> {
 
   delete() async {
   try {
-        final response = await makeHttpRequest('/api/auth/Question/${widget.id}', method: 'DELETE');
+        final response = await makeHttpRequest(context, '/api/auth/Question/${widget.id}', method: 'DELETE');
         print(response.statusCode);
         if (response.statusCode == 204) {
         AlertSnackBar.show(text: "Pergunta excluída com sucesso.", backgroundColor: AppColors.green, context: context);
@@ -42,7 +42,7 @@ class _QuestionDeleteDialogState extends State<QuestionDeleteDialog> {
   }
 
   fetchQuestion() async {
-    final response = await makeHttpRequest('/api/auth/Question/search/id/${widget.id}');
+    final response = await makeHttpRequest(context, '/api/auth/Question/search/id/${widget.id}');
     if (response.statusCode == 200) {
       final Map<String, dynamic> questionData = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {

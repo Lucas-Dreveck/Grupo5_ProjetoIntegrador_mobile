@@ -22,7 +22,7 @@ class _QuestionEditDialogState extends State<QuestionEditDialog> {
 
 
   edit() async {
-    final response = await makeHttpRequest('/api/auth/Question/${widget.id}', method: 'PUT', body: jsonEncode({
+    final response = await makeHttpRequest(context, '/api/auth/Question/${widget.id}', method: 'PUT', body: jsonEncode({
       'pillar': axis,
       'description': questionController.text,
     }));
@@ -41,7 +41,7 @@ class _QuestionEditDialogState extends State<QuestionEditDialog> {
   }
 
   fetchQuestion() async {
-    final response = await makeHttpRequest('/api/auth/Question/search/id/${widget.id}');
+    final response = await makeHttpRequest(context, '/api/auth/Question/search/id/${widget.id}');
     if (response.statusCode == 200) {
       final Map<String, dynamic> questionData = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {

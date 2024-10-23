@@ -24,10 +24,29 @@ class _LoginPageState extends State<LoginPage> {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); 
 
   @override
+  void initState() {
+    super.initState();
+    _checkLogin();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkLogin() async {
+    String? token = await _secureStorage.read(key: 'auth_token');
+    print(token);
+    if (token != null) {
+      Navigator.of(context)
+        .pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context)=>const MainApp()
+          ),(Route<dynamic> route) => false
+        );
+    }
   }
 
   Future<void> _login() async {
@@ -40,7 +59,7 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context) {
           return AlertDialog(
             title: const Text('Error'),
-            content: const Text('Por favor insira email e senha.'),
+            content: const Text('Por favor insira seu usuário ou email e senha.'),
             actions: <Widget>[
               TextButton(
                 onPressed: () {
@@ -55,25 +74,20 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    // Create the body to send to the backend
     Map<String, String> loginData = {
       "login": email,
       "password": password,
     };
 
     try {
-      // Send POST request to the backend to log in
-      final response = await makeHttpRequest('/api/login', method: 'POST', body: jsonEncode(loginData));
+      final response = await makeHttpRequest(context, '/api/login', method: 'POST', body: jsonEncode(loginData));
 
       if (response.statusCode == 200) {
-        // Successfully logged in, extract the token
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
         String token = responseBody['token'];
 
-        // Store the token securely
         await _secureStorage.write(key: 'auth_token', value: token);
 
-        // Navigate to the Home screen
         Navigator.of(context)
           .pushAndRemoveUntil(
             MaterialPageRoute(
@@ -81,7 +95,6 @@ class _LoginPageState extends State<LoginPage> {
             ),(Route<dynamic> route) => false
           );
       } else {
-        // Handle error, show message
         showDialog(
           context: context,
           builder: (context) {
@@ -101,7 +114,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       }
     } catch (error) {
-      // Handle any errors during the request
       print('Erro ao realizar login: $error');
       showDialog(
         context: context,
@@ -128,7 +140,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -137,7 +148,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          // White overlay with wave
           Positioned(
             bottom: 0,
             left: 0,
@@ -149,7 +159,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          // Content
           Center(
             child: SingleChildScrollView(
               child: Column(
@@ -184,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 60),
                   LoginButton(
-                    onPressed: _login, // Call the _login method on button press
+                    onPressed: _login,
                   ),
                   const SizedBox(height: 14),
                   ForgotPassword(

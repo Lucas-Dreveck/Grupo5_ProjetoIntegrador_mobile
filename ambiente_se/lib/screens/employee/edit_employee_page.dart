@@ -92,7 +92,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       'role': _role,
     };
 
-    final response = await makeHttpRequest(
+    final response = await makeHttpRequest(context, 
       "/api/auth/Employee/$id",
       method: 'PUT',
       body: json.encode(employeeData),
@@ -134,7 +134,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   }
 
   Future<void> fetchEmployeeData() async {
-    final response = await makeHttpRequest("/api/auth/Employee/$id");
+    final response = await makeHttpRequest(context, "/api/auth/Employee/$id");
 
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));

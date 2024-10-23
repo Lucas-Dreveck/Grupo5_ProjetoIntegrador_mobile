@@ -176,7 +176,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     const url = 'api/auth/Company/evaluation/search';
     
     try {
-      final response = await makeHttpRequest(url, parameters: queryParams);
+      final response = await makeHttpRequest(context, url, parameters: queryParams);
       if (response.statusCode == 200) {
         final List<dynamic> jsonResponse = json.decode(response.body);
         setState(() {
@@ -198,7 +198,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     final url = 'api/auth/haveActiveEvaluation/$companyId';
     
     try {
-      final response = await makeHttpRequest(url);
+      final response = await makeHttpRequest(context, url);
       if (response.statusCode == 200) {
         return json.decode(response.body);
       } else {
@@ -215,7 +215,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     final queryParams = {'companyId': selectedCompany!['id'].toString()};
 
     try {
-      final response = await makeHttpRequest(url, parameters: queryParams);
+      final response = await makeHttpRequest(context, url, parameters: queryParams);
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -352,7 +352,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
     const url = "api/auth/processAnswers";
 
     try {
-      final response = await makeHttpRequest(url, method: 'POST', parameters: queryParams, body: json.encode(body));
+      final response = await makeHttpRequest(context, url, method: 'POST', parameters: queryParams, body: json.encode(body));
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
         if (isComplete) {

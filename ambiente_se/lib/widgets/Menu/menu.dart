@@ -1,10 +1,12 @@
 import 'package:ambiente_se/screens/login/login.dart';
 import 'package:ambiente_se/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MenuLateral extends StatelessWidget {
   final int selectedPageIndex;
   final Function(int) onSelectPage;
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(); 
 
   const MenuLateral({
     super.key,
@@ -104,7 +106,8 @@ class MenuLateral extends StatelessWidget {
               child: TextButton.icon(
                 icon: const Icon(Icons.exit_to_app, color: Colors.white),
                 label: const Text('Sair', style: TextStyle(color: Colors.white)),
-                onPressed: () {
+                onPressed: () async {
+                  await _secureStorage.delete(key: 'auth_token');
                   Navigator.of(context).pop();
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (context) => const LoginPage()),
