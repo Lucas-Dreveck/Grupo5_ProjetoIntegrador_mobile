@@ -27,7 +27,7 @@ class _QuestionDetailDialogState extends State<QuestionDetailDialog> {
   }
 
   fetchQuestion() async {
-    final response = await makeHttpRequest('/api/auth/Question/search/id/${widget.id}');
+    final response = await makeHttpRequest(context, '/api/auth/Question/search/id/${widget.id}');
     if (response.statusCode == 200) {
       final Map<String, dynamic> questionData = jsonDecode(utf8.decode(response.bodyBytes));
       setState(() {

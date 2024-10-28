@@ -123,7 +123,7 @@ class _QuestionRegistrationDialogState extends State<QuestionRegistrationDialog>
         'description': question,
       };
       try {
-        final response = await makeHttpRequest(url, method: 'POST', body: jsonEncode(questionData));
+        final response = await makeHttpRequest(context, url, method: 'POST', body: jsonEncode(questionData));
         if (response.statusCode == 200) {
           AlertSnackBar.show(text: "Pergunta cadastrada com sucesso.", backgroundColor: AppColors.green, context: context);
           Navigator.of(context).pop();

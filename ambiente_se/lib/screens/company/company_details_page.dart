@@ -61,7 +61,7 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage>
   }
 
   Future<void> fetchCompanyData() async {
-    final response = await makeHttpRequest("/api/auth/Company/$id");
+    final response = await makeHttpRequest(context, "/api/auth/Company/$id");
 
     if (response.statusCode == 200) {
       final data = json.decode(utf8.decode(response.bodyBytes));
@@ -79,7 +79,7 @@ class CompanyDetailsPageState extends State<CompanyDetailsPage>
 
   Future<void> _delete() async {
     final response =
-        await makeHttpRequest("/api/auth/Company/$id", method: 'DELETE');
+        await makeHttpRequest(context, "/api/auth/Company/$id", method: 'DELETE');
 
     if (response.statusCode == 200) {
       AlertSnackBar.show(

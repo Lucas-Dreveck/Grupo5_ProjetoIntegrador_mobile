@@ -36,7 +36,7 @@ class _RankingPageState extends State<RankingPage> {
 
   fetchDropdownsData() async {
     isLoading = true;
-    final response = await makeHttpRequest("api/auth/Company", method: 'GET');
+    final response = await makeHttpRequest(context, "api/auth/Company", method: 'GET');
 
     try {
       if (response.statusCode == 200) {
@@ -92,7 +92,7 @@ class _RankingPageState extends State<RankingPage> {
       queryParams['tradeName'] = tradeName;
     }
 
-    final response = await makeHttpRequest("/api/ranking/score", method: 'GET', parameters: queryParams);
+    final response = await makeHttpRequest(context, "/api/ranking/score", method: 'GET', parameters: queryParams);
 
     try {
       if (response.statusCode == 200) {

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ambiente_se/screens/login/login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_file/open_file.dart';
@@ -8,7 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 const String backendUrl = 'localhost:8080';
-
 
 class AppColors {
   static const Color blue = Color(0xFF0077C8);
@@ -26,14 +26,11 @@ class AppColors {
 
 
 bool isValidCNPJ(String cnpj) {
-  // Remove qualquer caractere que não seja dígito
   cnpj = cnpj.replaceAll(RegExp(r'[^0-9]'), '');
-  // Verifica se o CNPJ tem 14 dígitos
   if (cnpj.length != 14) {
     return false;
   }
 
-  // Lista de CNPJs inválidos conhecidos
   const invalidCNPJs = [
     '00000000000000',
     '11111111111111',
@@ -51,7 +48,6 @@ bool isValidCNPJ(String cnpj) {
     return false;
   }
 
-  // Função auxiliar para calcular o dígito verificador
   int calculateDigit(String base, List<int> weights) {
     int sum = 0;
     for (int i = 0; i < base.length; i++) {
@@ -61,19 +57,15 @@ bool isValidCNPJ(String cnpj) {
     return remainder < 2 ? 0 : 11 - remainder;
   }
 
-  // Pesos para o cálculo dos dígitos verificadores
   const weights1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
   const weights2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
 
-  // Cálculo do primeiro dígito verificador
   String baseCNPJ = cnpj.substring(0, 12);
   int firstDigit = calculateDigit(baseCNPJ, weights1);
 
-  // Cálculo do segundo dígito verificador
   baseCNPJ += firstDigit.toString();
   int secondDigit = calculateDigit(baseCNPJ, weights2);
 
-  // Compara os dígitos calculados com os dígitos fornecidos
   return cnpj.endsWith('$firstDigit$secondDigit');
 }    
 
@@ -95,14 +87,11 @@ String formatCnpj(String cnpj) {
 }
 
 bool isValidCPF(String cpf) {
-  // Remove qualquer caractere que não seja dígito
   cpf = cpf.replaceAll(RegExp(r'[^0-9]'), '');
-  // Verifica se o CPF tem 11 dígitos
   if (cpf.length != 11) {
     return false;
   }
 
-  // Lista de CPFs inválidos conhecidos
   const invalidCPFs = [
     '00000000000',
     '11111111111',
@@ -120,7 +109,6 @@ bool isValidCPF(String cpf) {
     return false;
   }
 
-  // Função auxiliar para calcular o dígito verificador
   int calculateDigit(String base, List<int> weights) {
     int sum = 0;
     for (int i = 0; i < base.length; i++) {
@@ -130,19 +118,15 @@ bool isValidCPF(String cpf) {
     return remainder < 2 ? 0 : 11 - remainder;
   }
 
-  // Pesos para o cálculo dos dígitos verificadores
   const weights1 = [10, 9, 8, 7, 6, 5, 4, 3, 2];
   const weights2 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
 
-  // Cálculo do primeiro dígito verificador
   String baseCPF = cpf.substring(0, 9);
   int firstDigit = calculateDigit(baseCPF, weights1);
 
-  // Cálculo do segundo dígito verificador
   baseCPF += firstDigit.toString();
   int secondDigit = calculateDigit(baseCPF, weights2);
 
-  // Compara os dígitos calculados com os dígitos fornecidos
   return cpf.endsWith('$firstDigit$secondDigit');
 }
 
@@ -197,7 +181,7 @@ String formatCep(String cep) {
   }
 
 
-Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
+Future<http.Response> makeHttpRequest(BuildContext context, String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
   const FlutterSecureStorage secureStorage = FlutterSecureStorage();
   Uri url;
   if (parameters != null) {
@@ -233,7 +217,37 @@ Future<http.Response> makeHttpRequest(String endpoint, {String method = 'GET', d
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return response;
-    } else {
+    } else if (response.statusCode == 401) {
+      await secureStorage.delete(key: 'auth_token');
+      
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Erro'),
+            content: const Text('Sessão expirada ou token inválido, faça login novamente.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+
+      // Navigate to login page after dialog is closed
+      await Navigator.of(context)
+        .pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const LoginPage()
+          ), (Route<dynamic> route) => false
+        );
+        
+      throw Exception('Unauthorized');
+    }else {
       throw Exception('Failed to load data: ${response.statusCode}');
     }
   } catch (e) {
@@ -248,7 +262,7 @@ Future<void> downloadReport(BuildContext context, dynamic company) async {
       const SnackBar(content: Text('Download iniciado!'), duration: Duration(seconds: 2)),
     );
 
-    final response = await makeHttpRequest('api/pdf/${company['id'].toString()}');
+    final response = await makeHttpRequest(context, 'api/pdf/${company['id'].toString()}');
 
     if (response.statusCode == 200) {
       if (Platform.isAndroid) {

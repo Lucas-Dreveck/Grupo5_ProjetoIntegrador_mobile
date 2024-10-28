@@ -197,7 +197,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
   void _registerCompany(Map<String, dynamic> empresaData) async {
     const url = '/api/auth/Company';
     try {
-      final response = await makeHttpRequest(url, method: 'POST', body: jsonEncode(empresaData));
+      final response = await makeHttpRequest(context, url, method: 'POST', body: jsonEncode(empresaData));
       if (response.statusCode == 200) {
         AlertSnackBar.show(context: context, text: "Empresa cadastrada com sucesso.", backgroundColor: AppColors.green);
         Navigator.of(context).pop();

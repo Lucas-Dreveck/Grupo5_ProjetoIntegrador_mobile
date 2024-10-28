@@ -99,7 +99,7 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
   void _registerEmployee(Map<String, dynamic> employeeData) async {
     const url = '/api/auth/Employee';
     try {
-      final response = await makeHttpRequest(url,
+      final response = await makeHttpRequest(context, url,
           method: 'POST', body: jsonEncode(employeeData));
       if (response.statusCode == 200) {
         AlertSnackBar.show(

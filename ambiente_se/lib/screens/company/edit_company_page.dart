@@ -199,7 +199,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
 
     
 
-    final response = await makeHttpRequest(
+    final response = await makeHttpRequest(context, 
       '/api/auth/Company/${widget.id}',
       method: 'PUT',
       body: json.encode(companyData),
@@ -235,7 +235,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
   }
 
   void _fetchCompanyData() async {
-    final response = await makeHttpRequest('/api/auth/Company/${widget.id}');
+    final response = await makeHttpRequest(context, '/api/auth/Company/${widget.id}');
     if (response.statusCode == 200 ) {
       final data = json.decode(utf8.decode(response.bodyBytes));
       setState(() {
