@@ -229,7 +229,7 @@ class MainQuestionPageState extends State<MainQuestionPage> {
                                           ),
                                           DataCell(
                                             Center(
-                                              child: Text(item['description'], textAlign: TextAlign.center),
+                                              child: Text(item['description'], textAlign: TextAlign.center, maxLines: 2),
                                             ),
                                             onTap: () {
                                               showDialog(

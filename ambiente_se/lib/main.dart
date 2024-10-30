@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import for SystemChrome
 import 'package:ambiente_se/utils.dart';
 import 'package:ambiente_se/screens/login/login.dart';
 import 'package:ambiente_se/widgets/Menu/menu.dart';
@@ -10,6 +11,8 @@ import 'package:ambiente_se/screens/question/main_question_page.dart';
 import 'package:ambiente_se/screens/evaluation/evaluation_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(const MyApp());
 }
 
@@ -23,6 +26,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        canvasColor: Colors.white
       ),
       home: const LoginPage(),
       debugShowCheckedModeBanner: false,
@@ -91,7 +96,6 @@ class _MainAppState extends State<MainApp> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(

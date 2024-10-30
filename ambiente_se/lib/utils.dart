@@ -180,6 +180,39 @@ String formatCep(String cep) {
     return '${parts[2]}-${parts[1]}-${parts[0]}';
   }
 
+bool isValidDate(String date) {
+  final dateRegex = RegExp(r'^\d{2}/\d{2}/\d{4}$');
+  if (!dateRegex.hasMatch(date)) {
+    return false;
+  }
+
+  final parts = date.split('/');
+  final day = int.tryParse(parts[0]);
+  final month = int.tryParse(parts[1]);
+  final year = int.tryParse(parts[2]);
+
+  if (day == null || month == null || year == null) {
+    return false;
+  }
+
+  try {
+    final parsedDate = DateTime(year, month, day);
+    final today = DateTime.now();
+
+    if (parsedDate.isAfter(today)) {
+      return false;
+    }
+    if (parsedDate.day != day || parsedDate.month != month) {
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+
 
 Future<http.Response> makeHttpRequest(BuildContext context, String endpoint, {String method = 'GET', dynamic body, dynamic parameters}) async {
   const FlutterSecureStorage secureStorage = FlutterSecureStorage();
@@ -217,7 +250,7 @@ Future<http.Response> makeHttpRequest(BuildContext context, String endpoint, {St
 
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return response;
-    } else if (response.statusCode == 401) {
+    } else if (response.statusCode == 401 && url.path != '/api/login') {
       await secureStorage.delete(key: 'auth_token');
       
       await showDialog(
@@ -273,7 +306,7 @@ Future<void> downloadReport(BuildContext context, dynamic company) async {
       }
 
       final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/report_${company['tradeName']}.pdf';
+      final filePath = '${directory.path}/report_${company['tradeName'] ?? company['companyName']}.pdf';
 
       File file = File(filePath);
       await file.writeAsBytes(response.bodyBytes);
