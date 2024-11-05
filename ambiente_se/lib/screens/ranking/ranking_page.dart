@@ -21,16 +21,30 @@ class _RankingPageState extends State<RankingPage> {
   bool flagInit = true;
   dynamic firstPlace;
   bool isLoading = true;
+  bool hasMoreData = true; 
+  int currentPage = 0;
 
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
-    fetchRankingData(null, null, null);
-    fetchDropdownsData().then((value) => fetchRankingData(null, null, null));
+    fetchRankingData(true, null, null, null);
+    fetchDropdownsData().then((value) => fetchRankingData(true, null, null, null));
+    _scrollController.addListener(_onScroll);
+
   }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50 && !isLoading && hasMoreData) {
+      currentPage++;
+      fetchRankingData(false, null, null, null);
+    }
+  }
+
 
   @override
   void dispose() {
+    _scrollController.dispose(); 
     super.dispose();
   }
 
@@ -69,57 +83,70 @@ class _RankingPageState extends State<RankingPage> {
     }
     isLoading = false;
   }
-
-  Future<void> fetchRankingData(String? segment, String? companySize, String? tradeName) async {
-    if (segment == null) {
-    } else if (segment == "Sem filtro") {
-      queryParams.remove('segment');
-    } else {
-      queryParams['segment'] = segment;
-    }
-
-    if (companySize == null) {
-    } else if (companySize == "Sem filtro") {
-      queryParams.remove('companySize');
-    } else {
-      queryParams['companySize'] = companySize;
-    }
-
-    if (tradeName == null) {
-    } else if (tradeName.isEmpty) {
-      queryParams.remove('tradeName');
-    } else {
-      queryParams['tradeName'] = tradeName;
-    }
-
-    final response = await makeHttpRequest(context, "/api/ranking/score", method: 'GET', parameters: queryParams);
-
-    try {
-      if (response.statusCode == 200) {
-        setState(() {
-          rankings = json.decode(utf8.decode(response.bodyBytes));
-        });
-
-        if (flagInit && rankings.isNotEmpty) {
-          flagInit = false;
-          firstPlace = rankings[0];
-        }
-      } else {
-        AlertSnackBar.show(
-          context: context,
-          text: "Erro ao carregar rankings.",
-          backgroundColor: AppColors.red,
-        );
-        throw Exception('Failed to load rankings');
-      }
-    } catch (e) {
-      AlertSnackBar.show(
-        context: context,
-        text: "Erro ao carregar rankings: ${e.toString()}",
-        backgroundColor: AppColors.red,
-      );
-    }
+  
+  Future<void> fetchRankingData(bool isNewSearch, String? segment, String? companySize, String? tradeName) async {
+  
+  if (segment == "Sem filtro") {
+    queryParams.remove('segment');
+  } else if (segment != null) {
+    queryParams['segment'] = segment;
   }
+
+  if (companySize == "Sem filtro") {
+    queryParams.remove('companySize');
+  } else if (companySize != null) {
+    queryParams['companySize'] = companySize;
+  }
+
+  if (tradeName == null || tradeName.isEmpty) {
+    queryParams.remove('tradeName');
+  } else {
+    queryParams['tradeName'] = tradeName;
+  }
+
+  final String endpoint = "/api/ranking/score";
+  final Map<String, String> queryParameters = {
+    'page': currentPage.toString(),
+    ...queryParams,
+  };
+
+  final response = await makeHttpRequest(context, endpoint, method: 'GET', parameters: queryParameters);
+
+
+  if (response.statusCode == 200) {
+    final List<dynamic> newRankings = json.decode(utf8.decode(response.bodyBytes));
+
+    if (firstPlace == null) {
+      setState(() {
+        firstPlace = newRankings.firstWhere((ranking) => ranking['ranking'] == 1, orElse: () => null);
+      });
+    }
+
+    setState(() {
+      isLoading = false; 
+      if(isNewSearch){
+        rankings.clear();
+        currentPage = 0;
+      }
+      if (newRankings.isEmpty) {
+        hasMoreData = false;
+
+      } else {
+
+        final Set<int> existingIds = rankings.map<int>((r) => r['id'] as int).toSet();
+        final List<dynamic> filteredRankings = newRankings.where((ranking) => !existingIds.contains(ranking['id'] as int)).toList();
+
+        rankings.addAll(filteredRankings);
+        rankings.sort((a, b) => a['ranking'].compareTo(b['ranking'])); 
+      }
+    });
+  } else {
+    setState(() {
+      isLoading = false; 
+    });
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +154,7 @@ class _RankingPageState extends State<RankingPage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -140,7 +168,7 @@ class _RankingPageState extends State<RankingPage> {
                       prefixIcon: Icon(Icons.search),
                     ),
                     onChanged: (value) {
-                      fetchRankingData(null, null, value);
+                      fetchRankingData(true, null, null, value);
                     },
                   ),
                 ),
@@ -233,7 +261,7 @@ class _RankingPageState extends State<RankingPage> {
                             );
                           }).toList(),
                           onChanged: (newValue) {
-                            fetchRankingData(newValue, null, null);
+                            fetchRankingData(true,newValue, null, null);
                           },
                         ),
                       ),
@@ -254,7 +282,7 @@ class _RankingPageState extends State<RankingPage> {
                             );
                           }).toList(),
                           onChanged: (newValue) {
-                            fetchRankingData(null, newValue, null);
+                            fetchRankingData(true, null, newValue, null);
                           },
                         ),
                       ),
@@ -264,9 +292,7 @@ class _RankingPageState extends State<RankingPage> {
                 const SizedBox(height: 10),
 
                 // Tabela de Rankings
-                isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : (rankings.isNotEmpty)
+                rankings.isNotEmpty
                         ? Center(
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -277,31 +303,17 @@ class _RankingPageState extends State<RankingPage> {
                                   child: DataTable(
                                     columnSpacing: 20,
                                     columns: const [
-                                      DataColumn(
-                                          label: Text('Posição',
-                                              style: TextStyle(fontWeight: FontWeight.bold))),
-                                      DataColumn(
-                                          label: Text('Nome',
-                                              style: TextStyle(fontWeight: FontWeight.bold))),
-                                      DataColumn(
-                                          label: Text('Ramo',
-                                              style: TextStyle(fontWeight: FontWeight.bold))),
-                                      DataColumn(
-                                          label: Text('Cidade',
-                                              style: TextStyle(fontWeight: FontWeight.bold))),
+                                      DataColumn(label: Text('Posição', style: TextStyle(fontWeight: FontWeight.bold))),
+                                      DataColumn(label: Text('Nome', style: TextStyle(fontWeight: FontWeight.bold))),
+                                      DataColumn(label: Text('Ramo', style: TextStyle(fontWeight: FontWeight.bold))),
+                                      DataColumn(label: Text('Cidade', style: TextStyle(fontWeight: FontWeight.bold))),
                                     ],
                                     rows: rankings
                                         .map<DataRow>(
                                           (ranking) => DataRow(cells: [
-                                            DataCell(Text(
-                                              ranking['ranking'].toString(),
-                                              style: const TextStyle(fontWeight: FontWeight.bold),
-                                              
-                                            ), 
-                                            onTap: () {
+                                            DataCell(Text(ranking['ranking'].toString(), style: const TextStyle(fontWeight: FontWeight.bold)), onTap: () {
                                               downloadReport(context, ranking['id']);
-                                            },
-                                            ),
+                                            }),
                                             DataCell(Text(ranking['companyName'] ?? 'Nome não informado'), onTap: () {
                                               downloadReport(context, ranking['id']);
                                             }),
@@ -311,9 +323,7 @@ class _RankingPageState extends State<RankingPage> {
                                             DataCell(Text(ranking['city'] ?? 'Cidade não informada'), onTap: () {
                                               downloadReport(context, ranking['id']);
                                             }),
-                                          ],
-                                           
-                                          ),
+                                          ]),
                                         )
                                         .toList(),
                                   ),
@@ -322,7 +332,22 @@ class _RankingPageState extends State<RankingPage> {
                             ),
                           )
                         : const Center(child: Text("Nenhum resultado encontrado")),
-              ],
+                        if (isLoading)
+                          const CircularProgressIndicator()
+                        else if (!hasMoreData)
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Fim da lista",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          )
+                          
+          ],
             ),
           );
         },

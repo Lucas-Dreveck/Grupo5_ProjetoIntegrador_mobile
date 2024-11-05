@@ -46,16 +46,23 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       return false;
     }
     if (!isValidCPF(_cpfController.text)) {
-        AlertSnackBar.show(
-          context: context,
-          text: "O CPF informado é inválido.",
-        );
-        return false;
-      }
+      AlertSnackBar.show(
+        context: context,
+        text: "O CPF informado é inválido.",
+      );
+      return false;
+    }
     if (_birthDateController.text.isEmpty) {
       AlertSnackBar.show(
         context: context,
         text: "O campo de data de nascimento não pode estar vazio.",
+      );
+      return false;
+    }
+    if (!isValidDate(_birthDateController.text)) {
+      AlertSnackBar.show(
+        context: context,
+        text: "A data de nascimento é inválida ou está no futuro.",
       );
       return false;
     }
@@ -92,7 +99,8 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
       'role': _role,
     };
 
-    final response = await makeHttpRequest(context, 
+    final response = await makeHttpRequest(
+      context,
       "/api/auth/Employee/$id",
       method: 'PUT',
       body: json.encode(employeeData),
@@ -154,59 +162,57 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: Column(children: [
-        EmployeeForm(
-          nameController: _nameController,
-          cpfController: _cpfController,
-          birthDateController: _birthDateController,
-          onroleChanged: _updaterole,
-          role: _role,
-          key: UniqueKey(),
-          emailController: _emailController,
-          loginController: _loginController,
-          passwordController: _passwordController,
-          isEditing: true,
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Spacer(),
-                Row(
-                  children: [
-                    Expanded(
-                      child: DefaultButton(
-                        label: "Cancelar",
-                        onPressed: () {
-                          _cancel();
-                        },
-                        color: const Color(0xFF838B91),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: DefaultButton(
-                        label: "Salvar",
-                        onPressed: () {
-                          if (verifyPage()) {
-                            _save();
-                          }
-                        },
-                        color: const Color(0xFF0C9C6F),
-                      ),
-                    )
-                  ],
-                )
-              ],
+      resizeToAvoidBottomInset:
+          false, // Prevents resizing when keyboard appears
+      body: SingleChildScrollView(
+        // Enables scroll when keyboard is active
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            EmployeeForm(
+              nameController: _nameController,
+              cpfController: _cpfController,
+              birthDateController: _birthDateController,
+              onroleChanged: _updaterole,
+              role: _role,
+              key: UniqueKey(),
+              emailController: _emailController,
+              loginController: _loginController,
+              passwordController: _passwordController,
+              isEditing: true,
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DefaultButton(
+                          label: "Cancelar",
+                          onPressed: _cancel,
+                          color: const Color(0xFF838B91),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: DefaultButton(
+                          label: "Salvar",
+                          onPressed: () {
+                            if (verifyPage()) _save();
+                          },
+                          color: const Color(0xFF0C9C6F),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      ]),
+      ),
     );
   }
-  
 }
