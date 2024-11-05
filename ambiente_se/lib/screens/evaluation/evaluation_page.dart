@@ -493,8 +493,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
                 textAlign: TextAlign.center,
               ),
               actions: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                       onPressed: () async {
@@ -645,9 +646,9 @@ class _EvaluationPageState extends State<EvaluationPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              PreviousPageButton(pageController: _pageController),
+              Expanded(child:PreviousPageButton(pageController: _pageController)),
               const SizedBox(width: 50),
-              NextPageButton(sendQuestions: () => _sendQuestions(false), pageController: _pageController),
+              Expanded(child:NextPageButton(sendQuestions: () => _sendQuestions(false), pageController: _pageController)),
             ],
           ),
         ),
@@ -695,15 +696,17 @@ class _EvaluationPageState extends State<EvaluationPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              PreviousPageButton(pageController: _pageController),
+              Expanded(child:PreviousPageButton(pageController: _pageController)),
               const SizedBox(width: 50),
-              FinishButton(
-                onSelectPage: (int index) => widget.onSelectPage(index),
-                pageController: _pageController,
-                sendQuestions: (bool isComplete) => _sendQuestions(isComplete),
-                label: 'Finalizar',
-                answers: _categoryAnswers,
+              Expanded(child: FinishButton(
+                  onSelectPage: (int index) => widget.onSelectPage(index),
+                  pageController: _pageController,
+                  sendQuestions: (bool isComplete) => _sendQuestions(isComplete),
+                  label: 'Finalizar',
+                  answers: _categoryAnswers,
+                )
               )
+              
             ],
           ),
         ),
@@ -829,28 +832,30 @@ class _EvaluationPageState extends State<EvaluationPage> {
   }
 
   Widget _buildPercentageAccordance(String category, int percentage, Color color) {
-    return Column(
-      children: [
-        CircularPercentIndicator(
-          radius: 50,
-          backgroundColor: const Color.fromRGBO(254, 247, 255, 1.0),
-          lineWidth: 10.0,
-          percent: percentage / 100,
-          progressColor: color,
-          animation: true,
-          animationDuration: 1200,
-          circularStrokeCap: CircularStrokeCap.round,
-          center: Text(
-            '$percentage%',
-            style: const TextStyle(fontSize: 21, color: Colors.black),
+    return Flexible(
+      child: Column(
+        children: [
+          CircularPercentIndicator(
+            radius: 50,
+            backgroundColor: const Color.fromRGBO(254, 247, 255, 1.0),
+            lineWidth: 10.0,
+            percent: percentage / 100,
+            progressColor: color,
+            animation: true,
+            animationDuration: 1200,
+            circularStrokeCap: CircularStrokeCap.round,
+            center: Text(
+              '$percentage%',
+              style: const TextStyle(fontSize: 21, color: Colors.black),
+            ),
           ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          category,
-          style: const TextStyle(fontSize: 21, color: Colors.black),
-        ),
-      ],
+          const SizedBox(height: 5),
+          Text(
+            category,
+            style: const TextStyle(fontSize: 12, color: Colors.black),
+          ),
+        ],
+      ),
     );
   }
 

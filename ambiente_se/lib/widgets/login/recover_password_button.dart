@@ -16,7 +16,7 @@ class _RecoverPasswordButtonState extends State<RecoverPasswordButton> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40,
+      height: 50, // Aumenta a altura para evitar o corte do texto
       width: 300,
       child: ElevatedButton(
         onPressed: _isLoading
@@ -39,7 +39,7 @@ class _RecoverPasswordButtonState extends State<RecoverPasswordButton> {
               },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF0065A9),
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12), // Ajusta o padding
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),

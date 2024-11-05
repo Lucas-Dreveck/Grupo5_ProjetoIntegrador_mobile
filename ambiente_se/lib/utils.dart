@@ -8,7 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-const String backendUrl = 'localhost:8080';
+const String backendUrl = '192.168.1.19:8080';
 
 class AppColors {
   static const Color blue = Color(0xFF0077C8);
