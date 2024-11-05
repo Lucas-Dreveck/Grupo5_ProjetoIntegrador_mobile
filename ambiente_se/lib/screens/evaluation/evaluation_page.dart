@@ -646,9 +646,11 @@ class _EvaluationPageState extends State<EvaluationPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              const SizedBox(width: 20),
               Expanded(child:PreviousPageButton(pageController: _pageController)),
               const SizedBox(width: 50),
               Expanded(child:NextPageButton(sendQuestions: () => _sendQuestions(false), pageController: _pageController)),
+              const SizedBox(width: 20),
             ],
           ),
         ),
@@ -696,6 +698,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              const SizedBox(width: 20),
               Expanded(child:PreviousPageButton(pageController: _pageController)),
               const SizedBox(width: 50),
               Expanded(child: FinishButton(
@@ -705,8 +708,8 @@ class _EvaluationPageState extends State<EvaluationPage> {
                   label: 'Finalizar',
                   answers: _categoryAnswers,
                 )
-              )
-              
+              ),
+              const SizedBox(width: 20),
             ],
           ),
         ),
@@ -807,7 +810,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
           backgroundColor: Colors.black,
           child: CircleAvatar(
             radius: 75,
-            backgroundImage: AssetImage('images/logo.png'),
+            backgroundImage: AssetImage('assets/images/logo.png'),
           ),
         ),
         const SizedBox(height: 10),

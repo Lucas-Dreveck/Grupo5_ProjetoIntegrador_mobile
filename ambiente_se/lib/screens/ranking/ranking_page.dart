@@ -313,16 +313,16 @@ class _RankingPageState extends State<RankingPage> {
                                         .map<DataRow>(
                                           (ranking) => DataRow(cells: [
                                             DataCell(Text(ranking['ranking'].toString(), style: const TextStyle(fontWeight: FontWeight.bold)), onTap: () {
-                                              downloadReport(context, ranking['companyName']);
+                                              downloadReport(context, ranking);
                                             }),
                                             DataCell(Text(ranking['companyName'] ?? 'Nome não informado'), onTap: () {
-                                              downloadReport(context, ranking['companyName']);
+                                              downloadReport(context, ranking);
                                             }),
                                             DataCell(Text(ranking['segment'] ?? 'Segmento não informado'), onTap: () {
-                                              downloadReport(context, ranking['companyName']);
+                                              downloadReport(context, ranking);
                                             }),
                                             DataCell(Text(ranking['city'] ?? 'Cidade não informada'), onTap: () {
-                                              downloadReport(context, ranking['companyName']);
+                                              downloadReport(context, ranking);
                                             }),
                                           ]),
                                         )
