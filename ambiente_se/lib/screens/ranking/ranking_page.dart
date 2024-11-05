@@ -197,7 +197,7 @@ class _RankingPageState extends State<RankingPage> {
                                       minHeight: 0.0,
                                       maxWidth: 150.0,
                                       maxHeight: 150.0,
-                                      child: Image.network(
+                                      child: Image.asset(
                                         rankings.isNotEmpty
                                             ? (rankings[0]['imageUrl'] ?? 'assets/images/trofeu.png')
                                             : 'assets/images/trofeu.png',
@@ -207,7 +207,7 @@ class _RankingPageState extends State<RankingPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 40),
-                                Column(
+                                Expanded(child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -230,7 +230,8 @@ class _RankingPageState extends State<RankingPage> {
                                       style: const TextStyle(fontSize: 18, color: Color.fromARGB(255, 4, 100, 190)),
                                     ),
                                   ],
-                                ),
+                                ),)
+                                
                               ],
                             ),
                           ),
@@ -312,16 +313,16 @@ class _RankingPageState extends State<RankingPage> {
                                         .map<DataRow>(
                                           (ranking) => DataRow(cells: [
                                             DataCell(Text(ranking['ranking'].toString(), style: const TextStyle(fontWeight: FontWeight.bold)), onTap: () {
-                                              downloadReport(context, ranking['id']);
+                                              downloadReport(context, ranking);
                                             }),
                                             DataCell(Text(ranking['companyName'] ?? 'Nome não informado'), onTap: () {
-                                              downloadReport(context, ranking['id']);
+                                              downloadReport(context, ranking);
                                             }),
                                             DataCell(Text(ranking['segment'] ?? 'Segmento não informado'), onTap: () {
-                                              downloadReport(context, ranking['id']);
+                                              downloadReport(context, ranking);
                                             }),
                                             DataCell(Text(ranking['city'] ?? 'Cidade não informada'), onTap: () {
-                                              downloadReport(context, ranking['id']);
+                                              downloadReport(context, ranking);
                                             }),
                                           ]),
                                         )
