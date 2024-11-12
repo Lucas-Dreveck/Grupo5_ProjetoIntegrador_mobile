@@ -8,18 +8,18 @@ import 'package:ambiente_se/widgets/default/default_button.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-
-
 class CompanyRegistrationPage extends StatefulWidget {
   const CompanyRegistrationPage({super.key});
   @override
-  State<CompanyRegistrationPage> createState() => CompanyRegistrationPageState();
+  State<CompanyRegistrationPage> createState() =>
+      CompanyRegistrationPageState();
 }
 
 class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
   final TextEditingController _tradeNameController = TextEditingController();
   final TextEditingController _cnpjController = TextEditingController();
-  final TextEditingController _corporateNameController = TextEditingController();
+  final TextEditingController _corporateNameController =
+      TextEditingController();
   final TextEditingController _industryController = TextEditingController();
   var _companySize = "";
   void _updateCompanySize(String newCompanySize) {
@@ -27,15 +27,19 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
       _companySize = newCompanySize;
     });
   }
-  final TextEditingController _requesterNameController = TextEditingController();
-  final TextEditingController _requesterPhoneController = TextEditingController();
+
+  final TextEditingController _requesterNameController =
+      TextEditingController();
+  final TextEditingController _requesterPhoneController =
+      TextEditingController();
   final TextEditingController _companyEmailController = TextEditingController();
   final TextEditingController _companyPhoneController = TextEditingController();
+  final TextEditingController _logoController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _publicSpaceController = TextEditingController();
   final TextEditingController _neighborhoodController = TextEditingController();
-    final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _numberController = TextEditingController();
 
   var _state = "";
   void _updateState(String newUF) {
@@ -46,31 +50,52 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
 
   bool validatePageOne() {
     if (_tradeNameController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de nome fantasia não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de nome fantasia não pode estar vazio.",
+      );
       return false;
     }
-    if (_cnpjController.text.isEmpty ) {
-      AlertSnackBar.show(context: context, text: "O campo de CNPJ não pode estar vazio.", );
+    if (_cnpjController.text.isEmpty) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de CNPJ não pode estar vazio.",
+      );
       return false;
     }
-    if(_cnpjController.text.length < 18){
-      AlertSnackBar.show(context: context, text: "O campo de CNPJ não está completo.", );
+    if (_cnpjController.text.length < 18) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de CNPJ não está completo.",
+      );
       return false;
     }
-    if(!isValidCNPJ(_cnpjController.text)){
-      AlertSnackBar.show(context: context, text: "O CNPJ informado é inválido.", );
+    if (!isValidCNPJ(_cnpjController.text)) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O CNPJ informado é inválido.",
+      );
       return false;
     }
     if (_corporateNameController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de razão social não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de razão social não pode estar vazio.",
+      );
       return false;
     }
     if (_industryController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de ramo não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de ramo não pode estar vazio.",
+      );
       return false;
     }
     if (_companySize == "") {
-      AlertSnackBar.show(context: context, text: "O campo de companySize não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de companySize não pode estar vazio.",
+      );
       return false;
     }
 
@@ -81,32 +106,52 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
     final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
 
     if (_requesterNameController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de nome do solicitante não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de nome do solicitante não pode estar vazio.",
+      );
       return false;
     }
     if (_requesterPhoneController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de telefone do solicitante não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de telefone do solicitante não pode estar vazio.",
+      );
       return false;
     }
-    if(_requesterPhoneController.text.length < 18)
-    {
-      AlertSnackBar.show(context: context, text: "O campo de telefone do solicitante não está completo.", );
+    if (_requesterPhoneController.text.length < 18) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de telefone do solicitante não está completo.",
+      );
       return false;
     }
     if (_companyEmailController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de email da empresa não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de email da empresa não pode estar vazio.",
+      );
       return false;
     }
     if (!emailRegex.hasMatch(_companyEmailController.text)) {
-      AlertSnackBar.show(context: context, text: "O email informado é inválido.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O email informado é inválido.",
+      );
       return false;
     }
     if (_companyPhoneController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de telefone da empresa não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de telefone da empresa não pode estar vazio.",
+      );
       return false;
     }
-    if( _companyPhoneController.text.length < 18){
-      AlertSnackBar.show(context: context, text: "O campo de telefone da empresa não está completo.", );
+    if (_companyPhoneController.text.length < 18) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de telefone da empresa não está completo.",
+      );
       return false;
     }
 
@@ -115,36 +160,56 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
 
   bool validatePageThree() {
     if (_postalCodeController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de CEP não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de CEP não pode estar vazio.",
+      );
       return false;
     }
-    if (_postalCodeController.text.length < 9){
-      AlertSnackBar.show(context: context, text: "O campo de CEP não está completo.", );
-      return false; 
+    if (_postalCodeController.text.length < 9) {
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de CEP não está completo.",
+      );
+      return false;
     }
     if (_cityController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de cidade não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de cidade não pode estar vazio.",
+      );
       return false;
     }
     if (_publicSpaceController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de logradouro não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de logradouro não pode estar vazio.",
+      );
       return false;
     }
     if (_neighborhoodController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de bairro não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de bairro não pode estar vazio.",
+      );
       return false;
     }
     if (_state == "") {
-      AlertSnackBar.show(context: context, text: "O campo de UF não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de UF não pode estar vazio.",
+      );
       return false;
     }
     if (_numberController.text.isEmpty) {
-      AlertSnackBar.show(context: context, text: "O campo de número não pode estar vazio.", );
+      AlertSnackBar.show(
+        context: context,
+        text: "O campo de número não pode estar vazio.",
+      );
       return false;
     }
     return true;
   }
-
 
   final PageController _pageController = PageController();
 
@@ -166,19 +231,23 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
   void _cancel() {
     Navigator.of(context).pop();
   }
- 
+
   void _save() {
     final empresaData = {
+      "imageUrl": _logoController.text,
       "tradeName": _tradeNameController.text,
       "applicantsName": _requesterNameController.text,
-      "applicantsPhone": _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      "applicantsPhone":
+          _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
       "companyName": _corporateNameController.text,
       "cnpj": _cnpjController.text.replaceAll(RegExp(r'\D'), ''),
       "socialInscription": "1",
       "address": {
         "id": 0,
         "cep": _postalCodeController.text.replaceAll(RegExp(r'\D'), ''),
-        "number": int.tryParse(_numberController.text.replaceAll(RegExp(r'\D'), '')) ?? 0,
+        "number": int.tryParse(
+                _numberController.text.replaceAll(RegExp(r'\D'), '')) ??
+            0,
         "patio": _publicSpaceController.text,
         "complement": "",
         "city": _cityController.text,
@@ -186,7 +255,8 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
         "uf": _state,
       },
       "email": _companyEmailController.text,
-      "companyPhone": _companyPhoneController.text.replaceAll(RegExp(r'\D'), ''),
+      "companyPhone":
+          _companyPhoneController.text.replaceAll(RegExp(r'\D'), ''),
       "segment": _industryController.text,
       "companySize": _companySize,
     };
@@ -197,20 +267,31 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
   void _registerCompany(Map<String, dynamic> empresaData) async {
     const url = '/api/auth/Company';
     try {
-      final response = await makeHttpRequest(context, url, method: 'POST', body: jsonEncode(empresaData));
+      final response = await makeHttpRequest(context, url,
+          method: 'POST', body: jsonEncode(empresaData));
       if (response.statusCode == 200) {
-        AlertSnackBar.show(context: context, text: "Empresa cadastrada com sucesso.", backgroundColor: AppColors.green);
+        AlertSnackBar.show(
+            context: context,
+            text: "Empresa cadastrada com sucesso.",
+            backgroundColor: AppColors.green);
         Navigator.of(context).pop();
       } else {
-        AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa.", backgroundColor: AppColors.red);
+        AlertSnackBar.show(
+            context: context,
+            text: "Erro ao cadastrar empresa.",
+            backgroundColor: AppColors.red);
       }
     } catch (e) {
-      AlertSnackBar.show(context: context, text: "Erro ao cadastrar empresa: cnpj já cadastrado", backgroundColor: AppColors.red);
+      AlertSnackBar.show(
+          context: context,
+          text: "Erro ao cadastrar empresa: cnpj já cadastrado",
+          backgroundColor: AppColors.red);
     }
   }
 
   @override
   void dispose() {
+    _logoController.dispose();
     _tradeNameController.dispose();
     _cnpjController.dispose();
     _corporateNameController.dispose();
@@ -227,8 +308,6 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
     _pageController.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -292,6 +371,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
                     requesterPhoneController: _requesterPhoneController,
                     companyEmailController: _companyEmailController,
                     companyPhoneController: _companyPhoneController,
+                    logoController: _logoController,
                     key: UniqueKey(),
                   ),
                   Padding(
@@ -395,5 +475,4 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
       ),
     );
   }
-
 }
