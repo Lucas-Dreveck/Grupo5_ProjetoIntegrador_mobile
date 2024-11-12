@@ -805,12 +805,19 @@ class _EvaluationPageState extends State<EvaluationPage> {
   Widget _buildHeader() {
     return Column(
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           radius: 80,
           backgroundColor: Colors.black,
           child: CircleAvatar(
             radius: 75,
-            backgroundImage: AssetImage('assets/images/logo.png'),
+            backgroundImage: 
+              selectedCompany?['imageUrl'] != null ?
+              NetworkImage(
+                selectedCompany?['imageUrl'],
+              )
+              : const AssetImage(
+                'assets/images/logo.png',
+              ),
           ),
         ),
         const SizedBox(height: 10),
@@ -855,7 +862,7 @@ class _EvaluationPageState extends State<EvaluationPage> {
           const SizedBox(height: 5),
           Text(
             category,
-            style: const TextStyle(fontSize: 12, color: Colors.black),
+            style: const TextStyle(fontSize: 21, color: Colors.black),
           ),
         ],
       ),
