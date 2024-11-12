@@ -162,8 +162,7 @@ class _EditEmployeePageState extends State<EditEmployeePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          false, // Prevents resizing when keyboard appears
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         // Enables scroll when keyboard is active
         child: Column(
