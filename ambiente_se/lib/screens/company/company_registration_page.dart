@@ -31,11 +31,13 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
   final TextEditingController _requesterPhoneController = TextEditingController();
   final TextEditingController _companyEmailController = TextEditingController();
   final TextEditingController _companyPhoneController = TextEditingController();
+  final TextEditingController _logoController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _publicSpaceController = TextEditingController();
   final TextEditingController _neighborhoodController = TextEditingController();
-    final TextEditingController _numberController = TextEditingController();
+  final TextEditingController _numberController = TextEditingController();
+
 
   var _state = "";
   void _updateState(String newUF) {
@@ -169,6 +171,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
  
   void _save() {
     final empresaData = {
+      "imageUrl": _logoController.text,
       "tradeName": _tradeNameController.text,
       "applicantsName": _requesterNameController.text,
       "applicantsPhone": _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
@@ -211,6 +214,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
 
   @override
   void dispose() {
+    _logoController.dispose();
     _tradeNameController.dispose();
     _cnpjController.dispose();
     _corporateNameController.dispose();
@@ -284,7 +288,7 @@ class CompanyRegistrationPageState extends State<CompanyRegistrationPage> {
           // Pagina 2
           Column(
             children: [
-              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController, key: UniqueKey(),),
+              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController, logoController: _logoController, key: UniqueKey(),),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

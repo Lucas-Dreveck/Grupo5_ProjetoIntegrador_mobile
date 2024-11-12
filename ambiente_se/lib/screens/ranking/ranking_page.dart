@@ -104,7 +104,7 @@ class _RankingPageState extends State<RankingPage> {
     queryParams['tradeName'] = tradeName;
   }
 
-  final String endpoint = "/api/ranking/score";
+  const String endpoint = "/api/ranking/score";
   final Map<String, String> queryParameters = {
     'page': currentPage.toString(),
     ...queryParams,
@@ -137,7 +137,7 @@ class _RankingPageState extends State<RankingPage> {
         final List<dynamic> filteredRankings = newRankings.where((ranking) => !existingIds.contains(ranking['id'] as int)).toList();
 
         rankings.addAll(filteredRankings);
-        rankings.sort((a, b) => a['ranking'].compareTo(b['ranking'])); 
+        rankings.sort((a, b) => a['ranking'].compareTo(b['ranking']));
       }
     });
   } else {
@@ -197,12 +197,15 @@ class _RankingPageState extends State<RankingPage> {
                                       minHeight: 0.0,
                                       maxWidth: 150.0,
                                       maxHeight: 150.0,
-                                      child: Image.asset(
-                                        rankings.isNotEmpty
-                                            ? (rankings[0]['imageUrl'] ?? 'assets/images/trofeu.png')
-                                            : 'assets/images/trofeu.png',
-                                        fit: BoxFit.fill,
-                                      ),
+                                      child: rankings[0]['imageUrl'] != null ?
+                                            Image.network(
+                                              rankings[0]['imageUrl'],
+                                              fit: BoxFit.fill,
+                                            )
+                                            : Image.asset(
+                                              'assets/images/trofeu.png',
+                                              fit: BoxFit.fill,
+                                            ),
                                     ),
                                   ),
                                 ),

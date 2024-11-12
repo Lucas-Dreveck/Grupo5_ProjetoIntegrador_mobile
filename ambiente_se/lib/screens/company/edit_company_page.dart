@@ -35,6 +35,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
   final TextEditingController _requesterPhoneController = TextEditingController();
   final TextEditingController _companyEmailController = TextEditingController();
   final TextEditingController _companyPhoneController = TextEditingController();
+  final TextEditingController _logoController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _publicSpaceController = TextEditingController();
@@ -176,6 +177,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
  
   void _save() async {
     final companyData = {
+      'imageUrl': _logoController.text,
       'tradeName': _tradeNameController.text,
       'applicantsName': _requesterNameController.text,
       'applicantsPhone': _requesterPhoneController.text.replaceAll(RegExp(r'\D'), ''),
@@ -217,6 +219,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
 
   @override
   void dispose() {
+    _logoController.dispose();
     _tradeNameController.dispose();
     _cnpjController.dispose();
     _corporateNameController.dispose();
@@ -239,51 +242,36 @@ class EditCompanyPageState extends State<EditCompanyPage> {
     if (response.statusCode == 200 ) {
       final data = json.decode(utf8.decode(response.bodyBytes));
       setState(() {
-        print('socialInscription: ${data['socialInscription']}');
         _tradeNameController.text = data['tradeName']?.toString() ?? '';
-
-        print('cnpj: ${data['cnpj']}');
 
         _cnpjController.text = formatCnpj(data['cnpj']?.toString() ?? '');
 
-        print('socialInscription: ${data['socialInscription']?.toString() ?? ''}');
         _corporateNameController.text = data['socialInscription']?.toString() ?? '';
 
-        print('segment: ${data['segment']}');
         _industryController.text = data['segment']?.toString() ?? '';
 
-        print('companySize: ${data['companySize']}');
         _companySize = data['companySize']?.toString() ?? '';
-        print(_companySize);
 
-        print('applicantsName: ${data['applicantsName']}');
         _requesterNameController.text = data['applicantsName']?.toString() ?? '';
 
-        print('applicantsPhone: ${data['applicantsPhone']}');
         _requesterPhoneController.text = formatPhone(data['applicantsPhone']?.toString() ?? '');
 
-        print('email: ${data['email']}');
         _companyEmailController.text = data['email']?.toString() ?? '';
 
-        print('companyPhone: ${data['companyPhone']}');
         _companyPhoneController.text = formatPhone(data['companyPhone']?.toString() ?? '');
 
-        print('cep: ${data['addres']?['cep']}');
+        _logoController.text = data['imageUrl']?.toString() ?? '';
+
         _postalCodeController.text = formatCep(data['addres']?['cep']?.toString() ?? '');
 
-        print('city: ${data['addres']?['city']}');
         _cityController.text = data['addres']?['city']?.toString() ?? '';
 
-        print('patio: ${data['addres']?['patio']}');
         _publicSpaceController.text = data['addres']?['patio']?.toString() ?? '';
 
-        print('neighborhood: ${data['addres']?['neighborhood']}');
         _neighborhoodController.text = data['addres']?['neighborhood']?.toString() ?? '';
 
-        print('number: ${data['addres']?['number']}');
         _numberController.text = data['addres']?['number']?.toString() ?? '';
 
-        print('uf: ${data['addres']?['uf']}');
         _state = data['addres']?['uf']?.toString() ?? '';
       });
     } else {
@@ -353,7 +341,7 @@ class EditCompanyPageState extends State<EditCompanyPage> {
           // Pagina 2
           Column(
             children: [
-              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController, isEditing: true),
+              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController, logoController: _logoController, isEditing: true),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),

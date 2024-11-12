@@ -7,6 +7,7 @@ class CompanyFormTwo extends StatefulWidget {
   final TextEditingController requesterPhoneController;
   final TextEditingController companyEmailController;
   final TextEditingController companyPhoneController;
+  final TextEditingController logoController;
   final bool isEditing;
 
   const CompanyFormTwo({super.key, 
@@ -14,6 +15,7 @@ class CompanyFormTwo extends StatefulWidget {
     required this.requesterPhoneController,
     required this.companyEmailController,
     required this.companyPhoneController,
+    required this.logoController,
     this.isEditing = false,
   });
 
@@ -70,6 +72,13 @@ class CompanyFormTwoState extends State<CompanyFormTwo> {
             controller: widget.companyPhoneController,
             mask: phoneMask,
           ), 
+          const SizedBox(height: 15),
+          DefaultTextField(
+            label: "Url Logo (opcional)",
+            hintText: "",
+            controller: widget.logoController,
+            mask: phoneMask,
+          ),
         ]
       ),
     );
