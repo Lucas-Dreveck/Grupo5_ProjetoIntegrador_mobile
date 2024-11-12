@@ -302,161 +302,170 @@ class EditCompanyPageState extends State<EditCompanyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false, 
-      body: 
-      PageView(
-        physics: const NeverScrollableScrollPhysics(),
-        controller: _pageController,
-        children: [
-          Column(
-            children: [ 
-              CompanyFormOne(tradeNameController: _tradeNameController, cnpjController: _cnpjController, corporateNameController: _corporateNameController, industryController: _industryController, companySize: _companySize, oncompanySizeChanged: _updatecompanySize, isEditing: true, key: UniqueKey(),), 
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const Spacer(),
-                      Row(
-                        children: [
-                          Expanded(
-                            
-                            child: DefaultButton(
-                              label: "Cancelar",
-                              onPressed: () {_cancel();},
-                              color: AppColors.grey,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: DefaultButton(
-                              label: "Próxima",
-                              onPressed: () {
-                                if (validatePageOne()) {
-                                  _nextPage();
-                                }
-                              },
-                            ),
-                          )
-                        ],
-                      )
-                    ],
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: PageView(
+          physics: const NeverScrollableScrollPhysics(),
+          controller: _pageController,
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  CompanyFormOne(
+                    tradeNameController: _tradeNameController,
+                    cnpjController: _cnpjController,
+                    corporateNameController: _corporateNameController,
+                    industryController: _industryController,
+                    companySize: _companySize,
+                    oncompanySizeChanged: _updatecompanySize,
+                    isEditing: true,
+                    key: UniqueKey(),
                   ),
-                ),
-              ), 
-            ] 
-          ),
-          
-
-          // Pagina 2
-          Column(
-            children: [
-              CompanyFormTwo(requesterNameController: _requesterNameController, requesterPhoneController: _requesterPhoneController, companyEmailController: _companyEmailController, companyPhoneController: _companyPhoneController, isEditing: true),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: DefaultButton(
-                              label: "Cancelar",
-                              onPressed: () {
-                                _cancel();
-                              },
-                              color: AppColors.grey,
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Cancelar",
+                                onPressed: _cancel,
+                                color: AppColors.grey,
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: DefaultButton(
-                              label: "Anterior",
-                              onPressed: _prevPage,
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Próxima",
+                                onPressed: () {
+                                  if (validatePageOne()) {
+                                    _nextPage();
+                                  }
+                                },
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: DefaultButton(
-                              label: "Próxima",
-                              onPressed: () {
-                                if(validatePageTwo()){
-                                  _nextPage();
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-          // Pagina 3
-          Column(
-            children: [
-              CompanyFormThree(postalCodeController: _postalCodeController, cityController: _cityController, publicSpaceController: _publicSpaceController, neighborhoodController: _neighborhoodController, numberController: _numberController, uf: _state, onUfChanged: _updateState, isEditing: true, key: UniqueKey(),),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      const Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: DefaultButton(
-                              label: "Cancelar",
-                              onPressed: () {
-                                _cancel();
-                              },
-                              color: AppColors.grey,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: DefaultButton(
-                              label: "Anterior",
-                              onPressed: _prevPage,
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Expanded(
-                            child: DefaultButton(
-                              label: "Salvar",
-                              onPressed: () {
-                                if(validatePageThree()){
-                                  _save();
-                                }
-                              },
-                              color: AppColors.green,
-                            ),
-                          )
-                        ],
-                      )
-                    ],
+            ),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  CompanyFormTwo(
+                    requesterNameController: _requesterNameController,
+                    requesterPhoneController: _requesterPhoneController,
+                    companyEmailController: _companyEmailController,
+                    companyPhoneController: _companyPhoneController,
+                    isEditing: true,
+                    key: UniqueKey(),
                   ),
-                ),
-              )
-            ],
-          ),
-        ],
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Cancelar",
+                                onPressed: _cancel,
+                                color: AppColors.grey,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Anterior",
+                                onPressed: _prevPage,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Próxima",
+                                onPressed: () {
+                                  if (validatePageTwo()) {
+                                    _nextPage();
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  CompanyFormThree(
+                    postalCodeController: _postalCodeController,
+                    cityController: _cityController,
+                    publicSpaceController: _publicSpaceController,
+                    neighborhoodController: _neighborhoodController,
+                    numberController: _numberController,
+                    uf: _state,
+                    onUfChanged: _updateState,
+                    isEditing: true,
+                    key: UniqueKey(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Cancelar",
+                                onPressed: _cancel,
+                                color: AppColors.grey,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Anterior",
+                                onPressed: _prevPage,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: DefaultButton(
+                                label: "Salvar",
+                                onPressed: () {
+                                  if (validatePageThree()) {
+                                    _save();
+                                  }
+                                },
+                                color: AppColors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 }

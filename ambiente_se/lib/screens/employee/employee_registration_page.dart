@@ -142,7 +142,7 @@ class _EmployeeRegistrationPageState extends State<EmployeeRegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
