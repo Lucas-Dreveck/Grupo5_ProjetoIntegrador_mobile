@@ -197,9 +197,9 @@ class _RankingPageState extends State<RankingPage> {
                                       minHeight: 0.0,
                                       maxWidth: 150.0,
                                       maxHeight: 150.0,
-                                      child: rankings[0]['imageUrl'] != null ?
+                                      child: firstPlace['imageUrl'] != null ?
                                             Image.network(
-                                              rankings[0]['imageUrl'],
+                                              firstPlace['imageUrl'],
                                               fit: BoxFit.fill,
                                             )
                                             : Image.asset(
@@ -227,6 +227,7 @@ class _RankingPageState extends State<RankingPage> {
                                     Text(
                                       firstPlace['companyName'] ?? 'Nome não informado',
                                       style: const TextStyle(fontSize: 22),
+                                      maxLines: 2,
                                     ),
                                     Text(
                                       'Ramo: ${firstPlace['segment'] ?? 'Segmento não informado'}',
@@ -234,7 +235,6 @@ class _RankingPageState extends State<RankingPage> {
                                     ),
                                   ],
                                 ),)
-                                
                               ],
                             ),
                           ),

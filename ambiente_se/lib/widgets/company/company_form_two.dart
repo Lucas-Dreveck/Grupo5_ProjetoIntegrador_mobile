@@ -77,7 +77,6 @@ class CompanyFormTwoState extends State<CompanyFormTwo> {
             label: "Url Logo (opcional)",
             hintText: "",
             controller: widget.logoController,
-            mask: phoneMask,
           ),
         ]
       ),
