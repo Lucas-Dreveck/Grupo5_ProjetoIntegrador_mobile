@@ -125,33 +125,20 @@ flutter build ios
 
 ## 📦 Changelog
 
-### Versão 2.1.0 - 2024-10-03
+### Versão 1.1.0 - 2024-11-13
 
 #### Adicionado
 
-- Swagger para documentação da API.
-- Dependências de telemetria para monitoramento.
-
-#### Refatorado
-
-- Padrões de nomenclatura em inglês para controllers, services e rotas.
-
-### Versão 2.0.0 - 2024-06-23
-
-#### Adicionado
-
-- Autenticação JWT.
-- Hash de senhas.
-- Rotas protegidas com controle de acessos.
-- Tela de cadastro de perguntas.
-- Geração de PDFs detalhados.
+- Opção de adicionar imagem para empresas.
 
 #### Melhorias
 
-- Filtros e paginação para empresas, funcionários e perguntas.
-- Salvamento de progresso em avaliações.
+- Resolvido erros de overflow por algumas telas.
+- Resolvido problema no download do pdf via tela de ranking.
+- Resolvido problema na paginação do ranking.
+- Correção na paleta de cores.
 
-### Versão 1.0.0 - 2024-05-24
+### Versão 1.0.0 - 2024-10-28
 
 #### Adicionado
 - Sistema de login.
